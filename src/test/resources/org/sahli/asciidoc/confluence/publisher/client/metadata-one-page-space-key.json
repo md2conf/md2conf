@@ -1,0 +1,9 @@
+{
+  "spaceKey": "~personalSpace",
+  "pages": [
+    {
+      "title": "Some Confluence Content",
+      "contentFilePath": "some-confluence-content.html"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "page",
+  "title": "title",
+  "space": {
+    "key": "~personalSpace"
+  },
+  "body": {
+    "storage": {
+      "value": "content",
+      "representation": "storage"
+    }
+  }
+}
