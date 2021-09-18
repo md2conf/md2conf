@@ -17,16 +17,23 @@
 package io.github.md2conf.confluence.client;
 
 
-import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.Test;
 import io.github.md2conf.confluence.client.http.ConfluenceRestClient;
 import io.github.md2conf.confluence.client.metadata.ConfluencePageMetadata;
 import io.github.md2conf.confluence.client.metadata.ConfluencePublisherMetadata;
+import io.restassured.specification.RequestSpecification;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
+import static io.github.md2conf.confluence.client.PublishingStrategy.APPEND_TO_ANCESTOR;
+import static io.github.md2conf.confluence.client.PublishingStrategy.REPLACE_ANCESTOR;
 import static io.restassured.RestAssured.given;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -38,17 +45,19 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
-import static io.github.md2conf.confluence.client.PublishingStrategy.APPEND_TO_ANCESTOR;
-import static io.github.md2conf.confluence.client.PublishingStrategy.REPLACE_ANCESTOR;
 
 /**
  * @author Alain Sahli
  * @author Christian Stettler
  */
+@Testcontainers
 public class ConfluencePublisherIntegrationTest {
 
-    private static final String ANCESTOR_ID = "327706";
+    @Container
+    public GenericContainer confluence = new GenericContainer(DockerImageName.parse("qwazer/atlassian-sdk-confluence:latest"))
+            .withExposedPorts(8090);
+
+    private static final String ANCESTOR_ID = "65551";
 
     @Test
     public void publish_singlePageAndAppendToAncestorPublishingStrategy_pageIsCreatedAndAttachmentsAddedInConfluence() {
@@ -243,7 +252,7 @@ public class ConfluencePublisherIntegrationTest {
 
     private static ConfluencePublisherMetadata confluencePublisherMetadata(ConfluencePageMetadata... pages) {
         ConfluencePublisherMetadata confluencePublisherMetadata = new ConfluencePublisherMetadata();
-        confluencePublisherMetadata.setSpaceKey("CPI");
+        confluencePublisherMetadata.setSpaceKey("ds");
         confluencePublisherMetadata.setAncestorId(ANCESTOR_ID);
         confluencePublisherMetadata.setPages(asList(pages));
 
@@ -294,16 +303,17 @@ public class ConfluencePublisherIntegrationTest {
                 .path("results.find({it.title == '" + title + "'}).id");
     }
 
-    private static ConfluencePublisher confluencePublisher(ConfluencePublisherMetadata confluencePublisherMetadata, PublishingStrategy publishingStrategy) {
+    private ConfluencePublisher confluencePublisher(ConfluencePublisherMetadata confluencePublisherMetadata, PublishingStrategy publishingStrategy) {
         return new ConfluencePublisher(confluencePublisherMetadata, publishingStrategy, REMOVE_ORPHANS, confluenceRestClient(), null, null, true);
     }
 
     private static RequestSpecification givenAuthenticatedAsPublisher() {
-        return given().auth().preemptive().basic("confluence-publisher-it", "1234");
+        return given().auth().preemptive().basic("admin", "admin");
     }
 
-    private static ConfluenceRestClient confluenceRestClient() {
-        return new ConfluenceRestClient("http://localhost:8090", false, false, null, "confluence-publisher-it", "1234");
+    private ConfluenceRestClient confluenceRestClient() {
+        int port = confluence.getFirstMappedPort();
+        return new ConfluenceRestClient(String.format("http://localhost:%s", port), false, false, null, "admin", "admin");
     }
 
 }
