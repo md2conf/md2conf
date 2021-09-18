@@ -18,9 +18,6 @@ package io.github.md2conf.confluence.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
@@ -29,6 +26,7 @@ import io.github.md2conf.confluence.client.http.ConfluenceRestClient;
 import io.github.md2conf.confluence.client.http.NotFoundException;
 import io.github.md2conf.confluence.client.metadata.ConfluencePageMetadata;
 import io.github.md2conf.confluence.client.metadata.ConfluencePublisherMetadata;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -45,14 +43,11 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -70,34 +65,31 @@ import static io.github.md2conf.confluence.client.utils.InputStreamUtils.inputSt
  */
 public class ConfluencePublisherTest {
 
-    private static final String TEST_RESOURCES = "src/test/resources/org/sahli/asciidoc/confluence/publisher/client";
+    private static final String TEST_RESOURCES = "src/test/resources/io/github/md2conf/confluence/client";
     private static final String SOME_CONFLUENCE_CONTENT_SHA256_HASH = "7a901829ba6a0b6f7f084ae4313bdb5d83bc2c4ea21b452ba7073c0b0c60faae";
-
-    @Rule
-    public final ExpectedException expectedException = none();
 
     @Test
     public void publish_withMetadataMissingSpaceKey_throwsIllegalArgumentException() {
-        // assert
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("spaceKey must be set");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
-        // arrange + act
-        ConfluenceRestClient confluenceRestClientMock = mock(ConfluenceRestClient.class);
-        ConfluencePublisher confluencePublisher = confluencePublisher("without-space-key", confluenceRestClientMock);
-        confluencePublisher.publish();
+            // arrange + act
+            ConfluenceRestClient confluenceRestClientMock = mock(ConfluenceRestClient.class);
+            ConfluencePublisher confluencePublisher = confluencePublisher("without-space-key", confluenceRestClientMock);
+            confluencePublisher.publish();
+        });
+        assertTrue(exception.getMessage().contains("spaceKey must be set"));
     }
 
     @Test
     public void publish_withMetadataMissingAncestorId_throwsIllegalArgumentException() {
-        // assert
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("ancestorId must be set");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
-        // arrange + act
-        ConfluenceRestClient confluenceRestClientMock = mock(ConfluenceRestClient.class);
-        ConfluencePublisher confluencePublisher = confluencePublisher("without-ancestor-id", confluenceRestClientMock);
-        confluencePublisher.publish();
+            // arrange + act
+            ConfluenceRestClient confluenceRestClientMock = mock(ConfluenceRestClient.class);
+            ConfluencePublisher confluencePublisher = confluencePublisher("without-ancestor-id", confluenceRestClientMock);
+            confluencePublisher.publish();
+        });
+        assertTrue(exception.getMessage().contains("ancestorId must be set"));
     }
 
     @Test
@@ -146,20 +138,22 @@ public class ConfluencePublisherTest {
 
     @Test
     public void publish_multipleRootPageAndReplaceAncestorPublishingStrategy_throwsException() {
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("Multiple root pages found ('Some Confluence Content', 'Some Other Confluence Content'), but 'REPLACE_ANCESTOR' publishing strategy only supports one single root page");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
-        ConfluencePublisher confluencePublisher = confluencePublisher("multiple-page-ancestor-id", PublishingStrategy.REPLACE_ANCESTOR, "version message");
-        confluencePublisher.publish();
+            ConfluencePublisher confluencePublisher = confluencePublisher("multiple-page-ancestor-id", PublishingStrategy.REPLACE_ANCESTOR, "version message");
+            confluencePublisher.publish();
+        });
+        assertTrue(exception.getMessage().contains("Multiple root pages found ('Some Confluence Content', 'Some Other Confluence Content'), but 'REPLACE_ANCESTOR' publishing strategy only supports one single root page"));
     }
 
     @Test
     public void publish_noRootPageAndReplaceAncestorPublishingStrategy_throwsException() {
-        this.expectedException.expect(IllegalArgumentException.class);
-        this.expectedException.expectMessage("No root page found, but 'REPLACE_ANCESTOR' publishing strategy requires one single root page");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
-        ConfluencePublisher confluencePublisher = confluencePublisher("zero-page", PublishingStrategy.REPLACE_ANCESTOR, "version message");
-        confluencePublisher.publish();
+            ConfluencePublisher confluencePublisher = confluencePublisher("zero-page", PublishingStrategy.REPLACE_ANCESTOR, "version message");
+            confluencePublisher.publish();
+        });
+        assertTrue(exception.getMessage().contains("No root page found, but 'REPLACE_ANCESTOR' publishing strategy requires one single root page"));
     }
 
     @Test

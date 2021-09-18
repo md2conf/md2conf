@@ -18,7 +18,7 @@ package io.github.md2conf.confluence.client;
 
 
 import io.restassured.specification.RequestSpecification;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import io.github.md2conf.confluence.client.http.ConfluenceRestClient;
 import io.github.md2conf.confluence.client.metadata.ConfluencePageMetadata;
 import io.github.md2conf.confluence.client.metadata.ConfluencePublisherMetadata;
@@ -37,8 +37,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.fail;
 import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
 import static io.github.md2conf.confluence.client.PublishingStrategy.APPEND_TO_ANCESTOR;
 import static io.github.md2conf.confluence.client.PublishingStrategy.REPLACE_ANCESTOR;
