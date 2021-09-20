@@ -23,11 +23,13 @@ import io.github.md2conf.confluence.client.metadata.ConfluencePublisherMetadata;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,8 +56,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ConfluencePublisherIntegrationTest {
 
     @Container
-    public GenericContainer confluence = new GenericContainer(DockerImageName.parse("qwazer/atlassian-sdk-confluence:latest"))
-            .withExposedPorts(8090);
+    public static GenericContainer confluence = new GenericContainer(DockerImageName.parse("qwazer/atlassian-sdk-confluence:latest"))
+            .withExposedPorts(8090)
+            .waitingFor(Wait.forHttp("/")
+                            .forStatusCode(200)
+                            .forStatusCode(302)
+                            .withStartupTimeout(Duration.ofMinutes(10)));
 
     private static final String ANCESTOR_ID = "65551";
 
@@ -263,32 +269,32 @@ public class ConfluencePublisherIntegrationTest {
         return Paths.get("src/it/resources/").resolve(relativePath).toAbsolutePath().toString();
     }
 
-    private static String childPages() {
-        return "http://localhost:8090/rest/api/content/" + ANCESTOR_ID + "/child/page";
+    private String childPages() {
+        return confluenceBaseUrl()+ "/rest/api/content/" + ANCESTOR_ID + "/child/page";
     }
 
-    private static String attachmentsOf(String contentId) {
-        return "http://localhost:8090/rest/api/content/" + contentId + "/child/attachment";
+    private String attachmentsOf(String contentId) {
+        return confluenceBaseUrl()+ "/rest/api/content/" + contentId + "/child/attachment";
     }
 
-    private static String attachment(String attachmentId) {
-        return "http://localhost:8090/rest/api/content/" + attachmentId;
+    private String attachment(String attachmentId) {
+        return confluenceBaseUrl()+ "/rest/api/content/" + attachmentId;
     }
 
-    private static String rootPage() {
-        return "http://localhost:8090/rest/api/content/" + ANCESTOR_ID;
+    private  String rootPage() {
+        return confluenceBaseUrl()+ "/rest/api/content/" + ANCESTOR_ID;
     }
 
-    private static String rootPageAttachments() {
+    private String rootPageAttachments() {
         return attachmentsOf(ANCESTOR_ID);
     }
 
-    private static String pageVersionOf(String contentId) {
-        return "http://localhost:8090/rest/api/content/" + contentId + "?expand=version";
+    private String pageVersionOf(String contentId) {
+        return confluenceBaseUrl()+"/rest/api/content/" + contentId + "?expand=version";
     }
 
-    private static String propertyValueOf(String contentId, String key) {
-        return "http://localhost:8090/rest/api/content/" + contentId + "/property/" + key;
+    private String propertyValueOf(String contentId, String key) {
+        return confluenceBaseUrl()+"/rest/api/content/" + contentId + "/property/" + key;
     }
 
     private String firstAttachmentId() {
@@ -297,7 +303,7 @@ public class ConfluencePublisherIntegrationTest {
                 .path("results[0].id");
     }
 
-    private static String pageIdBy(String title) {
+    private String pageIdBy(String title) {
         return givenAuthenticatedAsPublisher()
                 .when().get(childPages())
                 .path("results.find({it.title == '" + title + "'}).id");
@@ -312,8 +318,11 @@ public class ConfluencePublisherIntegrationTest {
     }
 
     private ConfluenceRestClient confluenceRestClient() {
-        int port = confluence.getFirstMappedPort();
-        return new ConfluenceRestClient(String.format("http://localhost:%s", port), false, false, null, "admin", "admin");
+        return new ConfluenceRestClient(confluenceBaseUrl(), false, false, null, "admin", "admin");
+    }
+
+    private String confluenceBaseUrl(){
+        return String.format("http://localhost:%s", confluence.getFirstMappedPort());
     }
 
 }
