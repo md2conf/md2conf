@@ -8,7 +8,7 @@ is a part of md2conf toolset.
 
 ### Conluence Content model
 
-Conluence Content is a collection of Confluence Pages. Confluence Page has mandatory title (attribute "title"), content ("contentFilePath") of type "storage" or "wiki" ("type").  A Confluence Page can have optional collections of child pages ("children"), attachments ("attachments"), labels ("labels").
+Conluence Content is a collection of Confluence Pages. Confluence Page has mandatory title (attribute "title"), content ("contentFilePath") of type "storage" or "wiki" ("type").  A Confluence Page can have optional collections of child pages ("children"), attachments, labels.
 
 ![confluence-content.png](doc/plantuml/confluence-content.png)
 
