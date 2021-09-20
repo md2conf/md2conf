@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author Alain Sahli
  */
-public interface ConfluenceClient {
+public interface ConfluenceApiClient {
 
     String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content, String versionMessage);
 

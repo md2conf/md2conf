@@ -57,7 +57,7 @@ import com.google.common.util.concurrent.RateLimiter;
  * @author Alain Sahli
  * @author Christian Stettler
  */
-public class ConfluenceRestClient implements ConfluenceClient {
+public class ConfluenceRestClient implements ConfluenceApiClient {
 
     private final CloseableHttpClient httpClient;
     private final String username;
