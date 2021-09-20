@@ -8,19 +8,17 @@ is a part of md2conf toolset.
 
 ### Conluence Content model
 
-Conluence Content is a list of confluence pages. Each page has mandatory
-attributes title, content file path. Optional content type can be
-specified. A page can have optional childen, attachments, labels.
+Conluence Content is a collection of Confluence Pages. Confluence Page has mandatory title (attribute "title"), content ("contentFilePath") of type "storage" or "wiki" ("type").  A Confluence Page can have optional collections of child pages ("children"), attachments ("attachments"), labels ("labels").
 
 ![confluence-content.png](doc/plantuml/confluence-content.png)
 
 #### Content Type
 
-Confluence support 2 types of markup to publish pages using Confluence
-API.
+Confluence support 2 types of markup "storage" or "wiki" to publish pages using Confluence
+API. See Atlassian documentation for details:
 
-* [Confluence Storage Format](https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html) - refered as "storage"
-* [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html) - refered as "wiki"
+* [Confluence Storage Format](https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html) 
+* [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
 
 ### Example
 
