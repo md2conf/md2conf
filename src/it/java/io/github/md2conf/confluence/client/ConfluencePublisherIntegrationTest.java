@@ -56,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 public class ConfluencePublisherIntegrationTest {
 
     @Container
-    public GenericContainer confluence = new GenericContainer(DockerImageName.parse("qwazer/atlassian-sdk-confluence:latest"))
+    public static GenericContainer confluence = new GenericContainer(DockerImageName.parse("qwazer/atlassian-sdk-confluence:latest"))
             .withExposedPorts(8090)
             .waitingFor(Wait.forHttp("/")
                             .forStatusCode(200)
