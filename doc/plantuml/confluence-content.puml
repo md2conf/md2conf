@@ -1,0 +1,32 @@
+@startuml
+!theme plain
+
+left to right direction
+skinparam linetype ortho
+
+hide empty members
+hide circle
+
+class ConfluenceContent{
+List<ConfluencePage> pages
+}
+
+class ConfluencePage {
+    String title
+    Type type
+    String contentFilePath
+    List<ConfluencePage> children
+    Map<String, String> attachments
+    List<String> labels
+}
+
+ConfluenceContent::pages->ConfluencePage: consist of
+
+ConfluencePage::type-->Type
+enum Type{
+STORAGE,
+WIKI
+}
+
+
+@enduml
