@@ -2,27 +2,43 @@
 
 **confluence-client** is a Java based conluence client that utilize
 Confluence REST API to create/update/delete content in a Confluence
-instance.  
-It uses own domain model to describe Confluence content in json file. It
-is a part of md2conf toolset.
+instance. It uses own domain model to describe Confluence content in
+json file. It is a part of md2conf toolset.
 
-### Conluence Content model
+### Confluence Content model
 
-Conluence Content is a collection of Confluence Pages. Confluence Page has mandatory title (attribute "title"), content ("contentFilePath") of type "storage" or "wiki" ("type").  A Confluence Page can have optional collections of child pages ("children"), attachments, labels.
+Confluence Content is a collection of Confluence Pages.
+
 
 ![confluence-content.png](doc/plantuml/confluence-content.png)
 
+### Confluence Page
+
+Confluence Page has next attributes
+
+| Attribute       | Description                                |
+|:----------------|:-------------------------------------------|
+| title           | mandatory title                            |
+| contentFilePath | mandatory content file path                |
+| type            | "storage" or "wiki", see below for details |
+| children        | optional collections of child pages        |
+| attachments     | optional collections of attachments        |
+| labels          | optional collections of labels             |
+
 #### Content Type
 
-Confluence support 2 types of markup "storage" or "wiki" to publish pages using Confluence
-API. See Atlassian documentation for details:
+Confluence support 2 types of markup "storage" or "wiki" to publish
+pages using Confluence API. See Atlassian documentation for details:
 
-* [Confluence Storage Format](https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html) 
+* [Confluence Storage Format](https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html)
+  \- refered as "storage"
 * [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
+  \- refered as "wiki"
 
 ### Example
 
 TODO
+
 <!--TODO add example-->
 
 ### Usage
@@ -47,6 +63,6 @@ Plan to add next features:
 
 ### License
 
-Copyright (c) 2017-2021 Christian Stettler and others.
+Copyright (c) 2017-2021 Christian Stettler, Alain Sahli and others.
 
 Copyright (c) 2021-, qwazer.

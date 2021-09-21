@@ -20,9 +20,9 @@ class ConfluencePage {
     List<String> labels
 }
 
-ConfluenceContent::pages->ConfluencePage: consist of
+ConfluenceContent::pages-{ConfluencePage: consist of
 
-ConfluencePage::type-->Type
+ConfluencePage::type--Type
 enum Type{
 STORAGE,
 WIKI

@@ -5,7 +5,7 @@ import io.github.md2conf.confluence.client.http.ConfluencePage;
 /**
  * @author Christian Stettler
  */
-public interface ConfluencePublisherListener {
+public interface ConfluenceClientListener {
 
     void pageAdded(ConfluencePage addedPage);
 
