@@ -17,18 +17,23 @@
 package io.github.md2conf.confluence.client.metadata;
 
 import io.github.md2conf.confluence.client.support.RuntimeUse;
+import io.github.md2conf.model.ConfluenceContent;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Confluence content resolved against a particular Confluence installation.
+ * The same as ConfluenceContent, but with spaceKey and ancestorId.
+ *
  * @author Alain Sahli
+ * @author qwazer resheto@gmail.com
  */
-public class ConfluencePublisherMetadata {
+public class ConfluenceContentInstance {
 
     private String spaceKey;
     private String ancestorId;
-    private List<ConfluencePageMetadata> pages = new ArrayList<>();
+    private List<ConfluenceContent.ConfluencePage> pages = new ArrayList<>();
 
     public String getSpaceKey() {
         return this.spaceKey;
@@ -48,12 +53,12 @@ public class ConfluencePublisherMetadata {
         this.ancestorId = ancestorId;
     }
 
-    public List<ConfluencePageMetadata> getPages() {
+    public List<ConfluenceContent.ConfluencePage> getPages() {
         return this.pages;
     }
 
     @RuntimeUse
-    public void setPages(List<ConfluencePageMetadata> pages) {
+    public void setPages(List<ConfluenceContent.ConfluencePage> pages) {
         this.pages = pages;
     }
 

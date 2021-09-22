@@ -1,0 +1,49 @@
+package io.github.md2conf.confluence.client;
+
+import io.github.md2conf.confluence.client.http.InternalApiClient;
+import io.github.md2conf.confluence.client.http.InternalRestClient;
+import io.github.md2conf.confluence.client.http.NotFoundException;
+import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
+import io.github.md2conf.confluence.client.utils.AssertUtils;
+import io.github.md2conf.model.ConfluenceContent;
+
+import static io.github.md2conf.confluence.client.ConfluenceClientBuilder.aConfluenceClient;
+
+public class ConfluenceClientFactory {
+
+    public static ConfluenceClient confluenceClient(ConfluenceClientConfigurationProperties properties,
+                                                    ConfluenceContent confluenceContent,
+                                                    ConfluenceClientListener confluenceClientListener) {
+        AssertUtils.assertMandatoryParameter(!confluenceContent.getPages().isEmpty(), "Confluence Content Pages");
+        InternalApiClient internalApiClient = new InternalRestClient(properties.getConfluenceUrl(),
+                properties.isSkipSslVerification(),
+                true,
+                properties.getMaxRequestsPerSecond(),
+                properties.getUsername(),
+                properties.getPasswordOrPersonalAccessToken());
+
+        String ancestorId;
+        try {
+            ancestorId=  internalApiClient.getPageByTitle(properties.getSpaceKey(), properties.getParentPageTitle());
+        } catch (NotFoundException e){
+            throw new IllegalArgumentException(String.format("Cannot create ConfluenceClient. There is no page with title %s in %s space found",
+                    properties.getParentPageTitle(), properties.getSpaceKey()));
+        }
+
+        ConfluenceContentInstance metadata = new ConfluenceContentInstance();
+        metadata.setSpaceKey(properties.getSpaceKey());
+        metadata.setAncestorId(ancestorId);
+        metadata.setPages(confluenceContent.getPages());
+
+        ConfluenceClientBuilder builder = aConfluenceClient()
+                .withConfluenceClientListener(confluenceClientListener)
+                .withInternalApiClient(internalApiClient)
+                .withMetadata(metadata)
+                .withNotifyWatchers(properties.isNotifyWatchers())
+                .withOrphanRemovalStrategy(properties.getOrphanRemovalStrategy())
+                .withPublishingStrategy(PublishingStrategy.APPEND_TO_ANCESTOR)
+                .withVersionMessage(properties.getVersionMessage());
+
+        return builder.build();
+    }
+}
