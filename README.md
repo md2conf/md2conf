@@ -1,6 +1,6 @@
 # confluence-client
 
-**confluence-client** is a Java based conluence client that utilize
+**confluence-client** is a Java based confluence client that utilize
 Confluence REST API to create/update/delete content in a Confluence
 instance. It uses own domain model to describe Confluence content in
 json file. It is a part of md2conf toolset.
@@ -58,11 +58,11 @@ Plan to add next features:
 * Support for Confluence Wiki Markup content type
 * Externalized configuration
 * Command line interface
-* Performance optimizations for indepotency feature
+* Performance optimizations for idempotency feature
 
 
 ### License
 
-Copyright (c) 2017-2021 Christian Stettler, Alain Sahli and others.
+Copyright (c) 2016-2021 Christian Stettler, Alain Sahli and others.
 
 Copyright (c) 2021-, qwazer.
