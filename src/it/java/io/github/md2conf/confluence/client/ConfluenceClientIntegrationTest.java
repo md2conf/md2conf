@@ -43,6 +43,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class ConfluenceClientIntegrationTest extends AbstractContainerBaseTest {
 
+    private static final String ANCESTOR_ID = "65551"; //todo replace by dynamic resolution by title
+
     @Test
     public void publish_singlePageWithAttachments_pageIsCreatedAndAttachmentsAddedInConfluence() {
         // arrange
@@ -212,7 +214,7 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerBaseTest {
     }
 
     private String childPages() {
-        return confluenceBaseUrl()+ "/rest/api/content/" + pageIdBy(PARENT_PAGE_TITLE) + "/child/page";
+        return confluenceBaseUrl()+ "/rest/api/content/" + ANCESTOR_ID + "/child/page";
     }
 
     private String attachmentsOf(String contentId) {
