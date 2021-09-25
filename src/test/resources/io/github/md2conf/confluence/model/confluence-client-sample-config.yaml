@@ -1,0 +1,7 @@
+---
+pages:
+    - title: Some Confluence Content
+      contentFilePath: some-confluence-content.html
+      children:
+          - title: Some Child Content
+            contentFilePath: some-child-content.html

@@ -29,6 +29,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <httpcomponents.version>4.5.13</httpcomponents.version>
+        <jackson.version>2.12.5</jackson.version>
         <junit.version>5.8.0</junit.version>
         <testcontainers.version>1.16.0</testcontainers.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,8 +40,13 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.12.5</version>
+            <version>${jackson.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
