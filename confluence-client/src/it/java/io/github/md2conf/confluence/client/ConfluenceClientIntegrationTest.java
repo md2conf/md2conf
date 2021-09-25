@@ -18,6 +18,7 @@ package io.github.md2conf.confluence.client;
 
 
 import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluencePage;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +55,7 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
         attachments.put("attachmentOne.txt", absolutePathTo("attachments/attachmentOne.txt"));
         attachments.put("attachmentTwo.txt", absolutePathTo("attachments/attachmentTwo.txt"));
 
-        ConfluenceContent.ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"), attachments);
+        ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"), attachments);
         ConfluenceContent confluenceContent = new ConfluenceContent(confluencePage);
         ConfluenceClient confluenceClient = createConfluenceClient(confluenceContent);
 
@@ -81,7 +82,7 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
         attachments.put("attachmentOne.txt", absolutePathTo("attachments/attachmentOne.txt"));
         attachments.put("attachmentTwo.txt", absolutePathTo("attachments/attachmentTwo.txt"));
 
-        ConfluenceContent.ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"), attachments);
+        ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"), attachments);
         ConfluenceContent confluenceContent = new ConfluenceContent(confluencePage);
         ConfluenceClient confluenceClient = createConfluenceClient(confluenceContent);
 
@@ -105,7 +106,7 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
         attachments.put("attachmentOne.txt", absolutePathTo("attachments/attachmentOne.txt"));
         attachments.put("attachmentTwo.txt", absolutePathTo("attachments/attachmentTwo.txt"));
 
-        ConfluenceContent.ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"), attachments);
+        ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"), attachments);
         ConfluenceContent confluenceContent = new ConfluenceContent(confluencePage);
         ConfluenceClient confluenceClient = createConfluenceClient(confluenceContent);
 
@@ -149,7 +150,7 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
     public void publish_sameContentPublishedMultipleTimes_doesNotProduceMultipleVersions() {
         // arrange
         String title = uniqueTitle("Single Page");
-        ConfluenceContent.ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"));
+        ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"));
         ConfluenceContent confluenceContent = new ConfluenceContent(confluencePage);
         ConfluenceClient confluenceClient = createConfluenceClient(confluenceContent);
 
@@ -168,7 +169,7 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
         // arrange
         String title = uniqueTitle("Invalid Markup Test Page");
 
-        ConfluenceContent.ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"));
+        ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"));
         ConfluenceContent confluenceContent = new ConfluenceContent(confluencePage);
         ConfluenceClient confluenceClient = createConfluenceClient(confluenceContent);
 
@@ -195,13 +196,13 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
         return title + " - " + randomUUID();
     }
 
-    private static ConfluenceContent.ConfluencePage createConfluencePageWithAttachments(String title, String contentFilePath) {
+    private static ConfluencePage createConfluencePageWithAttachments(String title, String contentFilePath) {
         return createConfluencePageWithAttachments(title, contentFilePath, emptyMap());
     }
 
 
-    private static ConfluenceContent.ConfluencePage createConfluencePageWithAttachments(String title, String contentFilePath, Map<String, String> attachments) {
-        ConfluenceContent.ConfluencePage confluencePage = new ConfluenceContent.ConfluencePage();
+    private static ConfluencePage createConfluencePageWithAttachments(String title, String contentFilePath, Map<String, String> attachments) {
+        ConfluencePage confluencePage = new ConfluencePage();
         confluencePage.setTitle(title);
         confluencePage.setContentFilePath(contentFilePath);
         confluencePage.setAttachments(attachments);

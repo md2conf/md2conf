@@ -17,7 +17,7 @@
 package io.github.md2conf.confluence.client.metadata;
 
 import io.github.md2conf.confluence.client.support.RuntimeUse;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluencePage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ public class ConfluenceContentInstance {
 
     private String spaceKey;
     private String ancestorId;
-    private List<ConfluenceContent.ConfluencePage> pages = new ArrayList<>();
+    private List<ConfluencePage> pages = new ArrayList<>();
 
     public String getSpaceKey() {
         return this.spaceKey;
@@ -53,12 +53,12 @@ public class ConfluenceContentInstance {
         this.ancestorId = ancestorId;
     }
 
-    public List<ConfluenceContent.ConfluencePage> getPages() {
+    public List<ConfluencePage> getPages() {
         return this.pages;
     }
 
     @RuntimeUse
-    public void setPages(List<ConfluenceContent.ConfluencePage> pages) {
+    public void setPages(List<ConfluencePage> pages) {
         this.pages = pages;
     }
 

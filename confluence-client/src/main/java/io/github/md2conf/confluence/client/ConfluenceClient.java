@@ -19,8 +19,8 @@ package io.github.md2conf.confluence.client;
 import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
 import io.github.md2conf.confluence.client.http.InternalApiClient;
 import io.github.md2conf.confluence.client.http.NotFoundException;
-import io.github.md2conf.model.ConfluenceContent;
 import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
+import io.github.md2conf.model.ConfluencePage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -88,8 +88,8 @@ public class ConfluenceClient {
         this.confluenceClientListener.publishCompleted();
     }
 
-    private static ConfluenceContent.ConfluencePage singleRootPage(ConfluenceContentInstance metadata) {
-        List<ConfluenceContent.ConfluencePage> rootPages = metadata.getPages();
+    private static ConfluencePage singleRootPage(ConfluenceContentInstance metadata) {
+        List<ConfluencePage> rootPages = metadata.getPages();
 
         if (rootPages.size() > 1) {
             String rootPageTitles = rootPages.stream()
@@ -106,7 +106,7 @@ public class ConfluenceClient {
         return rootPages.get(0);
     }
 
-    private void startPublishingReplacingAncestorId(ConfluenceContent.ConfluencePage rootPage, String spaceKey, String ancestorId) {
+    private void startPublishingReplacingAncestorId(ConfluencePage rootPage, String spaceKey, String ancestorId) {
         if (rootPage != null) {
             updatePage(ancestorId, null, rootPage);
 
@@ -119,7 +119,7 @@ public class ConfluenceClient {
         }
     }
 
-    private void startPublishingUnderAncestorId(List<ConfluenceContent.ConfluencePage> pages, String spaceKey, String ancestorId) {
+    private void startPublishingUnderAncestorId(List<ConfluencePage> pages, String spaceKey, String ancestorId) {
         if (this.orphanRemovalStrategy == REMOVE_ORPHANS) {
             deleteConfluencePagesNotPresentUnderAncestor(pages, ancestorId);
         }
@@ -135,7 +135,7 @@ public class ConfluenceClient {
         });
     }
 
-    private void deleteConfluencePagesNotPresentUnderAncestor(List<ConfluenceContent.ConfluencePage> pagesToKeep, String ancestorId) {
+    private void deleteConfluencePagesNotPresentUnderAncestor(List<ConfluencePage> pagesToKeep, String ancestorId) {
         List<io.github.md2conf.confluence.client.http.ConfluencePage> childPagesOnConfluence = this.internalApiClient.getChildPages(ancestorId);
 
         List<io.github.md2conf.confluence.client.http.ConfluencePage> childPagesOnConfluenceToDelete = childPagesOnConfluence.stream()
@@ -162,7 +162,7 @@ public class ConfluenceClient {
                 });
     }
 
-    private String addOrUpdatePageUnderAncestor(String spaceKey, String ancestorId, ConfluenceContent.ConfluencePage page) {
+    private String addOrUpdatePageUnderAncestor(String spaceKey, String ancestorId, ConfluencePage page) {
         String contentId;
 
         try {
@@ -178,7 +178,7 @@ public class ConfluenceClient {
         return contentId;
     }
 
-    private void updatePage(String contentId, String ancestorId, ConfluenceContent.ConfluencePage page) {
+    private void updatePage(String contentId, String ancestorId, ConfluencePage page) {
         String content = fileContent(page.getContentFilePath(), UTF_8);
         io.github.md2conf.confluence.client.http.ConfluencePage existingPage = this.internalApiClient.getPageWithContentAndVersionById(contentId);
         String existingContentHash = this.internalApiClient.getPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);

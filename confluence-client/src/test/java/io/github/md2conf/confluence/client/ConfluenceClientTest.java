@@ -18,7 +18,7 @@ package io.github.md2conf.confluence.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluencePage;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
@@ -679,7 +679,7 @@ public class ConfluenceClientTest {
         }
     }
 
-    private static void resolveAbsoluteContentFileAndAttachmentsPath(List<ConfluenceContent.ConfluencePage> pages, Path contentRoot) {
+    private static void resolveAbsoluteContentFileAndAttachmentsPath(List<ConfluencePage> pages, Path contentRoot) {
         pages.forEach((page) -> {
             page.setContentFilePath(contentRoot.resolve(page.getContentFilePath()).toString());
             page.setAttachments(page.getAttachments().entrySet().stream().collect(toMap(

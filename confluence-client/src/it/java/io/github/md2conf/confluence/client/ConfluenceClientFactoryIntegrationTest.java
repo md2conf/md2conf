@@ -2,7 +2,7 @@ package io.github.md2conf.confluence.client;
 
 import io.github.md2conf.confluence.client.http.RequestFailedException;
 import io.github.md2conf.model.ConfluenceContent;
-import io.github.md2conf.model.ConfluenceContent.ConfluencePage;
+import io.github.md2conf.model.ConfluencePage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
