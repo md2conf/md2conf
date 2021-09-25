@@ -57,7 +57,7 @@ import com.google.common.util.concurrent.RateLimiter;
  * @author Alain Sahli
  * @author Christian Stettler
  */
-public class InternalRestClient implements InternalApiClient {
+public class RestApiInternalClient implements ApiInternalClient {
 
     private final CloseableHttpClient httpClient;
     private final String username;
@@ -66,16 +66,16 @@ public class InternalRestClient implements InternalApiClient {
     private final HttpRequestFactory httpRequestFactory;
     private final RateLimiter rateLimiter;
 
-    public InternalRestClient(String rootConfluenceUrl, boolean disableSslVerification, boolean enableHttpClientSystemProperties, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
+    public RestApiInternalClient(String rootConfluenceUrl, boolean disableSslVerification, boolean enableHttpClientSystemProperties, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
         this(rootConfluenceUrl, null, disableSslVerification, enableHttpClientSystemProperties, maxRequestsPerSecond, username, passwordOrPersonalAccessToken);
     }
 
-    public InternalRestClient(String rootConfluenceUrl, ProxyConfiguration proxyConfiguration, boolean disableSslVerification, boolean enableHttpClientSystemProperties, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
+    public RestApiInternalClient(String rootConfluenceUrl, ProxyConfiguration proxyConfiguration, boolean disableSslVerification, boolean enableHttpClientSystemProperties, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
         this(rootConfluenceUrl, defaultHttpClient(proxyConfiguration, disableSslVerification, enableHttpClientSystemProperties), maxRequestsPerSecond, username,
             passwordOrPersonalAccessToken);
     }
 
-    public InternalRestClient(String rootConfluenceUrl, CloseableHttpClient httpClient, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
+    public RestApiInternalClient(String rootConfluenceUrl, CloseableHttpClient httpClient, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
         AssertUtils.assertMandatoryParameter(httpClient != null, "httpClient");
 
         this.httpClient = httpClient;

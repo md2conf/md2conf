@@ -1,7 +1,7 @@
 package io.github.md2conf.confluence.client;
 
-import io.github.md2conf.confluence.client.http.InternalApiClient;
-import io.github.md2conf.confluence.client.http.InternalRestClient;
+import io.github.md2conf.confluence.client.http.ApiInternalClient;
+import io.github.md2conf.confluence.client.http.RestApiInternalClient;
 import io.github.md2conf.confluence.client.http.NotFoundException;
 import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
 import io.github.md2conf.confluence.client.utils.AssertUtils;
@@ -15,7 +15,7 @@ public class ConfluenceClientFactory {
                                                     ConfluenceContent confluenceContent,
                                                     ConfluenceClientListener confluenceClientListener) {
         AssertUtils.assertMandatoryParameter(!confluenceContent.getPages().isEmpty(), "Confluence Content Pages");
-        InternalApiClient internalApiClient = new InternalRestClient(properties.getConfluenceUrl(),
+        ApiInternalClient apiInternalClient = new RestApiInternalClient(properties.getConfluenceUrl(),
                 properties.isSkipSslVerification(),
                 true,
                 properties.getMaxRequestsPerSecond(),
@@ -24,7 +24,7 @@ public class ConfluenceClientFactory {
 
         String ancestorId;
         try {
-            ancestorId=  internalApiClient.getPageByTitle(properties.getSpaceKey(), properties.getParentPageTitle());
+            ancestorId=  apiInternalClient.getPageByTitle(properties.getSpaceKey(), properties.getParentPageTitle());
         } catch (NotFoundException e){
             throw new IllegalArgumentException(String.format("Cannot create ConfluenceClient. There is no page with title %s in %s space found",
                     properties.getParentPageTitle(), properties.getSpaceKey()));
@@ -37,7 +37,7 @@ public class ConfluenceClientFactory {
 
         ConfluenceClientBuilder builder = aConfluenceClient()
                 .withConfluenceClientListener(confluenceClientListener)
-                .withInternalApiClient(internalApiClient)
+                .withInternalApiClient(apiInternalClient)
                 .withMetadata(metadata)
                 .withNotifyWatchers(properties.isNotifyWatchers())
                 .withOrphanRemovalStrategy(properties.getOrphanRemovalStrategy())

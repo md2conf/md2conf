@@ -17,7 +17,7 @@
 package io.github.md2conf.confluence.client;
 
 import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
-import io.github.md2conf.confluence.client.http.InternalApiClient;
+import io.github.md2conf.confluence.client.http.ApiInternalClient;
 import io.github.md2conf.confluence.client.http.NotFoundException;
 import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
 import io.github.md2conf.model.ConfluencePage;
@@ -53,18 +53,18 @@ public class ConfluenceClient {
     private final ConfluenceContentInstance metadata;
     private final PublishingStrategy publishingStrategy;
     private final OrphanRemovalStrategy orphanRemovalStrategy;
-    private final InternalApiClient internalApiClient;
+    private final ApiInternalClient apiInternalClient;
     private final ConfluenceClientListener confluenceClientListener;
     private final String versionMessage;
     private final boolean notifyWatchers;
 
     public ConfluenceClient(ConfluenceContentInstance metadata, PublishingStrategy publishingStrategy, OrphanRemovalStrategy orphanRemovalStrategy,
-                            InternalApiClient internalApiClient, ConfluenceClientListener confluenceClientListener,
+                            ApiInternalClient apiInternalClient, ConfluenceClientListener confluenceClientListener,
                             String versionMessage, boolean notifyWatchers) {
         this.metadata = metadata;
         this.publishingStrategy = publishingStrategy;
         this.orphanRemovalStrategy = orphanRemovalStrategy;
-        this.internalApiClient = internalApiClient;
+        this.apiInternalClient = apiInternalClient;
         this.confluenceClientListener = confluenceClientListener != null ? confluenceClientListener : new NoOpConfluenceClientListener();
         this.versionMessage = versionMessage;
         this.notifyWatchers = notifyWatchers;
@@ -136,28 +136,28 @@ public class ConfluenceClient {
     }
 
     private void deleteConfluencePagesNotPresentUnderAncestor(List<ConfluencePage> pagesToKeep, String ancestorId) {
-        List<io.github.md2conf.confluence.client.http.ConfluencePage> childPagesOnConfluence = this.internalApiClient.getChildPages(ancestorId);
+        List<io.github.md2conf.confluence.client.http.ConfluencePage> childPagesOnConfluence = this.apiInternalClient.getChildPages(ancestorId);
 
         List<io.github.md2conf.confluence.client.http.ConfluencePage> childPagesOnConfluenceToDelete = childPagesOnConfluence.stream()
                                                                                                                              .filter(childPageOnConfluence -> pagesToKeep.stream().noneMatch(page -> page.getTitle().equals(childPageOnConfluence.getTitle())))
                                                                                                                              .collect(toList());
 
         childPagesOnConfluenceToDelete.forEach(pageToDelete -> {
-            List<io.github.md2conf.confluence.client.http.ConfluencePage> pageScheduledForDeletionChildPagesOnConfluence = this.internalApiClient.getChildPages(pageToDelete.getContentId());
+            List<io.github.md2conf.confluence.client.http.ConfluencePage> pageScheduledForDeletionChildPagesOnConfluence = this.apiInternalClient.getChildPages(pageToDelete.getContentId());
             pageScheduledForDeletionChildPagesOnConfluence.forEach(parentPageToDelete -> this.deleteConfluencePagesNotPresentUnderAncestor(emptyList(), pageToDelete.getContentId()));
-            this.internalApiClient.deletePage(pageToDelete.getContentId());
+            this.apiInternalClient.deletePage(pageToDelete.getContentId());
             this.confluenceClientListener.pageDeleted(pageToDelete);
         });
     }
 
     private void deleteConfluenceAttachmentsNotPresentUnderPage(String contentId, Map<String, String> attachments) {
-        List<ConfluenceAttachment> confluenceAttachments = this.internalApiClient.getAttachments(contentId);
+        List<ConfluenceAttachment> confluenceAttachments = this.apiInternalClient.getAttachments(contentId);
 
         confluenceAttachments.stream()
                 .filter(confluenceAttachment -> attachments.keySet().stream().noneMatch(attachmentFileName -> attachmentFileName.equals(confluenceAttachment.getTitle())))
                 .forEach(confluenceAttachment -> {
-                    this.internalApiClient.deletePropertyByKey(contentId, getAttachmentHashKey(confluenceAttachment.getTitle()));
-                    this.internalApiClient.deleteAttachment(confluenceAttachment.getId());
+                    this.apiInternalClient.deletePropertyByKey(contentId, getAttachmentHashKey(confluenceAttachment.getTitle()));
+                    this.apiInternalClient.deleteAttachment(confluenceAttachment.getId());
                     this.confluenceClientListener.attachmentDeleted(confluenceAttachment.getTitle(), contentId);
                 });
     }
@@ -166,12 +166,12 @@ public class ConfluenceClient {
         String contentId;
 
         try {
-            contentId = this.internalApiClient.getPageByTitle(spaceKey, page.getTitle());
+            contentId = this.apiInternalClient.getPageByTitle(spaceKey, page.getTitle());
             updatePage(contentId, ancestorId, page);
         } catch (NotFoundException e) {
             String content = fileContent(page.getContentFilePath(), UTF_8);
-            contentId = this.internalApiClient.addPageUnderAncestor(spaceKey, ancestorId, page.getTitle(), content, this.versionMessage);
-            this.internalApiClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, hash(content));
+            contentId = this.apiInternalClient.addPageUnderAncestor(spaceKey, ancestorId, page.getTitle(), content, this.versionMessage);
+            this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, hash(content));
             this.confluenceClientListener.pageAdded(new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), content, INITIAL_PAGE_VERSION));
         }
 
@@ -180,15 +180,15 @@ public class ConfluenceClient {
 
     private void updatePage(String contentId, String ancestorId, ConfluencePage page) {
         String content = fileContent(page.getContentFilePath(), UTF_8);
-        io.github.md2conf.confluence.client.http.ConfluencePage existingPage = this.internalApiClient.getPageWithContentAndVersionById(contentId);
-        String existingContentHash = this.internalApiClient.getPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
+        io.github.md2conf.confluence.client.http.ConfluencePage existingPage = this.apiInternalClient.getPageWithContentAndVersionById(contentId);
+        String existingContentHash = this.apiInternalClient.getPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
         String newContentHash = hash(content);
 
         if (notSameHash(existingContentHash, newContentHash) || !existingPage.getTitle().equals(page.getTitle())) {
-            this.internalApiClient.deletePropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
+            this.apiInternalClient.deletePropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
             int newPageVersion = existingPage.getVersion() + 1;
-            this.internalApiClient.updatePage(contentId, ancestorId, page.getTitle(), content, newPageVersion, this.versionMessage, this.notifyWatchers);
-            this.internalApiClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, newContentHash);
+            this.apiInternalClient.updatePage(contentId, ancestorId, page.getTitle(), content, newPageVersion, this.versionMessage, this.notifyWatchers);
+            this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, newContentHash);
             this.confluenceClientListener.pageUpdated(existingPage, new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), content, newPageVersion));
         }
     }
@@ -202,23 +202,23 @@ public class ConfluenceClient {
         String newAttachmentHash = hash(fileInputStream(absoluteAttachmentPath));
 
         try {
-            ConfluenceAttachment existingAttachment = this.internalApiClient.getAttachmentByFileName(contentId, attachmentFileName);
+            ConfluenceAttachment existingAttachment = this.apiInternalClient.getAttachmentByFileName(contentId, attachmentFileName);
             String attachmentId = existingAttachment.getId();
-            String existingAttachmentHash = this.internalApiClient.getPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName));
+            String existingAttachmentHash = this.apiInternalClient.getPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName));
 
             if (notSameHash(existingAttachmentHash, newAttachmentHash)) {
                 if (existingAttachmentHash != null) {
-                    this.internalApiClient.deletePropertyByKey(contentId, getAttachmentHashKey(attachmentFileName));
+                    this.apiInternalClient.deletePropertyByKey(contentId, getAttachmentHashKey(attachmentFileName));
                 }
-                this.internalApiClient.updateAttachmentContent(contentId, attachmentId, fileInputStream(absoluteAttachmentPath), this.notifyWatchers);
-                this.internalApiClient.setPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName), newAttachmentHash);
+                this.apiInternalClient.updateAttachmentContent(contentId, attachmentId, fileInputStream(absoluteAttachmentPath), this.notifyWatchers);
+                this.apiInternalClient.setPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName), newAttachmentHash);
                 this.confluenceClientListener.attachmentUpdated(attachmentFileName, contentId);
             }
 
         } catch (NotFoundException e) {
-            this.internalApiClient.deletePropertyByKey(contentId, getAttachmentHashKey(attachmentFileName));
-            this.internalApiClient.addAttachment(contentId, attachmentFileName, fileInputStream(absoluteAttachmentPath));
-            this.internalApiClient.setPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName), newAttachmentHash);
+            this.apiInternalClient.deletePropertyByKey(contentId, getAttachmentHashKey(attachmentFileName));
+            this.apiInternalClient.addAttachment(contentId, attachmentFileName, fileInputStream(absoluteAttachmentPath));
+            this.apiInternalClient.setPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName), newAttachmentHash);
             this.confluenceClientListener.attachmentAdded(attachmentFileName, contentId);
         }
     }
@@ -232,18 +232,18 @@ public class ConfluenceClient {
     }
 
     private void addOrUpdateLabels(String contentId, List<String> labels) {
-        List<String> existingLabels = this.internalApiClient.getLabels(contentId);
+        List<String> existingLabels = this.apiInternalClient.getLabels(contentId);
 
         existingLabels.stream()
                 .filter((existingLabel) -> !(labels.contains(existingLabel)))
-                .forEach((labelToDelete) -> this.internalApiClient.deleteLabel(contentId, labelToDelete));
+                .forEach((labelToDelete) -> this.apiInternalClient.deleteLabel(contentId, labelToDelete));
 
         List<String> labelsToAdd = labels.stream()
                 .filter((label) -> !(existingLabels.contains(label)))
                 .collect(toList());
 
         if (labelsToAdd.size() > 0) {
-            this.internalApiClient.addLabels(contentId, labelsToAdd);
+            this.apiInternalClient.addLabels(contentId, labelsToAdd);
         }
     }
 
