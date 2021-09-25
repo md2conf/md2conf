@@ -1,7 +1,5 @@
 package io.github.md2conf.model;
 
-import io.github.md2conf.confluence.client.support.RuntimeUse;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,7 +46,6 @@ public class ConfluenceContent {
             return this.title;
         }
 
-        @RuntimeUse
         public void setTitle(String title) {
             this.title = title;
         }
@@ -57,7 +54,6 @@ public class ConfluenceContent {
             return this.contentFilePath;
         }
 
-        @RuntimeUse
         public void setContentFilePath(String contentFilePath) {
             this.contentFilePath = contentFilePath;
         }
@@ -70,7 +66,6 @@ public class ConfluenceContent {
             }
         }
 
-        @RuntimeUse
         public void setChildren(List<ConfluencePage> children) {
             this.children = children;
         }
@@ -79,7 +74,6 @@ public class ConfluenceContent {
             return this.attachments;
         }
 
-        @RuntimeUse
         public void setAttachments(Map<String, String> attachments) {
             this.attachments = attachments;
         }
@@ -88,7 +82,6 @@ public class ConfluenceContent {
             return this.labels;
         }
 
-        @RuntimeUse
         public void setLabels(List<String> labels) {
             this.labels = labels;
         }

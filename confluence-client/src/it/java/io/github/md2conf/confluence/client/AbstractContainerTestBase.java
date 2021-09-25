@@ -12,7 +12,7 @@ import java.time.Duration;
 import static io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperties.ConfluenceClientConfigurationPropertiesBuilder.aConfluenceClientConfigurationProperties;
 
 @Testcontainers
-public class AbstractContainerBaseTest {
+public class AbstractContainerTestBase {
 
     @Container
     public static GenericContainer confluence = new GenericContainer(DockerImageName.parse("qwazer/atlassian-sdk-confluence:latest"))

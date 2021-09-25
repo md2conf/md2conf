@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Christian Stettler
  * @author qwazer resheto@gmail.com
  */
-public class ConfluenceClientIntegrationTest extends AbstractContainerBaseTest {
+public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
 
     private static final String ANCESTOR_ID = "65551"; //todo replace by dynamic resolution by title
 

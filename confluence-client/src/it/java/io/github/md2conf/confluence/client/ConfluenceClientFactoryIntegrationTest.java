@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-class ConfluenceClientFactoryTest extends AbstractContainerBaseTest {
+class ConfluenceClientFactoryIntegrationTest extends AbstractContainerTestBase {
 
     private static final ConfluenceContent emptyContent = new ConfluenceContent(new ConfluencePage());
 
