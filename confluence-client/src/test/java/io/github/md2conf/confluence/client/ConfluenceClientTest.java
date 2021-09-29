@@ -18,14 +18,16 @@ package io.github.md2conf.confluence.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
+import io.github.md2conf.confluence.client.http.NotFoundException;
+import io.github.md2conf.confluence.client.http.RestApiInternalClient;
+import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
+import io.github.md2conf.model.ConfluenceContent.Type;
 import io.github.md2conf.model.ConfluencePage;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
-import io.github.md2conf.confluence.client.http.RestApiInternalClient;
-import io.github.md2conf.confluence.client.http.NotFoundException;
-import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
-import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,6 +36,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.KEEP_ORPHANS;
+import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
+import static io.github.md2conf.confluence.client.utils.InputStreamUtils.inputStreamAsString;
+import static io.github.md2conf.model.ConfluenceContent.Type.STORAGE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newInputStream;
 import static java.util.Arrays.asList;
@@ -46,7 +52,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -54,9 +64,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.KEEP_ORPHANS;
-import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
-import static io.github.md2conf.confluence.client.utils.InputStreamUtils.inputStreamAsString;
 
 /**
  * @author Alain Sahli
@@ -96,7 +103,7 @@ public class ConfluenceClientTest {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(anyString(), anyString())).thenThrow(new NotFoundException());
-        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("2345");
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), anyString())).thenReturn("2345");
 
         ConfluenceClientListener confluenceClientListenerMock = mock(ConfluenceClientListener.class);
 
@@ -106,7 +113,7 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq("version message"));
         verify(confluenceClientListenerMock, times(1)).pageAdded(eq(new io.github.md2conf.confluence.client.http.ConfluencePage("2345", "Some Confluence Content", "<h1>Some Confluence Content</h1>", ConfluenceClient.INITIAL_PAGE_VERSION)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
         verifyNoMoreInteractions(confluenceClientListenerMock);
@@ -117,7 +124,7 @@ public class ConfluenceClientTest {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(anyString(), anyString())).thenThrow(new NotFoundException());
-        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("2345", "3456");
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), anyString())).thenReturn("2345", "3456");
 
         ConfluenceClientListener confluenceClientListenerMock = mock(ConfluenceClientListener.class);
 
@@ -127,8 +134,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
-        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Other Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Other Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq("version message"));
         verify(confluenceClientListenerMock, times(1)).pageAdded(eq(new io.github.md2conf.confluence.client.http.ConfluencePage("2345", "Some Confluence Content", "<h1>Some Confluence Content</h1>", ConfluenceClient.INITIAL_PAGE_VERSION)));
         verify(confluenceClientListenerMock, times(1)).pageAdded(eq(new io.github.md2conf.confluence.client.http.ConfluencePage("3456", "Some Other Confluence Content", "<h1>Some Confluence Content</h1>", ConfluenceClient.INITIAL_PAGE_VERSION)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
@@ -159,7 +166,7 @@ public class ConfluenceClientTest {
     public void publish_multiplePagesInHierarchyWithAncestorIdAsRoot_delegatesToConfluenceRestClient() {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
-        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("1234", "2345");
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), anyString())).thenReturn("1234", "2345");
         when(confluenceRestClientMock.getPageByTitle(anyString(), anyString())).thenThrow(new NotFoundException());
 
         ConfluenceClientListener confluenceClientListenerMock = mock(ConfluenceClientListener.class);
@@ -174,12 +181,14 @@ public class ConfluenceClientTest {
         ArgumentCaptor<String> ancestorIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> titleArgumentCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> contentArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Type> contentTypeArgumentCaptor = ArgumentCaptor.forClass(Type.class);
         ArgumentCaptor<String> messageArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        verify(confluenceRestClientMock, times(2)).addPageUnderAncestor(spaceKeyArgumentCaptor.capture(), ancestorIdArgumentCaptor.capture(), titleArgumentCaptor.capture(), contentArgumentCaptor.capture(), messageArgumentCaptor.capture());
+        verify(confluenceRestClientMock, times(2)).addPageUnderAncestor(spaceKeyArgumentCaptor.capture(), ancestorIdArgumentCaptor.capture(), titleArgumentCaptor.capture(), contentArgumentCaptor.capture(), contentTypeArgumentCaptor.capture(), messageArgumentCaptor.capture());
         assertThat(spaceKeyArgumentCaptor.getAllValues(), contains("~personalSpace", "~personalSpace"));
         assertThat(ancestorIdArgumentCaptor.getAllValues(), contains("72189173", "1234"));
         assertThat(titleArgumentCaptor.getAllValues(), contains("Some Confluence Content", "Some Child Content"));
         assertThat(contentArgumentCaptor.getAllValues(), contains("<h1>Some Confluence Content</h1>", "<h1>Some Child Content</h1>"));
+        assertThat(contentTypeArgumentCaptor.getAllValues(), Matchers.hasItems(STORAGE));
         assertThat(messageArgumentCaptor.getAllValues(), contains("version message", "version message"));
 
         verify(confluenceClientListenerMock, times(1)).pageAdded(eq(new io.github.md2conf.confluence.client.http.ConfluencePage("1234", "Some Confluence Content", "<h1>Some Confluence Content</h1>", ConfluenceClient.INITIAL_PAGE_VERSION)));
@@ -192,7 +201,7 @@ public class ConfluenceClientTest {
     public void publish_metadataOnePageWithNewAttachmentsAndAncestorIdAsRoot_attachesAttachmentToContent() {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
-        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), nullable(String.class))).thenReturn("4321");
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), nullable(String.class))).thenReturn("4321");
         when(confluenceRestClientMock.getPageByTitle(anyString(), anyString())).thenThrow(new NotFoundException());
         when(confluenceRestClientMock.getAttachmentByFileName(anyString(), anyString())).thenThrow(new NotFoundException());
 
@@ -208,7 +217,7 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock).addPageUnderAncestor("~personalSpace", "72189173", "Some Confluence Content", "<h1>Some Confluence Content</h1>", null);
+        verify(confluenceRestClientMock).addPageUnderAncestor("~personalSpace", "72189173", "Some Confluence Content", "<h1>Some Confluence Content</h1>", STORAGE, null);
         verify(confluenceRestClientMock, times(2)).addAttachment(contentId.capture(), attachmentFileName.capture(), attachmentContent.capture());
         assertThat(contentId.getAllValues(), contains("4321", "4321"));
         assertThat(inputStreamAsString(attachmentContent.getAllValues().get(attachmentFileName.getAllValues().indexOf("attachmentOne.txt")), UTF_8), is("attachment1"));
@@ -241,8 +250,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("3456"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq("version message"), eq(true));
+        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), any(Type.class), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("3456"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq(2), eq("version message"), eq(true));
 
         verify(confluenceClientListenerMock, times(1)).pageUpdated(eq(existingPage), eq(new io.github.md2conf.confluence.client.http.ConfluencePage("3456", "Existing Page", "<h1>Some Confluence Content</h1>", 2)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
@@ -266,8 +275,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq("version message"), eq(true));
+        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), any(Type.class), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq(2), eq("version message"), eq(true));
 
         verify(confluenceClientListenerMock, times(1)).pageUpdated(eq(existingPage), eq(new io.github.md2conf.confluence.client.http.ConfluencePage("1234", "Existing Page", "<h1>Some Confluence Content</h1>", 2)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
@@ -291,8 +300,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(null));
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq(null), eq(true));
+        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), any(Type.class), eq(null));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq(2), eq(null), eq(true));
 
         verify(confluenceClientListenerMock, times(1)).pageUpdated(eq(existingPage), eq(new io.github.md2conf.confluence.client.http.ConfluencePage("1234", "Existing Page", "<h1>Some Confluence Content</h1>", 2)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
@@ -315,8 +324,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, never()).addPageUnderAncestor(any(), any(), any(), any(), any());
-        verify(confluenceRestClientMock).updatePage(eq("72189173"), eq(null), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq(null), eq(true));
+        verify(confluenceRestClientMock, never()).addPageUnderAncestor(any(), any(), any(), any(), any(Type.class), any());
+        verify(confluenceRestClientMock).updatePage(eq("72189173"), eq(null), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq(2), eq(null), eq(true));
         verify(confluenceClientListenerMock).pageUpdated(existingPage, new io.github.md2conf.confluence.client.http.ConfluencePage("72189173", "Some Confluence Content", "<h1>Some Confluence Content</h1>", 2));
         verify(confluenceClientListenerMock).publishCompleted();
         verifyNoMoreInteractions(confluenceClientListenerMock);
@@ -582,7 +591,7 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Ancestor Page"), eq("<h1>Some Ancestor Content</h1>"), eq(2), eq("version message"), eq(true));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Ancestor Page"), eq("<h1>Some Ancestor Content</h1>"), eq(STORAGE), eq(2), eq("version message"), eq(true));
         verify(confluenceRestClientMock, times(1)).deletePage(eq("2345"));
         verify(confluenceRestClientMock, times(1)).deletePage(eq("3456"));
 
@@ -682,6 +691,7 @@ public class ConfluenceClientTest {
     private static void resolveAbsoluteContentFileAndAttachmentsPath(List<ConfluencePage> pages, Path contentRoot) {
         pages.forEach((page) -> {
             page.setContentFilePath(contentRoot.resolve(page.getContentFilePath()).toString());
+            page.setType(STORAGE);
             page.setAttachments(page.getAttachments().entrySet().stream().collect(toMap(
                     (entry) -> entry.getValue(),
                     (entry) -> contentRoot.resolve(entry.getKey()).toString()

@@ -27,6 +27,8 @@ import io.github.md2conf.confluence.client.http.payloads.PropertyPayload;
 import io.github.md2conf.confluence.client.http.payloads.Space;
 import io.github.md2conf.confluence.client.http.payloads.Storage;
 import io.github.md2conf.confluence.client.http.payloads.Version;
+import io.github.md2conf.confluence.client.http.payloads.Wiki;
+import io.github.md2conf.model.ConfluenceContent;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -74,16 +76,18 @@ class HttpRequestFactory {
         this.confluenceRestApiEndpoint = rootConfluenceUrl + REST_API_CONTEXT;
     }
 
-    HttpPost addPageUnderAncestorRequest(String spaceKey, String ancestorId, String title, String content, String versionMessage) {
+    HttpPost addPageUnderAncestorRequest(String spaceKey, String ancestorId, String title, String content, ConfluenceContent.Type type, String versionMessage) {
         assertMandatoryParameter(isNotBlank(spaceKey), "spaceKey");
         assertMandatoryParameter(isNotBlank(ancestorId), "ancestorId");
         assertMandatoryParameter(isNotBlank(title), "title");
+        assertMandatoryParameter(type != null, "type");
 
         PagePayload pagePayload = pagePayloadBuilder()
                 .spaceKey(spaceKey)
                 .ancestorId(ancestorId)
                 .title(title)
                 .content(content)
+                .type(type)
                 .version(INITAL_VERSION)
                 .versionMessage(versionMessage)
                 .notifyWatchers(true)
@@ -92,7 +96,7 @@ class HttpRequestFactory {
         return addPageHttpPost(this.confluenceRestApiEndpoint, pagePayload);
     }
 
-    HttpPut updatePageRequest(String contentId, String ancestorId, String title, String content, int newVersion, String versionMessage, boolean notifyWatchers) {
+    HttpPut updatePageRequest(String contentId, String ancestorId, String title, String content, ConfluenceContent.Type type, int newVersion, String versionMessage, boolean notifyWatchers) {
         assertMandatoryParameter(isNotBlank(contentId), "contentId");
         assertMandatoryParameter(isNotBlank(title), "title");
 
@@ -100,6 +104,7 @@ class HttpRequestFactory {
                 .ancestorId(ancestorId)
                 .title(title)
                 .content(content)
+                .type(type)
                 .version(newVersion)
                 .versionMessage(versionMessage)
                 .notifyWatchers(notifyWatchers)
@@ -367,6 +372,7 @@ class HttpRequestFactory {
 
         private String title;
         private String content;
+        private ConfluenceContent.Type type;
         private String spaceKey;
         private String ancestorId;
         private Integer version;
@@ -381,6 +387,12 @@ class HttpRequestFactory {
 
         public PagePayloadBuilder content(String content) {
             this.content = content;
+
+            return this;
+        }
+
+        public PagePayloadBuilder type(ConfluenceContent.Type type) {
+            this.type = type;
 
             return this;
         }
@@ -416,11 +428,22 @@ class HttpRequestFactory {
         }
 
         private PagePayload build() {
-            Storage storage = new Storage();
-            storage.setValue(this.content);
 
             Body body = new Body();
-            body.setStorage(storage);
+            switch (type) {
+                case STORAGE:
+                    Storage storage = new Storage();
+                    storage.setValue(this.content);
+                    body.setStorage(storage);
+                    break;
+                case WIKI:
+                    Wiki wiki = new Wiki();
+                    wiki.setValue(this.content);
+                    body.setWiki(wiki);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Type is not defined");
+            }
 
             PagePayload pagePayload = new PagePayload();
             pagePayload.setBody(body);

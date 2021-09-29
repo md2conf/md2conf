@@ -170,7 +170,7 @@ public class ConfluenceClient {
             updatePage(contentId, ancestorId, page);
         } catch (NotFoundException e) {
             String content = fileContent(page.getContentFilePath(), UTF_8);
-            contentId = this.apiInternalClient.addPageUnderAncestor(spaceKey, ancestorId, page.getTitle(), content, this.versionMessage);
+            contentId = this.apiInternalClient.addPageUnderAncestor(spaceKey, ancestorId, page.getTitle(), content, page.getType(), this.versionMessage );
             this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, hash(content));
             this.confluenceClientListener.pageAdded(new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), content, INITIAL_PAGE_VERSION));
         }
@@ -187,7 +187,7 @@ public class ConfluenceClient {
         if (notSameHash(existingContentHash, newContentHash) || !existingPage.getTitle().equals(page.getTitle())) {
             this.apiInternalClient.deletePropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
             int newPageVersion = existingPage.getVersion() + 1;
-            this.apiInternalClient.updatePage(contentId, ancestorId, page.getTitle(), content, newPageVersion, this.versionMessage, this.notifyWatchers);
+            this.apiInternalClient.updatePage(contentId, ancestorId, page.getTitle(), content, page.getType(), newPageVersion, this.versionMessage, this.notifyWatchers);
             this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, newContentHash);
             this.confluenceClientListener.pageUpdated(existingPage, new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), content, newPageVersion));
         }

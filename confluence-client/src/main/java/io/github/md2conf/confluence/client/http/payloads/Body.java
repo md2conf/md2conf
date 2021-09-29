@@ -25,6 +25,8 @@ public class Body {
 
     private Storage storage;
 
+    private Wiki wiki;
+
     @RuntimeUse
     public Storage getStorage() {
         return this.storage;
@@ -34,4 +36,12 @@ public class Body {
         this.storage = storage;
     }
 
+    @RuntimeUse
+    public Wiki getWiki() {
+        return wiki;
+    }
+
+    public void setWiki(Wiki wiki) {
+        this.wiki = wiki;
+    }
 }

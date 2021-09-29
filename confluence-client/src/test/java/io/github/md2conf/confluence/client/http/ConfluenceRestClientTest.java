@@ -17,6 +17,7 @@
 package io.github.md2conf.confluence.client.http;
 
 import io.github.md2conf.confluence.client.utils.InputStreamUtils;
+import io.github.md2conf.model.ConfluenceContent;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -91,7 +92,7 @@ public class ConfluenceRestClientTest {
         RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
-        String contentId = confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", "Version Message");
+        String contentId = confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", ConfluenceContent.Type.STORAGE, "Version Message" );
 
         // assert
         assertThat(contentId, is(expectedContentId));
@@ -104,7 +105,7 @@ public class ConfluenceRestClientTest {
         RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
-        confluenceRestClient.updatePage("123", "1", "Hello", "Content", 2, "Version Message", false);
+        confluenceRestClient.updatePage("123", "1", "Hello", "Content", ConfluenceContent.Type.STORAGE, 2, "Version Message", false);
 
         // assert
         verify(httpClientMock, times(1)).execute(any(HttpPut.class));
@@ -514,7 +515,7 @@ public class ConfluenceRestClientTest {
             RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
             // act
-            confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", "Version Message");
+            confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", ConfluenceContent.Type.STORAGE , "Version Message" );
         });
         assertTrue(exception.getMessage().contains("request failed (" +
                 "request: POST http://confluence.com/rest/api/content " +
@@ -538,7 +539,7 @@ public class ConfluenceRestClientTest {
             RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
             // act
-            confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", "Version Message");
+            confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", ConfluenceContent.Type.STORAGE, "Version Message" );
         });
         assertTrue(exception.getMessage().contains("request failed (" +
                 "request: POST http://confluence.com/rest/api/content " +

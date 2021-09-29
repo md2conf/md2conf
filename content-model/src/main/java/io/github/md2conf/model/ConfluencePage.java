@@ -15,7 +15,7 @@ public class ConfluencePage {
     private String title;
     private String contentFilePath;
 
-    private ConfluenceContent.Type type;
+    private ConfluenceContent.Type type = ConfluenceContent.Type.STORAGE;
     private List<ConfluencePage> children = new ArrayList<>();
     private Map<String, String> attachments = new HashMap<>();
     private List<String> labels = new ArrayList<>();
