@@ -1,13 +1,13 @@
 package io.github.md2conf.confluence.client;
 
-import io.github.md2conf.confluence.client.http.InternalApiClient;
+import io.github.md2conf.confluence.client.http.ApiInternalClient;
 import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
 
 public final class ConfluenceClientBuilder {
     private ConfluenceContentInstance metadata;
     private PublishingStrategy publishingStrategy;
     private OrphanRemovalStrategy orphanRemovalStrategy;
-    private InternalApiClient internalApiClient;
+    private ApiInternalClient apiInternalClient;
     private ConfluenceClientListener confluenceClientListener;
     private String versionMessage;
     private boolean notifyWatchers;
@@ -34,8 +34,8 @@ public final class ConfluenceClientBuilder {
         return this;
     }
 
-    public ConfluenceClientBuilder withInternalApiClient(InternalApiClient internalApiClient) {
-        this.internalApiClient = internalApiClient;
+    public ConfluenceClientBuilder withInternalApiClient(ApiInternalClient apiInternalClient) {
+        this.apiInternalClient = apiInternalClient;
         return this;
     }
 
@@ -55,6 +55,6 @@ public final class ConfluenceClientBuilder {
     }
 
     public ConfluenceClient build() {
-        return new ConfluenceClient(metadata, publishingStrategy, orphanRemovalStrategy, internalApiClient, confluenceClientListener, versionMessage, notifyWatchers);
+        return new ConfluenceClient(metadata, publishingStrategy, orphanRemovalStrategy, apiInternalClient, confluenceClientListener, versionMessage, notifyWatchers);
     }
 }

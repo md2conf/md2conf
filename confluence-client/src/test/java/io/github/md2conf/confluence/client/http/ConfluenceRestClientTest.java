@@ -17,6 +17,7 @@
 package io.github.md2conf.confluence.client.http;
 
 import io.github.md2conf.confluence.client.utils.InputStreamUtils;
+import io.github.md2conf.model.ConfluenceContent;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -68,7 +69,7 @@ public class ConfluenceRestClientTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            new InternalRestClient("", anyCloseableHttpClient(), null, null, null);
+            new RestApiInternalClient("", anyCloseableHttpClient(), null, null, null);
         });
         assertTrue(exception.getMessage().contains("rootConfluenceUrl must be set"));
     }
@@ -78,7 +79,7 @@ public class ConfluenceRestClientTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            new InternalRestClient(CONFLUENCE_ROOT_URL, null, null, null, null);
+            new RestApiInternalClient(CONFLUENCE_ROOT_URL, null, null, null, null);
         });
         assertTrue(exception.getMessage().contains("httpClient must be set"));
     }
@@ -88,10 +89,10 @@ public class ConfluenceRestClientTest {
         // arrange
         String expectedContentId = "1234";
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"id\":\"" + expectedContentId + "\"}", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
-        String contentId = confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", "Version Message");
+        String contentId = confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", ConfluenceContent.Type.STORAGE, "Version Message" );
 
         // assert
         assertThat(contentId, is(expectedContentId));
@@ -101,10 +102,10 @@ public class ConfluenceRestClientTest {
     public void updatePage_withValidParameters_sendUpdateRequest() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"id\":\"1234\"}", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
-        confluenceRestClient.updatePage("123", "1", "Hello", "Content", 2, "Version Message", false);
+        confluenceRestClient.updatePage("123", "1", "Hello", "Content", ConfluenceContent.Type.STORAGE, 2, "Version Message", false);
 
         // assert
         verify(httpClientMock, times(1)).execute(any(HttpPut.class));
@@ -114,7 +115,7 @@ public class ConfluenceRestClientTest {
     public void deletePage_withValidParameters_sendsDeleteRequest() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 204);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.deletePage("1234");
@@ -128,7 +129,7 @@ public class ConfluenceRestClientTest {
         // arrange
         String expectedContentId = "1234";
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"results\": [{\"id\":\"" + expectedContentId + "\"}], \"size\": 1}", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         String contentId = confluenceRestClient.getPageByTitle("~personalSpace", "Some title");
@@ -142,7 +143,7 @@ public class ConfluenceRestClientTest {
         assertThrows(NotFoundException.class, () -> {
             // arrange
             CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"size\": 0}", 200);
-            InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+            RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
             // act + assert
             confluenceRestClient.getPageByTitle("~personalSpace", "Some title");
@@ -154,7 +155,7 @@ public class ConfluenceRestClientTest {
         assertThrows(MultipleResultsException.class, () -> {
             // arrange
             CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"size\": 2}", 200);
-            InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+            RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
             // act + assert
             confluenceRestClient.getPageByTitle("~personalSpace", "Some title");
@@ -165,7 +166,7 @@ public class ConfluenceRestClientTest {
     public void addAttachment_withValidParameters_sendsMultipartHttpPostRequest() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.addAttachment("1234", "file.txt", new ByteArrayInputStream("file content".getBytes()));
@@ -178,7 +179,7 @@ public class ConfluenceRestClientTest {
     public void updateAttachmentContent_withValidParameters_sendsMultipartHttPostRequest() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.updateAttachmentContent("1234", "att12", new ByteArrayInputStream("file content".getBytes()), true);
@@ -191,7 +192,7 @@ public class ConfluenceRestClientTest {
     public void deleteAttachment_withValidParameters_sendsHttpDeleteRequest() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.deleteAttachment("att12");
@@ -205,7 +206,7 @@ public class ConfluenceRestClientTest {
         // arrange
         String jsonAttachment = "{\"id\": \"att12\", \"title\": \"Attachment.txt\", \"_links\": {\"download\": \"/download/Attachment.txt\"}, \"version\": {\"number\": 1}}";
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"results\": [" + jsonAttachment + "], \"size\": 1}", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         ConfluenceAttachment confluenceAttachment = confluenceRestClient.getAttachmentByFileName("1234", "file.txt");
@@ -222,7 +223,7 @@ public class ConfluenceRestClientTest {
         assertThrows(NotFoundException.class, () -> {
             // arrange
             CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"size\": 0}", 200);
-            InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+            RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
             // act
             confluenceRestClient.getAttachmentByFileName("1234", "file.txt");
@@ -234,7 +235,7 @@ public class ConfluenceRestClientTest {
         assertThrows(MultipleResultsException.class, () -> {
             // arrange
             CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"size\": 2}", 200);
-            InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+            RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
             // act
             confluenceRestClient.getAttachmentByFileName("4321", "another-file.txt");
@@ -246,7 +247,7 @@ public class ConfluenceRestClientTest {
         // arrange
         String responseFilePath = "src/test/resources/io/github/md2conf/confluence/client/http/page-content.json";
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode(InputStreamUtils.fileContent(responseFilePath, UTF_8), 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         ConfluencePage confluencePage = confluenceRestClient.getPageWithContentAndVersionById("1234");
@@ -263,7 +264,7 @@ public class ConfluenceRestClientTest {
         // arrange
         String resultSet = generateJsonPageResults(2);
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"results\": [" + resultSet + "], \"size\": 2}", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
         String contentId = "1234";
 
         // act
@@ -283,7 +284,7 @@ public class ConfluenceRestClientTest {
         List<String> jsonResponses = asList(firstResultSet, secondResultSet);
         List<Integer> statusCodes = asList(200, 200);
         CloseableHttpClient httpClientMock = recordHttpClientForMultipleResponsesWithContentAndStatusCode(jsonResponses, statusCodes);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
         String contentId = "1234";
         ArgumentCaptor<HttpGet> httpGetArgumentCaptor = ArgumentCaptor.forClass(HttpGet.class);
 
@@ -305,7 +306,7 @@ public class ConfluenceRestClientTest {
         List<String> jsonResponses = asList(firstResultSet, secondResultSet);
         List<Integer> statusCodes = asList(200, 200);
         CloseableHttpClient httpClientMock = recordHttpClientForMultipleResponsesWithContentAndStatusCode(jsonResponses, statusCodes);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
         String contentId = "1234";
         ArgumentCaptor<HttpGet> httpGetArgumentCaptor = ArgumentCaptor.forClass(HttpGet.class);
 
@@ -324,7 +325,7 @@ public class ConfluenceRestClientTest {
         // arrange
         String resultSet = generateJsonAttachmentResults(2);
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"results\": [" + resultSet + "], \"size\": 2}", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
         String contentId = "1234";
 
         // act
@@ -344,7 +345,7 @@ public class ConfluenceRestClientTest {
         List<String> jsonResponses = asList(firstResultSet, secondResultSet);
         List<Integer> statusCodes = asList(200, 200);
         CloseableHttpClient httpClientMock = recordHttpClientForMultipleResponsesWithContentAndStatusCode(jsonResponses, statusCodes);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
         String contentId = "1234";
         ArgumentCaptor<HttpGet> httpGetArgumentCaptor = ArgumentCaptor.forClass(HttpGet.class);
 
@@ -366,7 +367,7 @@ public class ConfluenceRestClientTest {
         List<String> jsonResponses = asList(firstResultSet, secondResultSet);
         List<Integer> statusCodes = asList(200, 200);
         CloseableHttpClient httpClientMock = recordHttpClientForMultipleResponsesWithContentAndStatusCode(jsonResponses, statusCodes);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
         String contentId = "1234";
         ArgumentCaptor<HttpGet> httpGetArgumentCaptor = ArgumentCaptor.forClass(HttpGet.class);
 
@@ -384,7 +385,7 @@ public class ConfluenceRestClientTest {
     public void sendRequest_withProvidedUsernameAndPassword_setsCredentialsProvider() throws Exception {
         // arrange
         CloseableHttpClient closeableHttpClient = anyCloseableHttpClient();
-        InternalRestClient confluenceRestClient = new InternalRestClient("http://confluence.com", closeableHttpClient, null, "username", "password");
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient("http://confluence.com", closeableHttpClient, null, "username", "password");
         HttpGet httpRequest = new HttpGet("http://confluence.com");
         ArgumentCaptor<HttpRequestBase> httpRequestArgumentCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
 
@@ -404,7 +405,7 @@ public class ConfluenceRestClientTest {
     public void sendRequest_withProvidedPasswordButNoUsername_setsCredentialsProvider() throws Exception {
         // arrange
         CloseableHttpClient closeableHttpClient = anyCloseableHttpClient();
-        InternalRestClient confluenceRestClient = new InternalRestClient("http://confluence.com", closeableHttpClient, null, "", "personalAccessToken");
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient("http://confluence.com", closeableHttpClient, null, "", "personalAccessToken");
         HttpGet httpRequest = new HttpGet("http://confluence.com");
         ArgumentCaptor<HttpRequestBase> httpRequestArgumentCaptor = ArgumentCaptor.forClass(HttpRequestBase.class);
 
@@ -424,7 +425,7 @@ public class ConfluenceRestClientTest {
     public void sendRequest_withRateLimitEnabled_blocksBeforeSendingSecondRequest() {
         // arrange
         CloseableHttpClient closeableHttpClient = anyCloseableHttpClient();
-        InternalRestClient confluenceRestClient = new InternalRestClient("http://confluence.com", closeableHttpClient, 0.5, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient("http://confluence.com", closeableHttpClient, 0.5, null, null);
         HttpGet httpRequest = new HttpGet("http://confluence.com");
 
         // act
@@ -442,7 +443,7 @@ public class ConfluenceRestClientTest {
     public void setPropertyByKey_withValidParameters_sendsPostRequestForPropertyCreation() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.setPropertyByKey("1234", "content-hash", "hash-value");
@@ -455,7 +456,7 @@ public class ConfluenceRestClientTest {
     public void getPropertyByKey_withValidParameters_sendsGetRequestForPropertyRetrieval() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"value\": \"hash-value\"}", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         String propertyValue = confluenceRestClient.getPropertyByKey("1234", "content-hash");
@@ -469,7 +470,7 @@ public class ConfluenceRestClientTest {
     public void getPropertyByKey_withNonExistingKeyAsParameter_returnsNull() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 404);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         String propertyValue = confluenceRestClient.getPropertyByKey("1234", "content-hash");
@@ -483,7 +484,7 @@ public class ConfluenceRestClientTest {
     public void deletePropertyByKey_withValidParameters_sendsDeleteRequestForPropertyKey() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.deletePropertyByKey("1234", "content-hash");
@@ -496,7 +497,7 @@ public class ConfluenceRestClientTest {
     public void deletePropertyByKey_withNonExistingKey_sendsDeleteRequestForPropertyKeyAndIgnoresError() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 403);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.deletePropertyByKey("1234", "unknown");
@@ -511,10 +512,10 @@ public class ConfluenceRestClientTest {
         IOException expected = new IOException("expected");
         Throwable exception = assertThrows(RequestFailedException.class, () -> {
             CloseableHttpClient httpClientMock = recordHttpClientForRequestException(expected);
-            InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+            RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
             // act
-            confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", "Version Message");
+            confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", ConfluenceContent.Type.STORAGE , "Version Message" );
         });
         assertTrue(exception.getMessage().contains("request failed (" +
                 "request: POST http://confluence.com/rest/api/content " +
@@ -535,10 +536,10 @@ public class ConfluenceRestClientTest {
         Throwable exception = assertThrows(RequestFailedException.class, () -> {
             // arrange
             CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"some\": \"json\"}", 404, "reason");
-            InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+            RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
             // act
-            confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", "Version Message");
+            confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", ConfluenceContent.Type.STORAGE, "Version Message" );
         });
         assertTrue(exception.getMessage().contains("request failed (" +
                 "request: POST http://confluence.com/rest/api/content " +
@@ -557,7 +558,7 @@ public class ConfluenceRestClientTest {
     public void getLabels_returnsLabels() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("{\"results\": [{\"prefix\": \"global\", \"name\": \"label\"}, {\"prefix\": \"foo\", \"name\": \"bar\"}]}", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         List<String> labels = confluenceRestClient.getLabels("123456");
@@ -572,7 +573,7 @@ public class ConfluenceRestClientTest {
     public void addLabels_sendsPostRequest() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.addLabels("123456", asList("foo", "bar"));
@@ -585,7 +586,7 @@ public class ConfluenceRestClientTest {
     public void deleteLabel_sendsDeleteRequest() throws Exception {
         // arrange
         CloseableHttpClient httpClientMock = recordHttpClientForSingleResponseWithContentAndStatusCode("", 200);
-        InternalRestClient confluenceRestClient = new InternalRestClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
+        RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
         confluenceRestClient.deleteLabel("123456", "foo");

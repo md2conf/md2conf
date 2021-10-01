@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.md2conf.confluence.client.utils.AssertUtils;
+import io.github.md2conf.model.ConfluenceContent;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -57,7 +58,7 @@ import com.google.common.util.concurrent.RateLimiter;
  * @author Alain Sahli
  * @author Christian Stettler
  */
-public class InternalRestClient implements InternalApiClient {
+public class RestApiInternalClient implements ApiInternalClient {
 
     private final CloseableHttpClient httpClient;
     private final String username;
@@ -66,16 +67,16 @@ public class InternalRestClient implements InternalApiClient {
     private final HttpRequestFactory httpRequestFactory;
     private final RateLimiter rateLimiter;
 
-    public InternalRestClient(String rootConfluenceUrl, boolean disableSslVerification, boolean enableHttpClientSystemProperties, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
+    public RestApiInternalClient(String rootConfluenceUrl, boolean disableSslVerification, boolean enableHttpClientSystemProperties, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
         this(rootConfluenceUrl, null, disableSslVerification, enableHttpClientSystemProperties, maxRequestsPerSecond, username, passwordOrPersonalAccessToken);
     }
 
-    public InternalRestClient(String rootConfluenceUrl, ProxyConfiguration proxyConfiguration, boolean disableSslVerification, boolean enableHttpClientSystemProperties, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
+    public RestApiInternalClient(String rootConfluenceUrl, ProxyConfiguration proxyConfiguration, boolean disableSslVerification, boolean enableHttpClientSystemProperties, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
         this(rootConfluenceUrl, defaultHttpClient(proxyConfiguration, disableSslVerification, enableHttpClientSystemProperties), maxRequestsPerSecond, username,
             passwordOrPersonalAccessToken);
     }
 
-    public InternalRestClient(String rootConfluenceUrl, CloseableHttpClient httpClient, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
+    public RestApiInternalClient(String rootConfluenceUrl, CloseableHttpClient httpClient, Double maxRequestsPerSecond, String username, String passwordOrPersonalAccessToken) {
         AssertUtils.assertMandatoryParameter(httpClient != null, "httpClient");
 
         this.httpClient = httpClient;
@@ -92,8 +93,8 @@ public class InternalRestClient implements InternalApiClient {
     }
 
     @Override
-    public String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content, String versionMessage) {
-        HttpPost addPageUnderSpaceRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, versionMessage);
+    public String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content, ConfluenceContent.Type type, String versionMessage) {
+        HttpPost addPageUnderSpaceRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, type, versionMessage);
 
         return sendRequestAndFailIfNot20x(addPageUnderSpaceRequest, (response) -> {
             String contentId = extractIdFromJsonNode(parseJsonResponse(response));
@@ -103,8 +104,8 @@ public class InternalRestClient implements InternalApiClient {
     }
 
     @Override
-    public void updatePage(String contentId, String ancestorId, String title, String content, int newVersion, String versionMessage, boolean notifyWatchers) {
-        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, newVersion, versionMessage, notifyWatchers);
+    public void updatePage(String contentId, String ancestorId, String title, String content, ConfluenceContent.Type type, int newVersion, String versionMessage, boolean notifyWatchers) {
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, type, newVersion, versionMessage, notifyWatchers);
         sendRequestAndFailIfNot20x(updatePageRequest);
     }
 

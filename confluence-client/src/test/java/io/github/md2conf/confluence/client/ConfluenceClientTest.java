@@ -18,14 +18,16 @@ package io.github.md2conf.confluence.client;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
+import io.github.md2conf.confluence.client.http.NotFoundException;
+import io.github.md2conf.confluence.client.http.RestApiInternalClient;
+import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
+import io.github.md2conf.model.ConfluenceContent.Type;
+import io.github.md2conf.model.ConfluencePage;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
-import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
-import io.github.md2conf.confluence.client.http.InternalRestClient;
-import io.github.md2conf.confluence.client.http.NotFoundException;
-import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
-import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -34,6 +36,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.KEEP_ORPHANS;
+import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
+import static io.github.md2conf.confluence.client.utils.InputStreamUtils.inputStreamAsString;
+import static io.github.md2conf.model.ConfluenceContent.Type.STORAGE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.Files.newInputStream;
 import static java.util.Arrays.asList;
@@ -46,7 +52,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -54,9 +64,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.KEEP_ORPHANS;
-import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
-import static io.github.md2conf.confluence.client.utils.InputStreamUtils.inputStreamAsString;
 
 /**
  * @author Alain Sahli
@@ -72,7 +79,7 @@ public class ConfluenceClientTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+            RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
             ConfluenceClient confluenceClient = confluencePublisher("without-space-key", confluenceRestClientMock);
             confluenceClient.publish();
         });
@@ -84,7 +91,7 @@ public class ConfluenceClientTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+            RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
             ConfluenceClient confluenceClient = confluencePublisher("without-ancestor-id", confluenceRestClientMock);
             confluenceClient.publish();
         });
@@ -94,9 +101,9 @@ public class ConfluenceClientTest {
     @Test
     public void publish_oneNewPageWithAncestorId_delegatesToConfluenceRestClient() {
         // arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(anyString(), anyString())).thenThrow(new NotFoundException());
-        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("2345");
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), anyString())).thenReturn("2345");
 
         ConfluenceClientListener confluenceClientListenerMock = mock(ConfluenceClientListener.class);
 
@@ -106,7 +113,7 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq("version message"));
         verify(confluenceClientListenerMock, times(1)).pageAdded(eq(new io.github.md2conf.confluence.client.http.ConfluencePage("2345", "Some Confluence Content", "<h1>Some Confluence Content</h1>", ConfluenceClient.INITIAL_PAGE_VERSION)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
         verifyNoMoreInteractions(confluenceClientListenerMock);
@@ -115,9 +122,9 @@ public class ConfluenceClientTest {
     @Test
     public void publish_multiplePageWithAncestorId_delegatesToConfluenceRestClient() {
         // arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(anyString(), anyString())).thenThrow(new NotFoundException());
-        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("2345", "3456");
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), anyString())).thenReturn("2345", "3456");
 
         ConfluenceClientListener confluenceClientListenerMock = mock(ConfluenceClientListener.class);
 
@@ -127,8 +134,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
-        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Other Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq("~personalSpace"), eq("72189173"), eq("Some Other Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq("version message"));
         verify(confluenceClientListenerMock, times(1)).pageAdded(eq(new io.github.md2conf.confluence.client.http.ConfluencePage("2345", "Some Confluence Content", "<h1>Some Confluence Content</h1>", ConfluenceClient.INITIAL_PAGE_VERSION)));
         verify(confluenceClientListenerMock, times(1)).pageAdded(eq(new io.github.md2conf.confluence.client.http.ConfluencePage("3456", "Some Other Confluence Content", "<h1>Some Confluence Content</h1>", ConfluenceClient.INITIAL_PAGE_VERSION)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
@@ -158,8 +165,8 @@ public class ConfluenceClientTest {
     @Test
     public void publish_multiplePagesInHierarchyWithAncestorIdAsRoot_delegatesToConfluenceRestClient() {
         // arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
-        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn("1234", "2345");
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), anyString())).thenReturn("1234", "2345");
         when(confluenceRestClientMock.getPageByTitle(anyString(), anyString())).thenThrow(new NotFoundException());
 
         ConfluenceClientListener confluenceClientListenerMock = mock(ConfluenceClientListener.class);
@@ -174,12 +181,14 @@ public class ConfluenceClientTest {
         ArgumentCaptor<String> ancestorIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> titleArgumentCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> contentArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Type> contentTypeArgumentCaptor = ArgumentCaptor.forClass(Type.class);
         ArgumentCaptor<String> messageArgumentCaptor = ArgumentCaptor.forClass(String.class);
-        verify(confluenceRestClientMock, times(2)).addPageUnderAncestor(spaceKeyArgumentCaptor.capture(), ancestorIdArgumentCaptor.capture(), titleArgumentCaptor.capture(), contentArgumentCaptor.capture(), messageArgumentCaptor.capture());
+        verify(confluenceRestClientMock, times(2)).addPageUnderAncestor(spaceKeyArgumentCaptor.capture(), ancestorIdArgumentCaptor.capture(), titleArgumentCaptor.capture(), contentArgumentCaptor.capture(), contentTypeArgumentCaptor.capture(), messageArgumentCaptor.capture());
         assertThat(spaceKeyArgumentCaptor.getAllValues(), contains("~personalSpace", "~personalSpace"));
         assertThat(ancestorIdArgumentCaptor.getAllValues(), contains("72189173", "1234"));
         assertThat(titleArgumentCaptor.getAllValues(), contains("Some Confluence Content", "Some Child Content"));
         assertThat(contentArgumentCaptor.getAllValues(), contains("<h1>Some Confluence Content</h1>", "<h1>Some Child Content</h1>"));
+        assertThat(contentTypeArgumentCaptor.getAllValues(), Matchers.hasItems(STORAGE));
         assertThat(messageArgumentCaptor.getAllValues(), contains("version message", "version message"));
 
         verify(confluenceClientListenerMock, times(1)).pageAdded(eq(new io.github.md2conf.confluence.client.http.ConfluencePage("1234", "Some Confluence Content", "<h1>Some Confluence Content</h1>", ConfluenceClient.INITIAL_PAGE_VERSION)));
@@ -191,8 +200,8 @@ public class ConfluenceClientTest {
     @Test
     public void publish_metadataOnePageWithNewAttachmentsAndAncestorIdAsRoot_attachesAttachmentToContent() {
         // arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
-        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), nullable(String.class))).thenReturn("4321");
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), nullable(String.class))).thenReturn("4321");
         when(confluenceRestClientMock.getPageByTitle(anyString(), anyString())).thenThrow(new NotFoundException());
         when(confluenceRestClientMock.getAttachmentByFileName(anyString(), anyString())).thenThrow(new NotFoundException());
 
@@ -208,7 +217,7 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock).addPageUnderAncestor("~personalSpace", "72189173", "Some Confluence Content", "<h1>Some Confluence Content</h1>", null);
+        verify(confluenceRestClientMock).addPageUnderAncestor("~personalSpace", "72189173", "Some Confluence Content", "<h1>Some Confluence Content</h1>", STORAGE, null);
         verify(confluenceRestClientMock, times(2)).addAttachment(contentId.capture(), attachmentFileName.capture(), attachmentContent.capture());
         assertThat(contentId.getAllValues(), contains("4321", "4321"));
         assertThat(inputStreamAsString(attachmentContent.getAllValues().get(attachmentFileName.getAllValues().indexOf("attachmentOne.txt")), UTF_8), is("attachment1"));
@@ -228,7 +237,7 @@ public class ConfluenceClientTest {
         // arrange
         io.github.md2conf.confluence.client.http.ConfluencePage existingPage = new io.github.md2conf.confluence.client.http.ConfluencePage("3456", "Existing Page", "<h1>Some Other Confluence Content</h1>", 1);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle("~personalSpace", "Existing Page")).thenReturn("3456");
         when(confluenceRestClientMock.getPageWithContentAndVersionById("3456")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("3456", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("someWrongHash");
@@ -241,8 +250,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("3456"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq("version message"), eq(true));
+        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), any(Type.class), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("3456"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq(2), eq("version message"), eq(true));
 
         verify(confluenceClientListenerMock, times(1)).pageUpdated(eq(existingPage), eq(new io.github.md2conf.confluence.client.http.ConfluencePage("3456", "Existing Page", "<h1>Some Confluence Content</h1>", 2)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
@@ -254,7 +263,7 @@ public class ConfluenceClientTest {
         // arrange
         io.github.md2conf.confluence.client.http.ConfluencePage existingPage = new io.github.md2conf.confluence.client.http.ConfluencePage("1234", "Existing Page", "<h1>Some Other Confluence Content</h1>", 1);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("1234")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("1234", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("someWrongHash");
 
@@ -266,8 +275,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq("version message"));
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq("version message"), eq(true));
+        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), any(Type.class), eq("version message"));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq(2), eq("version message"), eq(true));
 
         verify(confluenceClientListenerMock, times(1)).pageUpdated(eq(existingPage), eq(new io.github.md2conf.confluence.client.http.ConfluencePage("1234", "Existing Page", "<h1>Some Confluence Content</h1>", 2)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
@@ -279,7 +288,7 @@ public class ConfluenceClientTest {
         // arrange
         io.github.md2conf.confluence.client.http.ConfluencePage existingPage = new io.github.md2conf.confluence.client.http.ConfluencePage("1234", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("1234")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("1234", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
@@ -291,8 +300,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(null));
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq(null), eq(true));
+        verify(confluenceRestClientMock, never()).addPageUnderAncestor(eq("~personalSpace"), eq("1234"), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), any(Type.class), eq(null));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Existing Page"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq(2), eq(null), eq(true));
 
         verify(confluenceClientListenerMock, times(1)).pageUpdated(eq(existingPage), eq(new io.github.md2conf.confluence.client.http.ConfluencePage("1234", "Existing Page", "<h1>Some Confluence Content</h1>", 2)));
         verify(confluenceClientListenerMock, times(1)).publishCompleted();
@@ -304,7 +313,7 @@ public class ConfluenceClientTest {
         // arrange
         io.github.md2conf.confluence.client.http.ConfluencePage existingPage = new io.github.md2conf.confluence.client.http.ConfluencePage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("72189173", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
@@ -315,8 +324,8 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, never()).addPageUnderAncestor(any(), any(), any(), any(), any());
-        verify(confluenceRestClientMock).updatePage(eq("72189173"), eq(null), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(2), eq(null), eq(true));
+        verify(confluenceRestClientMock, never()).addPageUnderAncestor(any(), any(), any(), any(), any(Type.class), any());
+        verify(confluenceRestClientMock).updatePage(eq("72189173"), eq(null), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq(2), eq(null), eq(true));
         verify(confluenceClientListenerMock).pageUpdated(existingPage, new io.github.md2conf.confluence.client.http.ConfluencePage("72189173", "Some Confluence Content", "<h1>Some Confluence Content</h1>", 2));
         verify(confluenceClientListenerMock).publishCompleted();
         verifyNoMoreInteractions(confluenceClientListenerMock);
@@ -325,7 +334,7 @@ public class ConfluenceClientTest {
     @Test
     public void publish_whenAttachmentsHaveSameContentHash_doesNotUpdateAttachments() {
         // arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new io.github.md2conf.confluence.client.http.ConfluencePage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
@@ -348,7 +357,7 @@ public class ConfluenceClientTest {
     @Test
     public void publish_whenExistingAttachmentsHaveMissingHashProperty_updatesAttachmentsAndHashProperties() {
         // arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new io.github.md2conf.confluence.client.http.ConfluencePage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
@@ -386,7 +395,7 @@ public class ConfluenceClientTest {
     @Test
     public void publish_whenExistingAttachmentsHaveDifferentHashProperty_updatesAttachmentsAndHashProperties() {
         // arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new io.github.md2conf.confluence.client.http.ConfluencePage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
@@ -421,7 +430,7 @@ public class ConfluenceClientTest {
     @Test
     public void publish_whenNewAttachmentsAreEmpty_deletesAttachmentsPresentOnConfluence() {
         //arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new io.github.md2conf.confluence.client.http.ConfluencePage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
@@ -454,7 +463,7 @@ public class ConfluenceClientTest {
     @Test
     public void publish_whenSomePreviouslyAttachedFilesHaveBeenRemovedFromPage_deletesAttachmentsNotPresentUnderPage() {
         // arrange
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new io.github.md2conf.confluence.client.http.ConfluencePage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
@@ -491,7 +500,7 @@ public class ConfluenceClientTest {
         // arrange
         io.github.md2conf.confluence.client.http.ConfluencePage existingPage = new io.github.md2conf.confluence.client.http.ConfluencePage("12", "Some Confluence Content", "<h1>Some Confluence Content</h1>", 1);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getChildPages("1234")).thenReturn(singletonList(existingPage));
         when(confluenceRestClientMock.getPageByTitle("~personalSpace", "Some Confluence Content")).thenReturn("12");
         when(confluenceRestClientMock.getPageWithContentAndVersionById("12")).thenReturn(existingPage);
@@ -513,7 +522,7 @@ public class ConfluenceClientTest {
         io.github.md2conf.confluence.client.http.ConfluencePage existingChildPage = new io.github.md2conf.confluence.client.http.ConfluencePage("3456", "Some Child Content", "<h1>Some Child Content</h1>", 3);
         io.github.md2conf.confluence.client.http.ConfluencePage existingChildChildPage = new io.github.md2conf.confluence.client.http.ConfluencePage("4567", "Some Child Child Content", "<h1>Some Child Child Content</h1>", 3);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getChildPages("1234")).thenReturn(singletonList(existingParentPage));
         when(confluenceRestClientMock.getChildPages("2345")).thenReturn(singletonList(existingChildPage));
         when(confluenceRestClientMock.getChildPages("3456")).thenReturn(singletonList(existingChildChildPage));
@@ -544,7 +553,7 @@ public class ConfluenceClientTest {
         io.github.md2conf.confluence.client.http.ConfluencePage existingChildPage = new io.github.md2conf.confluence.client.http.ConfluencePage("3456", "Some Child Content", "<h1>Some Child Content</h1>", 3);
         io.github.md2conf.confluence.client.http.ConfluencePage existingChildChildPage = new io.github.md2conf.confluence.client.http.ConfluencePage("4567", "Some Child Child Content", "<h1>Some Child Child Content</h1>", 3);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getChildPages("1234")).thenReturn(singletonList(existingParentPage));
         when(confluenceRestClientMock.getChildPages("2345")).thenReturn(singletonList(existingChildPage));
         when(confluenceRestClientMock.getChildPages("3456")).thenReturn(singletonList(existingChildChildPage));
@@ -569,7 +578,7 @@ public class ConfluenceClientTest {
         io.github.md2conf.confluence.client.http.ConfluencePage existingParentPage = new io.github.md2conf.confluence.client.http.ConfluencePage("2345", "Some Confluence Content", "<h1>Some Confluence Content</h1>", 2);
         io.github.md2conf.confluence.client.http.ConfluencePage existingChildPage = new io.github.md2conf.confluence.client.http.ConfluencePage("3456", "Some Child Content", "<h1>Some Child Content</h1>", 3);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageWithContentAndVersionById("1234")).thenReturn(ancestorPage);
         when(confluenceRestClientMock.getChildPages("1234")).thenReturn(singletonList(existingParentPage));
         when(confluenceRestClientMock.getChildPages("2345")).thenReturn(singletonList(existingChildPage));
@@ -582,7 +591,7 @@ public class ConfluenceClientTest {
         confluenceClient.publish();
 
         // assert
-        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Ancestor Page"), eq("<h1>Some Ancestor Content</h1>"), eq(2), eq("version message"), eq(true));
+        verify(confluenceRestClientMock, times(1)).updatePage(eq("1234"), eq(null), eq("Ancestor Page"), eq("<h1>Some Ancestor Content</h1>"), eq(STORAGE), eq(2), eq("version message"), eq(true));
         verify(confluenceRestClientMock, times(1)).deletePage(eq("2345"));
         verify(confluenceRestClientMock, times(1)).deletePage(eq("3456"));
 
@@ -598,7 +607,7 @@ public class ConfluenceClientTest {
         // arrange
         io.github.md2conf.confluence.client.http.ConfluencePage confluencePage = new io.github.md2conf.confluence.client.http.ConfluencePage("2345", "Some Confluence Content", "<h1>Some Confluence Content</h1>", 1);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle("~personalSpace", "Some Confluence Content")).thenReturn("2345");
         when(confluenceRestClientMock.getPageWithContentAndVersionById("2345")).thenReturn(confluencePage);
         when(confluenceRestClientMock.getPropertyByKey("2345", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("7a901829ba6a0b6f7f084ae4313bdb5d83bc2c4ea21b452ba7073c0b0c60faae");
@@ -620,7 +629,7 @@ public class ConfluenceClientTest {
         // arrange
         io.github.md2conf.confluence.client.http.ConfluencePage confluencePage = new io.github.md2conf.confluence.client.http.ConfluencePage("2345", "Some Confluence Content", "<h1>Some Confluence Content</h1>", 1);
 
-        InternalRestClient confluenceRestClientMock = mock(InternalRestClient.class);
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle("~personalSpace", "Some Confluence Content")).thenReturn("2345");
         when(confluenceRestClientMock.getPageWithContentAndVersionById("2345")).thenReturn(confluencePage);
         when(confluenceRestClientMock.getPropertyByKey("2345", ConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("7a901829ba6a0b6f7f084ae4313bdb5d83bc2c4ea21b452ba7073c0b0c60faae");
@@ -638,27 +647,27 @@ public class ConfluenceClientTest {
         verify(confluenceRestClientMock, times(1)).addLabels(eq("2345"), eq(singletonList("label-one")));
     }
 
-    private static ConfluenceClient confluencePublisher(String qualifier, InternalRestClient confluenceRestClient) {
+    private static ConfluenceClient confluencePublisher(String qualifier, RestApiInternalClient confluenceRestClient) {
         return confluencePublisher(qualifier, PublishingStrategy.APPEND_TO_ANCESTOR, REMOVE_ORPHANS, confluenceRestClient, mock(ConfluenceClientListener.class), null, true);
     }
 
     private static ConfluenceClient confluencePublisher(String qualifier, PublishingStrategy publishingStrategy, String versionMessage) {
-        return confluencePublisher(qualifier, publishingStrategy, REMOVE_ORPHANS, mock(InternalRestClient.class), mock(ConfluenceClientListener.class), versionMessage, true);
+        return confluencePublisher(qualifier, publishingStrategy, REMOVE_ORPHANS, mock(RestApiInternalClient.class), mock(ConfluenceClientListener.class), versionMessage, true);
     }
 
-    private static ConfluenceClient confluencePublisher(String qualifier, PublishingStrategy publishingStrategy, InternalRestClient confluenceRestClient) {
+    private static ConfluenceClient confluencePublisher(String qualifier, PublishingStrategy publishingStrategy, RestApiInternalClient confluenceRestClient) {
         return confluencePublisher(qualifier, publishingStrategy, REMOVE_ORPHANS, confluenceRestClient, mock(ConfluenceClientListener.class), null, true);
     }
 
-    private static ConfluenceClient confluencePublisher(String qualifier, InternalRestClient confluenceRestClient, ConfluenceClientListener confluenceClientListener, String versionedMessage) {
+    private static ConfluenceClient confluencePublisher(String qualifier, RestApiInternalClient confluenceRestClient, ConfluenceClientListener confluenceClientListener, String versionedMessage) {
         return confluencePublisher(qualifier, PublishingStrategy.APPEND_TO_ANCESTOR, REMOVE_ORPHANS, confluenceRestClient, confluenceClientListener, versionedMessage, true);
     }
 
-    private static ConfluenceClient confluencePublisher(String qualifier, PublishingStrategy publishingStrategy, InternalRestClient confluenceRestClient, ConfluenceClientListener confluenceClientListener, String versionMessage) {
+    private static ConfluenceClient confluencePublisher(String qualifier, PublishingStrategy publishingStrategy, RestApiInternalClient confluenceRestClient, ConfluenceClientListener confluenceClientListener, String versionMessage) {
         return confluencePublisher(qualifier, publishingStrategy, REMOVE_ORPHANS, confluenceRestClient, confluenceClientListener, versionMessage, true);
     }
 
-    private static ConfluenceClient confluencePublisher(String qualifier, PublishingStrategy publishingStrategy, OrphanRemovalStrategy orphanRemovalStrategy, InternalRestClient confluenceRestClient, ConfluenceClientListener confluenceClientListener, String versionMessage, boolean notifyWatchers) {
+    private static ConfluenceClient confluencePublisher(String qualifier, PublishingStrategy publishingStrategy, OrphanRemovalStrategy orphanRemovalStrategy, RestApiInternalClient confluenceRestClient, ConfluenceClientListener confluenceClientListener, String versionMessage, boolean notifyWatchers) {
         Path metadataFilePath = Paths.get(TEST_RESOURCES + "/metadata-" + qualifier + ".json");
         Path contentRoot = metadataFilePath.getParent().toAbsolutePath();
 
@@ -679,9 +688,10 @@ public class ConfluenceClientTest {
         }
     }
 
-    private static void resolveAbsoluteContentFileAndAttachmentsPath(List<ConfluenceContent.ConfluencePage> pages, Path contentRoot) {
+    private static void resolveAbsoluteContentFileAndAttachmentsPath(List<ConfluencePage> pages, Path contentRoot) {
         pages.forEach((page) -> {
             page.setContentFilePath(contentRoot.resolve(page.getContentFilePath()).toString());
+            page.setType(STORAGE);
             page.setAttachments(page.getAttachments().entrySet().stream().collect(toMap(
                     (entry) -> entry.getValue(),
                     (entry) -> contentRoot.resolve(entry.getKey()).toString()

@@ -17,6 +17,7 @@
 package io.github.md2conf.confluence.client.http;
 
 import io.github.md2conf.confluence.client.utils.InputStreamUtils;
+import io.github.md2conf.model.ConfluenceContent;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -75,10 +76,11 @@ public class HttpRequestFactoryTest {
         String ancestorId = "1234";
         String title = "title";
         String content = "content";
+        ConfluenceContent.Type type = ConfluenceContent.Type.STORAGE;
         String versionMessage = "version message";
 
         // act
-        HttpPost addPageUnderAncestorRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, versionMessage);
+        HttpPost addPageUnderAncestorRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, type, versionMessage);
 
         // assert
         assertThat(addPageUnderAncestorRequest.getMethod(), is("POST"));
@@ -97,10 +99,11 @@ public class HttpRequestFactoryTest {
         String ancestorId = "1234";
         String title = "title";
         String content = "content";
+        ConfluenceContent.Type type = ConfluenceContent.Type.STORAGE;
         String versionMessage = null;
 
         // act
-        HttpPost addPageUnderAncestorRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, versionMessage);
+        HttpPost addPageUnderAncestorRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, type, versionMessage);
 
         // assert
         assertThat(addPageUnderAncestorRequest.getMethod(), is("POST"));
@@ -117,7 +120,7 @@ public class HttpRequestFactoryTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "1234", "", "content", "version message");
+            this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "1234", "", "content", ConfluenceContent.Type.STORAGE, "version message");
         });
         assertTrue(exception.getMessage().contains("title must be set"));
     }
@@ -127,7 +130,7 @@ public class HttpRequestFactoryTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "", "title", "content", "version message");
+            this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "", "title", "content", ConfluenceContent.Type.STORAGE, "version message");
         });
         assertTrue(exception.getMessage().contains("ancestorId must be set"));
     }
@@ -144,7 +147,7 @@ public class HttpRequestFactoryTest {
         boolean notifyWatchers = false;
 
         // act
-        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, version, versionMessage, notifyWatchers);
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, ConfluenceContent.Type.STORAGE, version, versionMessage, notifyWatchers);
 
         // assert
         assertThat(updatePageRequest.getMethod(), is("PUT"));
@@ -168,7 +171,7 @@ public class HttpRequestFactoryTest {
         boolean notifyWatchers = true;
 
         // act
-        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, version, versionMessage, notifyWatchers);
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, ConfluenceContent.Type.STORAGE, version, versionMessage, notifyWatchers);
 
         // assert
         assertThat(updatePageRequest.getMethod(), is("PUT"));
@@ -185,7 +188,7 @@ public class HttpRequestFactoryTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            this.httpRequestFactory.updatePageRequest("", "1", "title", "content", 2, "test message", true);
+            this.httpRequestFactory.updatePageRequest("", "1", "title", "content", ConfluenceContent.Type.STORAGE, 2, "test message", true);
         });
         assertTrue(exception.getMessage().contains("contentId must be set"));
     }
@@ -195,7 +198,7 @@ public class HttpRequestFactoryTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            this.httpRequestFactory.updatePageRequest("1234", "1", "", "content", 2, "test message", true);
+            this.httpRequestFactory.updatePageRequest("1234", "1", "", "content", ConfluenceContent.Type.STORAGE, 2, "test message", true);
         });
         assertTrue(exception.getMessage().contains("title must be set"));
     }
