@@ -31,6 +31,8 @@
         <httpcomponents.version>4.5.13</httpcomponents.version>
         <jackson.version>2.12.5</jackson.version>
         <junit.version>5.8.0</junit.version>
+        <mockito.version>3.12.4</mockito.version>
+        <assertj.version>3.21.0</assertj.version>
         <testcontainers.version>1.16.0</testcontainers.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -38,6 +40,8 @@
 
     <modules>
         <module>content-model</module>
+        <module>converter-common-api</module>
+        <module>converter-markdown</module>
         <module>confluence-client</module>
     </modules>
 
