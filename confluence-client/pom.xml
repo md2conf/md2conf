@@ -76,8 +76,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>22.0</version>
-            <scope>compile</scope>
+            <version>31.0.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
