@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ConfluenceContent {
+public class ConfluenceContent { //todo rename to ConfluenceContentModel
+
+    public static String DEFAULT_FILE_NAME = "confluence-content-model.json";
+
     private List<ConfluencePage> pages = new ArrayList<>();
 
     public List<ConfluencePage> getPages() {
