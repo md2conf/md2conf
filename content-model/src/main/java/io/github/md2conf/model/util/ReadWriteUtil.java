@@ -1,8 +1,11 @@
-package io.github.md2conf.converter;
+package io.github.md2conf.model.util;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.github.md2conf.model.ConfluenceContent;
 
 import java.io.File;
@@ -10,11 +13,25 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ContentModelWriter {
+public class ReadWriteUtil {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    static ObjectMapper jsonObjectMapper = new ObjectMapper(new JsonFactory());
+    static ObjectMapper yamlObjectMapper = new ObjectMapper(new YAMLFactory());
 
-    static void saveConfluenceContentModelToFilesystem(ConfluenceContent confluenceContent, Path outputPath){
+    static {
+        jsonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        yamlObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    public static ConfluenceContent readFromYamlOrJson(File file) throws IOException {
+            if (file.getName().endsWith(".yaml")) {
+                return yamlObjectMapper.readValue(file, ConfluenceContent.class);
+            } else {
+                return jsonObjectMapper.readValue(file, ConfluenceContent.class);
+            }
+    }
+
+    public static void saveConfluenceContentModelToFilesystem(ConfluenceContent confluenceContent, Path outputPath){
         if (outputPath.toFile().exists()&& !outputPath.toFile().isDirectory()){
             throw new IllegalArgumentException("Output path is not a directory");
         }
@@ -22,7 +39,7 @@ public class ContentModelWriter {
             createDirectories(outputPath);
         }
         File jsonFile = new File(outputPath.toFile(), ConfluenceContent.DEFAULT_FILE_NAME);
-        ObjectWriter writer = objectMapper.writer(new DefaultPrettyPrinter());
+        ObjectWriter writer = jsonObjectMapper.writer(new DefaultPrettyPrinter());
         try {
             writer.writeValue(jsonFile, confluenceContent);
         } catch (IOException e) {

@@ -4,7 +4,7 @@ import io.github.md2conf.model.ConfluenceContent;
 
 import java.nio.file.Path;
 
-import static io.github.md2conf.converter.ContentModelWriter.saveConfluenceContentModelToFilesystem;
+import static io.github.md2conf.model.util.ReadWriteUtil.saveConfluenceContentModelToFilesystem;
 
 public abstract class MainConverter<P extends ConverterConfigurationProperties>{
 
