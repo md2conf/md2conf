@@ -1,6 +1,6 @@
 package io.github.md2conf.converter.markdown;
 
-import io.github.md2conf.converter.FileBasedPagesStructureProvider;
+import io.github.md2conf.converter.PagesStructureProvider;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,11 +13,11 @@ import static java.nio.file.Files.walk;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-public class MarkdownPagesStructureProvider implements FileBasedPagesStructureProvider {
+public class MarkdownPagesStructureProvider implements PagesStructureProvider {
 
     private static final String MD_FILE_EXTENSION = "md";
     private static final String EXCLUDE_FILE_PREFIX = "_";
-    private  MarkdownPagesStructure structure;
+    private MarkdownPagesStructure structure;
 
     public MarkdownPagesStructure structure() {
         return structure;
@@ -52,7 +52,7 @@ public class MarkdownPagesStructureProvider implements FileBasedPagesStructurePr
 
     private static Map<Path, MarkdownPage> indexMarkdownPagesByFolderPath(Path documentationRootFolder) throws IOException {
         return walk(documentationRootFolder)
-                .filter((path) -> isAdocFile(path) && !isExcludeFile(path))
+                .filter((path) -> isMarkdownFile(path) && !isExcludeFile(path))
                 .collect(toMap(MarkdownPagesStructureProvider::removeExtension, MarkdownPage::new));
     }
 
@@ -66,7 +66,7 @@ public class MarkdownPagesStructureProvider implements FileBasedPagesStructurePr
         return Paths.get(path.toString().substring(0, path.toString().lastIndexOf('.')));
     }
 
-    private static boolean isAdocFile(Path file) {
+    private static boolean isMarkdownFile(Path file) {
         return file.toString().endsWith(MD_FILE_EXTENSION);
     }
 

@@ -1,12 +1,12 @@
 package io.github.md2conf.converter.markdown;
 
-import io.github.md2conf.converter.FileBasedPagesStructureProvider;
+import io.github.md2conf.converter.PagesStructureProvider;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MarkdownPage implements FileBasedPagesStructureProvider.FileBasedPage {
+public class MarkdownPage implements PagesStructureProvider.Page {
 
     private final Path path;
     private final List<MarkdownPage> children;

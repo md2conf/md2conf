@@ -1,7 +1,7 @@
 package io.github.md2conf.confluence.client;
 
 import io.github.md2conf.confluence.client.http.RequestFailedException;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 class ConfluenceClientFactoryIntegrationTest extends AbstractContainerTestBase {
 
-    private static final ConfluenceContent emptyContent = new ConfluenceContent(new ConfluencePage());
+    private static final ConfluenceContentModel emptyContent = new ConfluenceContentModel(new ConfluencePage());
 
     @Test
     void test_create_client_with_not_existing_space() {

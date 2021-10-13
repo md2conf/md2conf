@@ -28,7 +28,7 @@ import io.github.md2conf.confluence.client.http.payloads.Space;
 import io.github.md2conf.confluence.client.http.payloads.Storage;
 import io.github.md2conf.confluence.client.http.payloads.Version;
 import io.github.md2conf.confluence.client.http.payloads.Wiki;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -51,12 +51,12 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.List;
 
+import static io.github.md2conf.confluence.client.http.HttpRequestFactory.PagePayloadBuilder.pagePayloadBuilder;
+import static io.github.md2conf.confluence.client.utils.AssertUtils.assertMandatoryParameter;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
-import static io.github.md2conf.confluence.client.http.HttpRequestFactory.PagePayloadBuilder.pagePayloadBuilder;
-import static io.github.md2conf.confluence.client.utils.AssertUtils.assertMandatoryParameter;
 
 /**
  * @author Alain Sahli
@@ -76,7 +76,7 @@ class HttpRequestFactory {
         this.confluenceRestApiEndpoint = rootConfluenceUrl + REST_API_CONTEXT;
     }
 
-    HttpPost addPageUnderAncestorRequest(String spaceKey, String ancestorId, String title, String content, ConfluenceContent.Type type, String versionMessage) {
+    HttpPost addPageUnderAncestorRequest(String spaceKey, String ancestorId, String title, String content, ConfluenceContentModel.Type type, String versionMessage) {
         assertMandatoryParameter(isNotBlank(spaceKey), "spaceKey");
         assertMandatoryParameter(isNotBlank(ancestorId), "ancestorId");
         assertMandatoryParameter(isNotBlank(title), "title");
@@ -96,7 +96,7 @@ class HttpRequestFactory {
         return addPageHttpPost(this.confluenceRestApiEndpoint, pagePayload);
     }
 
-    HttpPut updatePageRequest(String contentId, String ancestorId, String title, String content, ConfluenceContent.Type type, int newVersion, String versionMessage, boolean notifyWatchers) {
+    HttpPut updatePageRequest(String contentId, String ancestorId, String title, String content, ConfluenceContentModel.Type type, int newVersion, String versionMessage, boolean notifyWatchers) {
         assertMandatoryParameter(isNotBlank(contentId), "contentId");
         assertMandatoryParameter(isNotBlank(title), "title");
 
@@ -372,7 +372,7 @@ class HttpRequestFactory {
 
         private String title;
         private String content;
-        private ConfluenceContent.Type type;
+        private ConfluenceContentModel.Type type;
         private String spaceKey;
         private String ancestorId;
         private Integer version;
@@ -391,7 +391,7 @@ class HttpRequestFactory {
             return this;
         }
 
-        public PagePayloadBuilder type(ConfluenceContent.Type type) {
+        public PagePayloadBuilder type(ConfluenceContentModel.Type type) {
             this.type = type;
 
             return this;

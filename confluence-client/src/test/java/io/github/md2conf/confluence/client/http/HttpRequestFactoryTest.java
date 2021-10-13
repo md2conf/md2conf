@@ -17,7 +17,7 @@
 package io.github.md2conf.confluence.client.http;
 
 import io.github.md2conf.confluence.client.utils.InputStreamUtils;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.List;
 
+import static io.github.md2conf.confluence.client.utils.SameJsonAsMatcher.isSameJsonAs;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -39,7 +40,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static io.github.md2conf.confluence.client.utils.SameJsonAsMatcher.isSameJsonAs;
 
 /**
  * @author Alain Sahli
@@ -76,7 +76,7 @@ public class HttpRequestFactoryTest {
         String ancestorId = "1234";
         String title = "title";
         String content = "content";
-        ConfluenceContent.Type type = ConfluenceContent.Type.STORAGE;
+        ConfluenceContentModel.Type type = ConfluenceContentModel.Type.STORAGE;
         String versionMessage = "version message";
 
         // act
@@ -99,7 +99,7 @@ public class HttpRequestFactoryTest {
         String ancestorId = "1234";
         String title = "title";
         String content = "content";
-        ConfluenceContent.Type type = ConfluenceContent.Type.STORAGE;
+        ConfluenceContentModel.Type type = ConfluenceContentModel.Type.STORAGE;
         String versionMessage = null;
 
         // act
@@ -120,7 +120,7 @@ public class HttpRequestFactoryTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "1234", "", "content", ConfluenceContent.Type.STORAGE, "version message");
+            this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "1234", "", "content", ConfluenceContentModel.Type.STORAGE, "version message");
         });
         assertTrue(exception.getMessage().contains("title must be set"));
     }
@@ -130,7 +130,7 @@ public class HttpRequestFactoryTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "", "title", "content", ConfluenceContent.Type.STORAGE, "version message");
+            this.httpRequestFactory.addPageUnderAncestorRequest("~personalSpace", "", "title", "content", ConfluenceContentModel.Type.STORAGE, "version message");
         });
         assertTrue(exception.getMessage().contains("ancestorId must be set"));
     }
@@ -147,7 +147,7 @@ public class HttpRequestFactoryTest {
         boolean notifyWatchers = false;
 
         // act
-        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, ConfluenceContent.Type.STORAGE, version, versionMessage, notifyWatchers);
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, ConfluenceContentModel.Type.STORAGE, version, versionMessage, notifyWatchers);
 
         // assert
         assertThat(updatePageRequest.getMethod(), is("PUT"));
@@ -171,7 +171,7 @@ public class HttpRequestFactoryTest {
         boolean notifyWatchers = true;
 
         // act
-        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, ConfluenceContent.Type.STORAGE, version, versionMessage, notifyWatchers);
+        HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, ConfluenceContentModel.Type.STORAGE, version, versionMessage, notifyWatchers);
 
         // assert
         assertThat(updatePageRequest.getMethod(), is("PUT"));
@@ -188,7 +188,7 @@ public class HttpRequestFactoryTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            this.httpRequestFactory.updatePageRequest("", "1", "title", "content", ConfluenceContent.Type.STORAGE, 2, "test message", true);
+            this.httpRequestFactory.updatePageRequest("", "1", "title", "content", ConfluenceContentModel.Type.STORAGE, 2, "test message", true);
         });
         assertTrue(exception.getMessage().contains("contentId must be set"));
     }
@@ -198,7 +198,7 @@ public class HttpRequestFactoryTest {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
             // arrange + act
-            this.httpRequestFactory.updatePageRequest("1234", "1", "", "content", ConfluenceContent.Type.STORAGE, 2, "test message", true);
+            this.httpRequestFactory.updatePageRequest("1234", "1", "", "content", ConfluenceContentModel.Type.STORAGE, 2, "test message", true);
         });
         assertTrue(exception.getMessage().contains("title must be set"));
     }

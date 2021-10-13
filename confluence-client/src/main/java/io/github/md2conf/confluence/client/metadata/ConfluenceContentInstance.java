@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * Confluence content resolved against a particular Confluence installation.
- * The same as ConfluenceContent, but with spaceKey and ancestorId.
+ * The same as ConfluenceContentModel, but with spaceKey and ancestorId.
  *
  * @author Alain Sahli
  * @author qwazer resheto@gmail.com

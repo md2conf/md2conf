@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ConfluenceContent {
+public class ConfluenceContentModel {
+
+    public static String DEFAULT_FILE_NAME = "confluence-content-model.json";
+
     private List<ConfluencePage> pages = new ArrayList<>();
 
     public List<ConfluencePage> getPages() {
@@ -16,14 +19,14 @@ public class ConfluenceContent {
         this.pages = pages;
     }
 
-    public ConfluenceContent() {
+    public ConfluenceContentModel() {
     }
 
-    public ConfluenceContent(List<ConfluencePage> pages) {
+    public ConfluenceContentModel(List<ConfluencePage> pages) {
         this.pages = pages;
     }
 
-    public ConfluenceContent(ConfluencePage...pages){
+    public ConfluenceContentModel(ConfluencePage...pages){
         this.pages = Arrays.stream(pages).collect(Collectors.toList());
     }
 
