@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ReadWriteUtil {
+public class ModelReadWriteUtil {
 
     static ObjectMapper jsonObjectMapper = new ObjectMapper(new JsonFactory());
     static ObjectMapper yamlObjectMapper = new ObjectMapper(new YAMLFactory());

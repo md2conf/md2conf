@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ReadWriteUtilTest {
+class ModelReadWriteUtilTest {
 
     private static final String TEST_RESOURCES = "src/test/resources";
 
@@ -38,7 +38,7 @@ class ReadWriteUtilTest {
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
 
         Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).doesNotExist();
-        ReadWriteUtil.saveConfluenceContentModelToFilesystem(confluenceContentModel, outputTmpDir);
+        ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(confluenceContentModel, outputTmpDir);
 
         Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).exists();
         Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).isNotEmptyFile();
@@ -54,14 +54,14 @@ class ReadWriteUtilTest {
         Path path =  Paths.get(absolutePathTo("single-page/single-page.wiki"));
         Assertions.assertThat(path).exists();
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> {
-            ReadWriteUtil.saveConfluenceContentModelToFilesystem(new ConfluenceContentModel(), path );
+            ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(new ConfluenceContentModel(), path );
         });
     }
 
     @Test
     void save_to_non_existing_dir() {
         String dir2 = UUID.randomUUID().toString();
-        ReadWriteUtil.saveConfluenceContentModelToFilesystem(new ConfluenceContentModel(), Paths.get(outputTmpDir.toString(), dir2));
+        ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(new ConfluenceContentModel(), Paths.get(outputTmpDir.toString(), dir2));
         Assertions.assertThat(Path.of(outputTmpDir.toString(), dir2, ConfluenceContentModel.DEFAULT_FILE_NAME)).exists();
         Assertions.assertThat(Path.of(outputTmpDir.toString(), dir2, ConfluenceContentModel.DEFAULT_FILE_NAME)).isNotEmptyFile();
     }
@@ -83,7 +83,7 @@ class ReadWriteUtilTest {
     @Test
     void test_read_confluence_content_zero_page() throws IOException {
         File file = Paths.get(TEST_RESOURCES, "confluence-content-zero-page.json").toFile();
-        ConfluenceContentModel confluenceContentModel =  ReadWriteUtil.readFromYamlOrJson(file);
+        ConfluenceContentModel confluenceContentModel =  ModelReadWriteUtil.readFromYamlOrJson(file);
         assertNotNull(confluenceContentModel);
         assertTrue(confluenceContentModel.getPages().isEmpty());
     }
@@ -91,7 +91,7 @@ class ReadWriteUtilTest {
     @Test
     void test_read_confluence_content_confluence_content_non_model_fields() throws IOException {
         File file = Paths.get(TEST_RESOURCES, "confluence-content-non-model-fields.json").toFile();
-        ConfluenceContentModel confluenceContentModel =  ReadWriteUtil.readFromYamlOrJson(file);
+        ConfluenceContentModel confluenceContentModel =  ModelReadWriteUtil.readFromYamlOrJson(file);
         assertNotNull(confluenceContentModel);
         assertFalse(confluenceContentModel.getPages().isEmpty());
     }
@@ -99,7 +99,7 @@ class ReadWriteUtilTest {
     @Test
     void test_read_confluence_client_sample_config_yaml() throws IOException {
         File file = Paths.get(TEST_RESOURCES, "confluence-client-sample-config.yaml").toFile();
-        ConfluenceContentModel confluenceContentModel =  ReadWriteUtil.readFromYamlOrJson(file);
+        ConfluenceContentModel confluenceContentModel =  ModelReadWriteUtil.readFromYamlOrJson(file);
         assertNotNull(confluenceContentModel);
         assertFalse(confluenceContentModel.getPages().isEmpty());
     }
@@ -107,7 +107,7 @@ class ReadWriteUtilTest {
     @Test
     void test_read_confluence_client_sample_config_json() throws IOException {
         File file = Paths.get(TEST_RESOURCES, "confluence-client-sample-config.yaml").toFile();
-        ConfluenceContentModel confluenceContentModel =  ReadWriteUtil.readFromYamlOrJson(file);
+        ConfluenceContentModel confluenceContentModel =  ModelReadWriteUtil.readFromYamlOrJson(file);
         assertNotNull(confluenceContentModel);
         assertFalse(confluenceContentModel.getPages().isEmpty());
     }
