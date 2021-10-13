@@ -52,7 +52,7 @@ public class MarkdownPagesStructureProvider implements FileBasedPagesStructurePr
 
     private static Map<Path, MarkdownPage> indexMarkdownPagesByFolderPath(Path documentationRootFolder) throws IOException {
         return walk(documentationRootFolder)
-                .filter((path) -> isAdocFile(path) && !isExcludeFile(path))
+                .filter((path) -> isMarkdownFile(path) && !isExcludeFile(path))
                 .collect(toMap(MarkdownPagesStructureProvider::removeExtension, MarkdownPage::new));
     }
 
@@ -66,7 +66,7 @@ public class MarkdownPagesStructureProvider implements FileBasedPagesStructurePr
         return Paths.get(path.toString().substring(0, path.toString().lastIndexOf('.')));
     }
 
-    private static boolean isAdocFile(Path file) {
+    private static boolean isMarkdownFile(Path file) {
         return file.toString().endsWith(MD_FILE_EXTENSION);
     }
 
