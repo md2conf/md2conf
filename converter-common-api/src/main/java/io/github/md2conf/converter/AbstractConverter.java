@@ -1,6 +1,6 @@
 package io.github.md2conf.converter;
 
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 
 import java.nio.file.Path;
 
@@ -15,7 +15,7 @@ public abstract class AbstractConverter<P extends ConverterConfigurationProperti
     }
 
     public void convertAndSave(P p){
-        ConfluenceContent content = contentModelConverter.produce(p);
+        ConfluenceContentModel content = contentModelConverter.produce(p);
         Path outputPath = Path.of(p.getOutputDirectory());
         saveConfluenceContentModelToFilesystem(content, outputPath);
     }

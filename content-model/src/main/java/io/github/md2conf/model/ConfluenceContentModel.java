@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ConfluenceContent { //todo rename to ConfluenceContentModel
+public class ConfluenceContentModel {
 
     public static String DEFAULT_FILE_NAME = "confluence-content-model.json";
 
@@ -19,14 +19,14 @@ public class ConfluenceContent { //todo rename to ConfluenceContentModel
         this.pages = pages;
     }
 
-    public ConfluenceContent() {
+    public ConfluenceContentModel() {
     }
 
-    public ConfluenceContent(List<ConfluencePage> pages) {
+    public ConfluenceContentModel(List<ConfluencePage> pages) {
         this.pages = pages;
     }
 
-    public ConfluenceContent(ConfluencePage...pages){
+    public ConfluenceContentModel(ConfluencePage...pages){
         this.pages = Arrays.stream(pages).collect(Collectors.toList());
     }
 

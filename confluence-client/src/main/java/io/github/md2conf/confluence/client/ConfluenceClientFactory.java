@@ -1,20 +1,20 @@
 package io.github.md2conf.confluence.client;
 
 import io.github.md2conf.confluence.client.http.ApiInternalClient;
-import io.github.md2conf.confluence.client.http.RestApiInternalClient;
 import io.github.md2conf.confluence.client.http.NotFoundException;
+import io.github.md2conf.confluence.client.http.RestApiInternalClient;
 import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
 import io.github.md2conf.confluence.client.utils.AssertUtils;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 
 import static io.github.md2conf.confluence.client.ConfluenceClientBuilder.aConfluenceClient;
 
 public class ConfluenceClientFactory {
 
     public static ConfluenceClient confluenceClient(ConfluenceClientConfigurationProperties properties,
-                                                    ConfluenceContent confluenceContent,
+                                                    ConfluenceContentModel confluenceContentModel,
                                                     ConfluenceClientListener confluenceClientListener) {
-        AssertUtils.assertMandatoryParameter(!confluenceContent.getPages().isEmpty(), "Confluence Content Pages");
+        AssertUtils.assertMandatoryParameter(!confluenceContentModel.getPages().isEmpty(), "Confluence Content Pages");
         ApiInternalClient apiInternalClient = new RestApiInternalClient(properties.getConfluenceUrl(),
                 properties.isSkipSslVerification(),
                 true,
@@ -33,7 +33,7 @@ public class ConfluenceClientFactory {
         ConfluenceContentInstance metadata = new ConfluenceContentInstance();
         metadata.setSpaceKey(properties.getSpaceKey());
         metadata.setAncestorId(ancestorId);
-        metadata.setPages(confluenceContent.getPages());
+        metadata.setPages(confluenceContentModel.getPages());
 
         ConfluenceClientBuilder builder = aConfluenceClient()
                 .withConfluenceClientListener(confluenceClientListener)

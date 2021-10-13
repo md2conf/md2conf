@@ -1,7 +1,7 @@
 package io.github.md2conf.converter.markdown;
 
 import io.github.md2conf.converter.ContentModelProducer;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 
 import java.nio.file.Path;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class MarkdownContentModelProducer implements ContentModelProducer<MarkdownConverterConfigurationProperties> {
 
-    public ConfluenceContent produce(MarkdownConverterConfigurationProperties properties) {
+    public ConfluenceContentModel produce(MarkdownConverterConfigurationProperties properties) {
 
         Path path = Path.of(properties.getInputDirectory());
         MarkdownPagesStructureProvider structureProvider = new MarkdownPagesStructureProvider(path);
@@ -20,14 +20,14 @@ public class MarkdownContentModelProducer implements ContentModelProducer<Markdo
                 .stream()
                 .map(this::convertPage)
                 .collect(Collectors.toList());
-        return new ConfluenceContent(confluencePages);
+        return new ConfluenceContentModel(confluencePages);
     }
 
     private ConfluencePage convertPage(MarkdownPage markdownPage) {
         ConfluencePage confluencePage = new ConfluencePage();
         confluencePage.setTitle(title(markdownPage));
         confluencePage.setContentFilePath(markdownPage.path().toString()); //todo copy new content
-        confluencePage.setType(ConfluenceContent.Type.WIKI);// todo
+        confluencePage.setType(ConfluenceContentModel.Type.WIKI);// todo
         List<ConfluencePage> children = markdownPage.children().stream().map(this::convertPage).collect(Collectors.toList());
         confluencePage.setChildren(children);
         return confluencePage;

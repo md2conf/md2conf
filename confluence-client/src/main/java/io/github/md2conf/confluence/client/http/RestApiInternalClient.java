@@ -19,8 +19,9 @@ package io.github.md2conf.confluence.client.http;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.util.concurrent.RateLimiter;
 import io.github.md2conf.confluence.client.utils.AssertUtils;
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -51,8 +52,6 @@ import static java.util.Collections.singletonList;
 import static org.apache.http.HttpHeaders.AUTHORIZATION;
 import static org.apache.http.HttpHeaders.PROXY_AUTHORIZATION;
 import static org.apache.http.client.config.CookieSpecs.STANDARD;
-
-import com.google.common.util.concurrent.RateLimiter;
 
 /**
  * @author Alain Sahli
@@ -93,7 +92,7 @@ public class RestApiInternalClient implements ApiInternalClient {
     }
 
     @Override
-    public String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content, ConfluenceContent.Type type, String versionMessage) {
+    public String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content, ConfluenceContentModel.Type type, String versionMessage) {
         HttpPost addPageUnderSpaceRequest = this.httpRequestFactory.addPageUnderAncestorRequest(spaceKey, ancestorId, title, content, type, versionMessage);
 
         return sendRequestAndFailIfNot20x(addPageUnderSpaceRequest, (response) -> {
@@ -104,7 +103,7 @@ public class RestApiInternalClient implements ApiInternalClient {
     }
 
     @Override
-    public void updatePage(String contentId, String ancestorId, String title, String content, ConfluenceContent.Type type, int newVersion, String versionMessage, boolean notifyWatchers) {
+    public void updatePage(String contentId, String ancestorId, String title, String content, ConfluenceContentModel.Type type, int newVersion, String versionMessage, boolean notifyWatchers) {
         HttpPut updatePageRequest = this.httpRequestFactory.updatePageRequest(contentId, ancestorId, title, content, type, newVersion, versionMessage, notifyWatchers);
         sendRequestAndFailIfNot20x(updatePageRequest);
     }

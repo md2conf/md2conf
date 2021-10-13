@@ -1,8 +1,8 @@
 package io.github.md2conf.converter;
 
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 
 public interface ContentModelProducer<P extends ConverterConfigurationProperties> {
-    ConfluenceContent produce(P properties);
+    ConfluenceContentModel produce(P properties);
 
 }

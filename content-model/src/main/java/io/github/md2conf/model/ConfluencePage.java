@@ -15,7 +15,7 @@ public class ConfluencePage {
     private String title;
     private String contentFilePath;
 
-    private ConfluenceContent.Type type = ConfluenceContent.Type.STORAGE;
+    private ConfluenceContentModel.Type type = ConfluenceContentModel.Type.STORAGE;
     private List<ConfluencePage> children = new ArrayList<>();
     private Map<String, String> attachments = new HashMap<>();
     private List<String> labels = new ArrayList<>();
@@ -36,11 +36,11 @@ public class ConfluencePage {
         this.contentFilePath = contentFilePath;
     }
 
-    public ConfluenceContent.Type getType() {
+    public ConfluenceContentModel.Type getType() {
         return type;
     }
 
-    public void setType(ConfluenceContent.Type type) {
+    public void setType(ConfluenceContentModel.Type type) {
         this.type = type;
     }
 

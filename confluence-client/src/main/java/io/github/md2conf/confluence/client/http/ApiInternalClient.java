@@ -16,7 +16,7 @@
 
 package io.github.md2conf.confluence.client.http;
 
-import io.github.md2conf.model.ConfluenceContent;
+import io.github.md2conf.model.ConfluenceContentModel;
 
 import java.io.InputStream;
 import java.util.List;
@@ -26,9 +26,9 @@ import java.util.List;
  */
 public interface ApiInternalClient {
 
-    String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content, ConfluenceContent.Type type, String versionMessage);
+    String addPageUnderAncestor(String spaceKey, String ancestorId, String title, String content, ConfluenceContentModel.Type type, String versionMessage);
 
-    void updatePage(String contentId, String ancestorId, String title, String content, ConfluenceContent.Type type, int newVersion, String versionMessage, boolean notifyWatchers);
+    void updatePage(String contentId, String ancestorId, String title, String content, ConfluenceContentModel.Type type, int newVersion, String versionMessage, boolean notifyWatchers);
 
     void deletePage(String contentId);
 
