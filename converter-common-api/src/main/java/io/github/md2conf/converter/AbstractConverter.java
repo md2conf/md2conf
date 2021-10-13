@@ -6,11 +6,11 @@ import java.nio.file.Path;
 
 import static io.github.md2conf.model.util.ReadWriteUtil.saveConfluenceContentModelToFilesystem;
 
-public abstract class MainConverter<P extends ConverterConfigurationProperties>{
+public abstract class AbstractConverter<P extends ConverterConfigurationProperties>{
 
     private final ContentModelProducer<P> contentModelConverter;
 
-    public MainConverter(ContentModelProducer<P> contentModelConverter) {
+    public AbstractConverter(ContentModelProducer<P> contentModelConverter) {
         this.contentModelConverter = contentModelConverter;
     }
 

@@ -1,6 +1,6 @@
 package io.github.md2conf.converter.markdown;
 
-import io.github.md2conf.converter.FileBasedPagesStructureProvider;
+import io.github.md2conf.converter.PagesStructureProvider;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,11 +13,11 @@ import static java.nio.file.Files.walk;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-public class MarkdownPagesStructureProvider implements FileBasedPagesStructureProvider {
+public class MarkdownPagesStructureProvider implements PagesStructureProvider {
 
     private static final String MD_FILE_EXTENSION = "md";
     private static final String EXCLUDE_FILE_PREFIX = "_";
-    private  MarkdownPagesStructure structure;
+    private MarkdownPagesStructure structure;
 
     public MarkdownPagesStructure structure() {
         return structure;
