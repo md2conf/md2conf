@@ -1,3 +1,11 @@
+# Generating GPG
+
+https://central.sonatype.org/publish/requirements/gpg/
+
+### Dealing with Expired Keys
+https://central.sonatype.org/publish/requirements/gpg/#dealing-with-expired-keys
+
+
 # How to Sign and Release to The Central Repository with GitHub Actions
 
 GitHub allows automated builds using [GitHub Actions](https://help.github.com/en/actions). A commonly asked question is how to release artifacts (packaged Java jars) built by Maven and Gradle to [The Central Repository](https://search.maven.org/). The GitHub Actions documentation provides only part of the answer.
