@@ -28,4 +28,5 @@ jobs:
         cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
         gpg --list-secret-keys --keyid-format LONG
     - name: Build with Maven
-      run: mvn -B verify --file pom.xml -Pintegration-tests
+      run: mvn --no-transfer-progress -B verify --file pom.xml \
+           -Pintegration-tests,ossrh -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
