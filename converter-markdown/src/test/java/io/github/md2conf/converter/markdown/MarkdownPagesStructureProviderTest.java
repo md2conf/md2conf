@@ -43,6 +43,22 @@ class MarkdownPagesStructureProviderTest {
         assertThat(excludePage).isNull();
     }
 
+    @Test
+    void dir_named_dot_md2cond_excluded() {
+        // arrange
+        Path documentationRootFolder = Paths.get("src/test/resources/markdown-based-pages-structure");
+        MarkdownPagesStructureProvider fileBasedPagesStructureProvider = new MarkdownPagesStructureProvider(documentationRootFolder);
+
+        // act
+        MarkdownPagesStructure structure = fileBasedPagesStructureProvider.structure();
+
+        // assert
+        assertThat(structure.pages()).hasSize(1);
+
+        MarkdownPage index2Page = markdownPageByPath(structure.pages(), documentationRootFolder.resolve(".md2conf/index2.md"));
+        assertThat(index2Page).isNull();
+
+    }
 
     private MarkdownPage markdownPageByPath(List<MarkdownPage> markdownPages, Path markdownPagePath) {
         return markdownPages.stream()

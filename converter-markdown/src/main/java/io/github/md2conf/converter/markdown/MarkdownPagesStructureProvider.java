@@ -16,7 +16,9 @@ import static java.util.stream.Collectors.toMap;
 public class MarkdownPagesStructureProvider implements PagesStructureProvider {
 
     private static final String MD_FILE_EXTENSION = "md";
-    private static final String EXCLUDE_FILE_PREFIX = "_";
+    private static final String EXCLUDE_FILE_PREFIX = "."; //todo make exclude configurable
+    //todo add confluence-content-model.json exclusions ?
+    private static final String EXCLUDE_DIR_PREFIX = ".md2conf";
     private MarkdownPagesStructure structure;
 
     public MarkdownPagesStructure structure() {
@@ -52,7 +54,7 @@ public class MarkdownPagesStructureProvider implements PagesStructureProvider {
 
     private static Map<Path, MarkdownPage> indexMarkdownPagesByFolderPath(Path documentationRootFolder) throws IOException {
         return walk(documentationRootFolder)
-                .filter((path) -> isMarkdownFile(path) && !isExcludeFile(path))
+                .filter((path) -> isMarkdownFile(path) && !isExcludeFile(path) && !isExcludeDir(path))
                 .collect(toMap(MarkdownPagesStructureProvider::removeExtension, MarkdownPage::new));
     }
 
@@ -72,5 +74,8 @@ public class MarkdownPagesStructureProvider implements PagesStructureProvider {
 
     private static boolean isExcludeFile(Path file) {
         return file.getFileName().toString().startsWith(EXCLUDE_FILE_PREFIX);
+    }
+    private static boolean isExcludeDir(Path file) {
+        return file.toAbsolutePath().toString().contains(EXCLUDE_DIR_PREFIX);
     }
 }
