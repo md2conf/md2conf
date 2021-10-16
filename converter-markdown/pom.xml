@@ -20,6 +20,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.vladsch.flexmark</groupId>
+            <artifactId>flexmark-jira-converter</artifactId>
+            <version>0.62.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>

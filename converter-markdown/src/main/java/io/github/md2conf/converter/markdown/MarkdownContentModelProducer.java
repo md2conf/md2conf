@@ -27,6 +27,8 @@ public class MarkdownContentModelProducer implements ContentModelProducer<Markdo
         ConfluencePage confluencePage = new ConfluencePage();
         confluencePage.setTitle(title(markdownPage));
         confluencePage.setContentFilePath(markdownPage.path().toString()); //todo copy new content
+
+
         confluencePage.setType(ConfluenceContentModel.Type.WIKI);// todo
         List<ConfluencePage> children = markdownPage.children().stream().map(this::convertPage).collect(Collectors.toList());
         confluencePage.setChildren(children);
