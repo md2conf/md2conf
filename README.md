@@ -1,4 +1,22 @@
-# confluence-client
+# md2conf toolset
+
+Toolset to convert and publish Markdown markup files to Confluence
+instance. And download Confluence pages and save as markdown files on
+filesystem.
+
+This toolset designed for "docs-as-code" approach to use markdown as a
+docs source and Confluence as a publishing platform.
+
+## Tools
+
+* **converter-markdown** - to convert *.md files to confluence wiki or
+  storage format
+* **confluence-client** - confluence client that utilize Confluence REST API
+  for CRUD operation with content in a Confluence instance
+* **confluence-dumper** -confluence client that dump given Confluence page with children pages
+
+
+## confluence-client
 
 **confluence-client** is a Java based confluence client that utilize
 Confluence REST API to create/update/delete content in a Confluence
