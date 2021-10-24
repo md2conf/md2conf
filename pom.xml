@@ -43,6 +43,7 @@
         <module>converter-common-api</module>
         <module>converter-markdown</module>
         <module>confluence-client</module>
+        <module>main-application</module>
     </modules>
 
 
