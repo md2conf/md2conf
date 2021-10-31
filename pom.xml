@@ -39,11 +39,10 @@
     </properties>
 
     <modules>
-        <module>content-model</module>
-        <module>converter-common-api</module>
-        <module>converter-markdown</module>
+        <module>confluence-content-model</module>
+        <module>converters</module>
         <module>confluence-client</module>
-        <module>main-application</module>
+        <module>main-cli</module>
     </modules>
 
 
