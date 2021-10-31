@@ -10,16 +10,15 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>converter-noop</artifactId>
+    <artifactId>converters</artifactId>
+    <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
 
-    <dependencies>
-        <dependency>
-            <groupId>io.github.md2conf</groupId>
-            <artifactId>converter-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
-
+    <modules>
+        <module>converter-api</module>
+        <module>converter-noop</module>
+        <module>converter-copying</module>
+        <module>converter-markdown-to-wiki</module>
+    </modules>
 </project>

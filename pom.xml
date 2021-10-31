@@ -39,13 +39,10 @@
     </properties>
 
     <modules>
-        <module>content-model</module>
-        <module>converter-api</module>
-        <module>converter-noop</module>
-        <module>converter-copying</module>
-        <module>converter-markdown-to-wiki</module>
+        <module>confluence-content-model</module>
+        <module>converters</module>
         <module>confluence-client</module>
-        <module>main-application</module>
+        <module>main-cli</module>
     </modules>
 
 
