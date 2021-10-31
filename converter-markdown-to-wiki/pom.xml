@@ -10,13 +10,13 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>converter-markdown</artifactId>
+    <artifactId>converter-markdown-to-wiki</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>io.github.md2conf</groupId>
-            <artifactId>converter-common-api</artifactId>
+            <artifactId>converter-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

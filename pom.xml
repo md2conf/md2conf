@@ -40,8 +40,10 @@
 
     <modules>
         <module>content-model</module>
-        <module>converter-common-api</module>
-        <module>converter-markdown</module>
+        <module>converter-api</module>
+        <module>converter-noop</module>
+        <module>converter-copying</module>
+        <module>converter-markdown-to-wiki</module>
         <module>confluence-client</module>
         <module>main-application</module>
     </modules>
