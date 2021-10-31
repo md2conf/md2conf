@@ -1,20 +1,19 @@
 # md2conf toolset
 
-Toolset to convert and publish Markdown markup files to Confluence
-instance. And download Confluence pages and save as markdown files on
-filesystem.
+Set of tools to publish/dump confluence content from/to filesystem and
+various converters.
 
-This toolset designed for "docs-as-code" approach to use markdown as a
-docs source and Confluence as a publishing platform.
+This toolset designed to support "docs-as-code" approach to use markdown
+as a docs source and Confluence as a publishing platform.
 
-## Tools
+## What's inside?
 
-* **converter-markdown** - to convert *.md files to confluence wiki or
-  storage format
-* **confluence-client** - confluence client that utilize Confluence REST API
-  for CRUD operation with content in a Confluence instance
-* **confluence-dumper** -confluence client that dump given Confluence page with children pages
-
+* **confluence-content-model** - an abstraction to model confluence
+  content on a filesystem.
+* **converters** - tools to convert directories with files to
+  `confluence-content-model` or from `confluence-content-model`
+* **confluence-client** - confluence client that utilize Confluence REST
+  API for CRUD operation with content in a Confluence instance. It allow
 
 ## confluence-client
 
@@ -59,9 +58,22 @@ TODO
 
 <!--TODO add example-->
 
-### Usage
+## Usage
 
-<!--TODO add usage-->
+### Command-line
+
+```
+Usage: md2conf [COMMAND]
+Set of tools to publish/dump confluence content from/to filesystem and various
+converters
+Commands:
+  convert                      Convert files using specified converter
+  publish                      Publish content to a Confluence instance
+  conpub, convert-and-publish  Convert and publish docs to a Confluence instance
+  dump                         Dump content from Confluence instance
+  help                         Displays help information about the specified
+                                 command
+```
 
 ### History and Motivation
 

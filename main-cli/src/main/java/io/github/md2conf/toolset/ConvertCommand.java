@@ -11,7 +11,7 @@ import java.nio.file.Path;
 
 
 @Command(name = "convert",
-        description = "Convert files using specified converter")
+        description = "Convert files to `confluence-content-model` or from `confluence-content-model`")
 public class ConvertCommand implements Runnable {
 
 //    @CommandLine.Option(names = {"-c", "--converter"}, description = "converter",

@@ -8,7 +8,10 @@ import picocli.CommandLine;
                 PublishCommand.class,
                 ConvertAndPublishCommand.class,
                 DumpCommand.class,
-                CommandLine.HelpCommand.class}
+                ModelOverviewCommand.class,
+                CommandLine.HelpCommand.class},
+        description = "Set of tools to publish/dump 'confluence-content-model' from/to filesystem and various converters",
+        footer = "See 'md2conf help md2conf' for an overview of 'confluence-content-model' abstraction"
 )
 public class MainApp {
     public static void main(String[] args) {
