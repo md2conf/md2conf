@@ -23,5 +23,10 @@
             <artifactId>converter-markdown</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.6.1</version>
+        </dependency>
     </dependencies>
 </project>
