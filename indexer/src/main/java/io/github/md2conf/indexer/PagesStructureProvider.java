@@ -1,4 +1,4 @@
-package io.github.md2conf.converter;
+package io.github.md2conf.indexer;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -20,5 +20,7 @@ public interface PagesStructureProvider {
         Path path();
 
         List<? extends Page> children();
+
+        void addChild(Page page);
     }
 }
