@@ -26,11 +26,6 @@ public class MarkdownPage implements PagesStructureProvider.Page {
         return children;
     }
 
-    @Override
-    public void addChild(PagesStructureProvider.Page page) {
-
-    }
-
     void addChild(MarkdownPage child) {
         this.children.add(child);
     }
