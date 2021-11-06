@@ -21,14 +21,11 @@ public class ConfluencePageFactory {
      * @param path file path with content
      * @return ConfluencePage
      */
-    public ConfluencePage pageByPath(Path path)  {
+    public ConfluencePage pageByPath(Path path) throws IOException {
         ConfluencePage page = new ConfluencePage();
         page.setContentFilePath(path.toFile().getAbsolutePath());
-        try {
-            page.setTitle(TitleExtractor.extractTitle(path, extractTitleStrategy));
-        } catch (IOException e) {
-            throw new RuntimeException("Cannot create page by path " + e);
-        }
+        page.setTitle(TitleExtractor.extractTitle(path, extractTitleStrategy));
+
         return page;
     }
 

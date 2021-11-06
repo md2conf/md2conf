@@ -7,7 +7,7 @@ import java.nio.file.Path;
 public interface Indexer {
 
     /**
-     * Index given path and produce ConfluenceContentModel
+     * Produce ConfluenceContentModel by indexing files in given path
      * @param path - input path
      * @return - ConfluenceContentModel object
      */
