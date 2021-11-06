@@ -15,7 +15,7 @@ as a docs source and Confluence as a publishing platform.
 * **converters** - tools to convert directories with files to
   `confluence-content-model` or from `confluence-content-model`
 * **confluence-client** - confluence client that utilize Confluence REST
-  API for CRUD operation with content in a Confluence instance. It allow
+  API for CRUD operation with content in a Confluence instance.
 
 ## confluence-client
 
@@ -66,15 +66,17 @@ TODO
 
 ```
 Usage: md2conf [COMMAND]
-Set of tools to publish/dump confluence content from/to filesystem and various
-converters
+Set of tools to work with 'confluence-content-model': publish, dump, convert.
 Commands:
-  convert                      Convert files using specified converter
+  convert                      Convert files to `confluence-content-model` or
+                                 from `confluence-content-model`
   publish                      Publish content to a Confluence instance
   conpub, convert-and-publish  Convert and publish docs to a Confluence instance
   dump                         Dump content from Confluence instance
   help                         Displays help information about the specified
                                  command
+'confluence-content-model' is a representation of Confluence page trees and
+attachments on a local filesystem. See 'md2conf help md2conf' for details.
 ```
 
 ### History and Motivation
