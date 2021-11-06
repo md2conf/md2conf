@@ -3,6 +3,7 @@ package io.github.md2conf.indexer;
 import io.github.md2conf.model.ConfluenceContentModel;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -11,13 +12,14 @@ import static io.github.md2conf.indexer.IndexerConfigurationPropertiesFactory.aT
 
 class DefaultIndexerTest {
 
+    @TempDir
+    private Path tmpDir;
+
     private DefaultIndexer defaultIndexer = new DefaultIndexer(new IndexerConfigurationProperties());
 
     @Test
     void index_empty_dir() {
-        String path = "src/test/resources/empty_dir";
-        File f = new File(path);
-        ConfluenceContentModel model = defaultIndexer.indexPath(f.toPath());
+        ConfluenceContentModel model = defaultIndexer.indexPath(tmpDir);
         Assertions.assertThat(model).isNotNull();
         Assertions.assertThat(model.getPages()).isEmpty();
     }
