@@ -1,86 +1,89 @@
 package io.github.md2conf.indexer;
 
-import io.github.md2conf.indexer.PagesStructureProvider.Page;
 import io.github.md2conf.model.ConfluenceContentModel;
+import io.github.md2conf.model.ConfluencePage;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-public class SimpleIndexer implements Indexer{
+public class SimpleIndexer implements Indexer {
 
     private final IndexerConfigurationProperties properties;
+    private final ConfluencePageFactory confluencePageFactory;
+
+    private final PathMatcher includePathMatcher;
+    private final PathMatcher excludePathMatcher;
 
     public SimpleIndexer(IndexerConfigurationProperties indexerConfigurationProperties) {
         this.properties = indexerConfigurationProperties;
+        confluencePageFactory = new ConfluencePageFactory(properties.getExtractTitleStrategy());
+        FileSystem fileSystem = FileSystems.getDefault();
+        this.includePathMatcher = fileSystem.getPathMatcher(properties.getIncludePattern());
+        this.excludePathMatcher = fileSystem.getPathMatcher(properties.getExcludePattern());
     }
 
     @Override
     public ConfluenceContentModel indexPath(Path rootPath) {
         try {
-            Map<Path, Page> markdownPageIndex = indexPages(rootPath);
-            List<Page> allPages = connectMarkdownPagesToParent(markdownPageIndex);
-            List<Page> topLevelMarkdownPages = findTopLevelPages(allPages, rootPath);
-            return new MarkdownPagesStructure(topLevelMarkdownPages);
+            Map<Path, ConfluencePage> pageIndex = indexPages(rootPath);
+            List<ConfluencePage> allPages = linkPagesToParent(pageIndex);
+            List<ConfluencePage> topLevelPages = findTopLevelPages(allPages, rootPath);
+            return new ConfluenceContentModel(topLevelPages);
         } catch (IOException e) {
             throw new RuntimeException("Could not index directory " + rootPath + "Using properties" + properties, e);
         }
     }
 
-    private static ConfluenceContentModel convertToConfluenceContentModel(List<Page> pages){
 
-    }
-
-
-    private static Map<Path, Page> indexPages(Path rootPath) throws IOException {
+    private Map<Path, ConfluencePage> indexPages(Path rootPath) throws IOException {
         return Files.walk(rootPath)
-                    .filter((path) -> isIncluded(path) && ! isExcluded(path))
-                    .collect(toMap(Function.identity(), SimpleIndexer::newPage));
+                    .filter((path) -> isIncluded(path) && !isExcluded(path))
+                    .collect(toMap(Path::toAbsolutePath, confluencePageFactory::pageByPath));
     }
 
-    private List<Page> connectMarkdownPagesToParent(Map<Path, Page> pageIndex) {
-        pageIndex.forEach((rootPath, page) -> {
-            pageIndex.computeIfPresent(page.path().getParent(), (ignored, parentPage) -> {
-                page.addChild(page);
+
+    private List<ConfluencePage> linkPagesToParent(Map<Path, ConfluencePage> pageIndex) {
+        pageIndex.forEach((absolutePath, page) -> {
+            pageIndex.computeIfPresent(absolutePathOfParentPage(page), (ignored, parentPage) -> {
+                page.getChildren().add(page);
                 return parentPage;
             });
         });
         return new ArrayList<>(pageIndex.values());
     }
 
-    private static List<Page> findTopLevelPages(List<Page> allPages, Path documentationRootFolder) {
+    private Path absolutePathOfParentPage(ConfluencePage page) {
+        return Path.of(Path.of(page.getContentFilePath()).getParent().toString()+ "."+properties.getFileExtension());
+    }
+
+    private static List<ConfluencePage> findTopLevelPages(List<ConfluencePage> allPages, Path rootPath) {
         return allPages.stream()
-                    .filter((markdownPage) -> markdownPage.path().equals(documentationRootFolder.resolve(markdownPage.path().getFileName())))
-                    .collect(toList());
+                       .filter((page) -> Path.of(page.getContentFilePath())
+                                             .equals(rootPath.resolve(Path.of(page.getContentFilePath()).getFileName()))
+                       )
+                       .collect(toList());
     }
 
-    private static Page newPage(Path v) {
-        return new Page() {
-            @Override
-            public Path path() {
-                return v;
-            }
+    private boolean isExcluded(Path path) {
+        return false;
 
-            @Override
-            public List<? extends Page> children() {
-                return null;
-            }
-        };
+//        return excludePathMatcher.matches(path);
     }
 
-    private static boolean isExcluded(Path path) {
-        return false; //todo implement
-    }
-
-    private static boolean isIncluded(Path path) {
-        return true; //implement
+    private boolean isIncluded(Path path) {
+        return FilenameUtils.getExtension(path.toString()).equals(properties.getFileExtension())
+                && includePathMatcher.matches(path);
     }
 
 

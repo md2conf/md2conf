@@ -1,6 +1,6 @@
 package io.github.md2conf.converter.markdown;
 
-import io.github.md2conf.indexer.PagesStructureProvider;
+import io.github.md2conf.converter.PagesStructureProvider;
 
 import java.io.IOException;
 import java.nio.file.Path;

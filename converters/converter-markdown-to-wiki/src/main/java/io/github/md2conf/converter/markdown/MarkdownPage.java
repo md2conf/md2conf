@@ -1,6 +1,6 @@
 package io.github.md2conf.converter.markdown;
 
-import io.github.md2conf.indexer.PagesStructureProvider;
+import io.github.md2conf.converter.PagesStructureProvider;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -24,6 +24,11 @@ public class MarkdownPage implements PagesStructureProvider.Page {
     @Override
     public List<MarkdownPage> children() {
         return children;
+    }
+
+    @Override
+    public void addChild(PagesStructureProvider.Page page) {
+
     }
 
     void addChild(MarkdownPage child) {
