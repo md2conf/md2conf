@@ -15,7 +15,7 @@ as a docs source and Confluence as a publishing platform.
 * **converters** - tools to convert directories with files to
   `confluence-content-model` or from `confluence-content-model`
 * **confluence-client** - confluence client that utilize Confluence REST
-  API for CRUD operation with content in a Confluence instance. It allow
+  API for CRUD operation with content in a Confluence instance.
 
 ## confluence-client
 
