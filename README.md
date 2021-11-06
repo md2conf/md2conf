@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
+
 # md2conf toolset
 
 Set of tools to publish/dump confluence content from/to filesystem and
