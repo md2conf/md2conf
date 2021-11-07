@@ -1,3 +1,4 @@
+[![status](https://img.shields.io/badge/STATUS-DEVELOPING-important)](https://img.shields.io/badge/STATUS-DEVELOPING-important)
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
 # md2conf toolset
