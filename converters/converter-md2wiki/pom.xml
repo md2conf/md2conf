@@ -10,7 +10,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>converter-markdown-to-wiki</artifactId>
+    <artifactId>converter-md2wiki</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 
     <dependencies>

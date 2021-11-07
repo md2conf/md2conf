@@ -19,6 +19,6 @@
         <module>converter-common</module>
         <module>converter-noop</module>
         <module>converter-copying</module>
-        <module>converter-markdown-to-wiki</module>
+        <module>converter-md2wiki</module>
     </modules>
 </project>

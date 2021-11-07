@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.md2conf</groupId>
-            <artifactId>converter-markdown-to-wiki</artifactId>
+            <artifactId>converter-md2wiki</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
