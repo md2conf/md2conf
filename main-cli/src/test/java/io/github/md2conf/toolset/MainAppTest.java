@@ -5,10 +5,23 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 class MainAppTest {
+
+
+    @Test
+    void invoke_main_method_wth_wrong_param() {
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(errContent));
+        MainApp.main(new String[]{"wrong param"});
+        Assertions.assertThat(errContent.toString()).contains("Unmatched argument at index 0");
+        System.setErr(originalErr);
+    }
 
     @Test
     void invoke_without_parameters() {
