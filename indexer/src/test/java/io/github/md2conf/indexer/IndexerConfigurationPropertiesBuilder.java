@@ -4,7 +4,6 @@ public final class IndexerConfigurationPropertiesBuilder {
     private String fileExtension = "wiki";
     private String includePattern = "glob:**";
     private String excludePattern = "glob:**/.*";
-    private ExtractTitleStrategy extractTitleStrategy = ExtractTitleStrategy.FROM_FIRST_HEADER;
 
     private IndexerConfigurationPropertiesBuilder() {
     }
@@ -28,17 +27,11 @@ public final class IndexerConfigurationPropertiesBuilder {
         return this;
     }
 
-    public IndexerConfigurationPropertiesBuilder withExtractTitleStrategy(ExtractTitleStrategy extractTitleStrategy) {
-        this.extractTitleStrategy = extractTitleStrategy;
-        return this;
-    }
-
     public IndexerConfigurationProperties build() {
         IndexerConfigurationProperties indexerConfigurationProperties = new IndexerConfigurationProperties();
         indexerConfigurationProperties.setFileExtension(fileExtension);
         indexerConfigurationProperties.setIncludePattern(includePattern);
         indexerConfigurationProperties.setExcludePattern(excludePattern);
-        indexerConfigurationProperties.setExtractTitleStrategy(extractTitleStrategy);
         return indexerConfigurationProperties;
     }
 }
