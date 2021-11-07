@@ -15,6 +15,8 @@ import picocli.CommandLine;
 )
 public class MainApp {
     public static void main(String[] args) {
-        new CommandLine(new MainApp()).execute(args);
+        CommandLine commandLine = new CommandLine(new MainApp());
+        commandLine.setCaseInsensitiveEnumValuesAllowed(true);
+        commandLine.execute(args);
     }
 }
