@@ -13,7 +13,7 @@ import picocli.CommandLine.Command;
 import java.io.File;
 import java.nio.file.Path;
 
-import static io.github.md2conf.converter.Converter.MD2WIKI;
+import static io.github.md2conf.converter.Converter.Type.MD2WIKI;
 
 
 @Command(name = "convert",
@@ -23,7 +23,7 @@ public class ConvertCommand implements Runnable {
     @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
             defaultValue = "MD2WIKI",
             showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private Converter converter = MD2WIKI;
+    private Converter.Type converter = MD2WIKI;
 
     @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "input directory")
     private Path inputDirectory;
@@ -63,6 +63,8 @@ public class ConvertCommand implements Runnable {
 
         Indexer indexer = new DefaultIndexer(indexerConfigurationProperties);
         PagesStructure pagesStructure = indexer.indexPath(inputDirectory);
+
+//        ConfluenceContentModel model =
 
         switch (converter){
             case MD2WIKI:

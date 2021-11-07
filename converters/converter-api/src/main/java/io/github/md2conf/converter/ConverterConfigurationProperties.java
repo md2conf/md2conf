@@ -1,9 +1,6 @@
 package io.github.md2conf.converter;
 
-public interface ConverterConfigurationProperties {
+public class ConverterConfigurationProperties {
 
-    String getInputDirectory();
-    String getOutputDirectory();
 
-    //todo design  property loadContentModelFromFile -
 }
