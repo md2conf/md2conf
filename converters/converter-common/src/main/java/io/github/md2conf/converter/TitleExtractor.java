@@ -10,7 +10,7 @@ import java.util.Optional;
 public class TitleExtractor {
 
 
-    public static String extractTitle(Path path, ExtractTitleStrategy strategy) throws IOException {
+    public static String extractTitle(Path path, ExtractTitleStrategy strategy){
         switch (strategy) {
             case FROM_FILENAME:
                 return FilenameUtils.getBaseName(path.toString());
@@ -21,7 +21,7 @@ public class TitleExtractor {
         }
     }
 
-    private static String readHeaderFromFile(Path path) throws IOException {
+    private static String readHeaderFromFile(Path path)  {
         String res = null;
         String extension = FilenameUtils.getExtension(path.toString());
         if (extension.equalsIgnoreCase("wiki")) {
@@ -34,11 +34,15 @@ public class TitleExtractor {
 
     }
 
-    private static String readFirstWikiHeader(Path path) throws IOException {
-        Optional<String> lineWithHeader =
-                Files.lines(path)
-                     .filter(v -> v.trim().startsWith("h1.") || v.trim().startsWith("h2.") || v.trim().startsWith("h3."))
-                     .findFirst();
+    private static String readFirstWikiHeader(Path path)  {
+        Optional<String> lineWithHeader;
+        try {
+            lineWithHeader = Files.lines(path)
+                                  .filter(v -> v.trim().startsWith("h1.") || v.trim().startsWith("h2.") || v.trim().startsWith("h3."))
+                                  .findFirst();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
         return lineWithHeader.map(s -> s.trim()
                                         .replaceFirst("h[123]\\.", "").trim())
                              .orElseThrow(() -> new IllegalArgumentException("Cannot extract title from wiki content"));

@@ -42,25 +42,6 @@ public class DefaultIndexer implements Indexer {
         }
     }
 
-//    //todo move to appropriate place
-//    private ConfluenceContentModel createConfluenceContentModel(List<DefaultPage> topLevelPages) throws IOException {
-//        List<ConfluencePage> confluencePages = new ArrayList<>();
-//        for (DefaultPage topLevelPage : topLevelPages) { //use "for" loop to throw exception to caller
-//            ConfluencePage confluencePage = createConfluencePage(topLevelPage);
-//            confluencePages.add(confluencePage);
-//        }
-//        return new ConfluenceContentModel(confluencePages);
-//    }
-//
-//    private ConfluencePage createConfluencePage(Page defaultPage) throws IOException {
-//        ConfluencePage confluencePage = confluencePageFactory.pageByPath(defaultPage.path());
-//        for (Page childPage : defaultPage.children()) {
-//            ConfluencePage childConfluencePage = createConfluencePage(childPage);
-//            confluencePage.getChildren().add(childConfluencePage);
-//        }
-//        return confluencePage;
-//    }
-
     private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
         return Files.walk(rootPath)
                     .filter((path) -> isIncluded(path) && !isExcluded(path))

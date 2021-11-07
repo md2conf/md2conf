@@ -2,7 +2,6 @@ package io.github.md2conf.converter;
 
 import io.github.md2conf.model.ConfluencePage;
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 public class ConfluencePageFactory {
@@ -21,13 +20,11 @@ public class ConfluencePageFactory {
      * @param path file path with content
      * @return ConfluencePage
      */
-    public ConfluencePage pageByPath(Path path) throws IOException {
+    public ConfluencePage pageByPath(Path path) {
         ConfluencePage page = new ConfluencePage();
         page.setContentFilePath(path.toFile().getAbsolutePath());
         page.setTitle(TitleExtractor.extractTitle(path, extractTitleStrategy));
-
         return page;
     }
-
 
 }
