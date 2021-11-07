@@ -1,8 +1,8 @@
 package io.github.md2conf.toolset;
 
 import io.github.md2conf.converter.Converter;
+import io.github.md2conf.converter.ExtractTitleStrategy;
 import io.github.md2conf.indexer.DefaultIndexer;
-import io.github.md2conf.indexer.ExtractTitleStrategy;
 import io.github.md2conf.indexer.Indexer;
 import io.github.md2conf.indexer.IndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
@@ -59,7 +59,7 @@ public class ConvertCommand implements Runnable {
         indexerConfigurationProperties.setFileExtension(fileExtension);
         indexerConfigurationProperties.setIncludePattern(includePattern);
         indexerConfigurationProperties.setExcludePattern(excludePattern);
-        indexerConfigurationProperties.setExtractTitleStrategy(extractTitleStrategy);
+//        indexerConfigurationProperties.setExtractTitleStrategy(extractTitleStrategy);
 
         Indexer indexer = new DefaultIndexer(indexerConfigurationProperties);
         PagesStructure pagesStructure = indexer.indexPath(inputDirectory);

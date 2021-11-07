@@ -7,7 +7,8 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.File;
 import java.nio.file.Path;
 
-import static io.github.md2conf.indexer.IndexerConfigurationPropertiesFactory.aTitleFromFilenameIndexerConfigurationProperties;
+import static io.github.md2conf.indexer.IndexerConfigurationPropertiesFactory.aDefaultIndexerConfigurationProperties;
+
 
 class DefaultIndexerTest {
 
@@ -34,8 +35,9 @@ class DefaultIndexerTest {
 
     @Test
     void index_dir_with_xml_files() {
-        DefaultIndexer defaultIndexer = new DefaultIndexer(aTitleFromFilenameIndexerConfigurationProperties()
+        DefaultIndexer defaultIndexer = new DefaultIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("xml")
+                .withIncludePattern("glob:**")
                 .build());
         String path = "src/test/resources/dir_with_xml_files";
         Path rootDir = (new File(path)).toPath();
@@ -53,8 +55,9 @@ class DefaultIndexerTest {
 
     @Test
     void test_dir_with_name_collision() {
-        DefaultIndexer defaultIndexer = new DefaultIndexer(aTitleFromFilenameIndexerConfigurationProperties()
+        DefaultIndexer defaultIndexer = new DefaultIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("wiki")
+                .withIncludePattern("glob:**")
                 .build());
         String path = "src/test/resources/dir_with_name_collision";
         Path rootDir = (new File(path)).toPath();

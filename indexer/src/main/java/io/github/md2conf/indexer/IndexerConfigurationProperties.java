@@ -3,10 +3,8 @@ package io.github.md2conf.indexer;
 public class IndexerConfigurationProperties {
 
     private String fileExtension = "wiki";
-    private String includePattern = "glob:**";
+    private String includePattern = "glob:**"; //todo drop - overcomplicated
     private String excludePattern = "glob:**/.*";
-
-    private ExtractTitleStrategy extractTitleStrategy = ExtractTitleStrategy.FROM_FIRST_HEADER; //todo move
 
     public String getIncludePattern() {
         return includePattern;
@@ -24,14 +22,6 @@ public class IndexerConfigurationProperties {
         this.excludePattern = excludePattern;
     }
 
-    public ExtractTitleStrategy getExtractTitleStrategy() {
-        return extractTitleStrategy;
-    }
-
-    public void setExtractTitleStrategy(ExtractTitleStrategy extractTitleStrategy) {
-        this.extractTitleStrategy = extractTitleStrategy;
-    }
-
     public String getFileExtension() {
         return fileExtension;
     }
@@ -46,7 +36,6 @@ public class IndexerConfigurationProperties {
                 "fileExtension='" + fileExtension + '\'' +
                 ", includePattern='" + includePattern + '\'' +
                 ", excludePattern='" + excludePattern + '\'' +
-                ", extractTitleStrategy=" + extractTitleStrategy +
                 '}';
     }
 }

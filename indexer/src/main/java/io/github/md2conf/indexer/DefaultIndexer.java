@@ -1,7 +1,5 @@
 package io.github.md2conf.indexer;
 
-import io.github.md2conf.model.ConfluenceContentModel;
-import io.github.md2conf.model.ConfluencePage;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
@@ -22,14 +20,11 @@ import static java.util.stream.Collectors.toMap;
 public class DefaultIndexer implements Indexer {
 
     private final IndexerConfigurationProperties properties;
-    private final ConfluencePageFactory confluencePageFactory;
-
     private final PathMatcher includePathMatcher;
     private final PathMatcher excludePathMatcher;
 
     public DefaultIndexer(IndexerConfigurationProperties indexerConfigurationProperties) {
         this.properties = indexerConfigurationProperties;
-        confluencePageFactory = new ConfluencePageFactory(properties.getExtractTitleStrategy());
         FileSystem fileSystem = FileSystems.getDefault();
         this.includePathMatcher = fileSystem.getPathMatcher(properties.getIncludePattern());
         this.excludePathMatcher = fileSystem.getPathMatcher(properties.getExcludePattern());
@@ -47,24 +42,24 @@ public class DefaultIndexer implements Indexer {
         }
     }
 
-    //todo move to appropriate place
-    private ConfluenceContentModel createConfluenceContentModel(List<DefaultPage> topLevelPages) throws IOException {
-        List<ConfluencePage> confluencePages = new ArrayList<>();
-        for (DefaultPage topLevelPage : topLevelPages) { //use "for" loop to throw exception to caller
-            ConfluencePage confluencePage = createConfluencePage(topLevelPage);
-            confluencePages.add(confluencePage);
-        }
-        return new ConfluenceContentModel(confluencePages);
-    }
-
-    private ConfluencePage createConfluencePage(Page defaultPage) throws IOException {
-        ConfluencePage confluencePage = confluencePageFactory.pageByPath(defaultPage.path());
-        for (Page childPage : defaultPage.children()) {
-            ConfluencePage childConfluencePage = createConfluencePage(childPage);
-            confluencePage.getChildren().add(childConfluencePage);
-        }
-        return confluencePage;
-    }
+//    //todo move to appropriate place
+//    private ConfluenceContentModel createConfluenceContentModel(List<DefaultPage> topLevelPages) throws IOException {
+//        List<ConfluencePage> confluencePages = new ArrayList<>();
+//        for (DefaultPage topLevelPage : topLevelPages) { //use "for" loop to throw exception to caller
+//            ConfluencePage confluencePage = createConfluencePage(topLevelPage);
+//            confluencePages.add(confluencePage);
+//        }
+//        return new ConfluenceContentModel(confluencePages);
+//    }
+//
+//    private ConfluencePage createConfluencePage(Page defaultPage) throws IOException {
+//        ConfluencePage confluencePage = confluencePageFactory.pageByPath(defaultPage.path());
+//        for (Page childPage : defaultPage.children()) {
+//            ConfluencePage childConfluencePage = createConfluencePage(childPage);
+//            confluencePage.getChildren().add(childConfluencePage);
+//        }
+//        return confluencePage;
+//    }
 
     private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
         return Files.walk(rootPath)

@@ -1,4 +1,4 @@
-package io.github.md2conf.indexer;
+package io.github.md2conf.converter;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

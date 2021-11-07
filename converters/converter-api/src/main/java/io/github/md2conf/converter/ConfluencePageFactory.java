@@ -1,4 +1,4 @@
-package io.github.md2conf.indexer;
+package io.github.md2conf.converter;
 
 import io.github.md2conf.model.ConfluencePage;
 

@@ -8,23 +8,6 @@ public class IndexerConfigurationPropertiesFactory {
         return anIndexerConfigurationProperties()
                 .withFileExtension("wiki")
                 .withIncludePattern("glob:**")
-                .withIncludePattern("glob:**/.*")
-                .withExtractTitleStrategy(ExtractTitleStrategy.FROM_FIRST_HEADER);
-    }
-
-    public static IndexerConfigurationPropertiesBuilder aTitleFromFilenameIndexerConfigurationProperties() {
-        return anIndexerConfigurationProperties()
-                .withFileExtension("wiki")
-                .withIncludePattern("glob:**")
-                .withExcludePattern("glob:**/.*")
-                .withExtractTitleStrategy(ExtractTitleStrategy.FROM_FILENAME);
-    }
-
-    public static IndexerConfigurationPropertiesBuilder aTitleFromFirstHeaderIndexerConfigurationProperties() {
-        return anIndexerConfigurationProperties()
-                .withFileExtension("wiki")
-                .withIncludePattern("glob:**")
-                .withIncludePattern("glob:**/.*")
-                .withExtractTitleStrategy(ExtractTitleStrategy.FROM_FIRST_HEADER);
+                .withExcludePattern("glob:**/.*");
     }
 }
