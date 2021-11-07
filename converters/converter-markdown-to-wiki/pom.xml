@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.md2conf</groupId>
-            <artifactId>converter-api</artifactId>
+            <artifactId>converter-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
