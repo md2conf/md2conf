@@ -6,7 +6,7 @@ public class IndexerConfigurationProperties {
     private String includePattern = "glob:**";
     private String excludePattern = "glob:**/.*";
 
-    private ExtractTitleStrategy extractTitleStrategy = ExtractTitleStrategy.FROM_FIRST_HEADER;
+    private ExtractTitleStrategy extractTitleStrategy = ExtractTitleStrategy.FROM_FIRST_HEADER; //todo move
 
     public String getIncludePattern() {
         return includePattern;

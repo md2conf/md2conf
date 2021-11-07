@@ -1,8 +1,11 @@
 package io.github.md2conf.toolset;
 
 import io.github.md2conf.converter.Converter;
+import io.github.md2conf.indexer.DefaultIndexer;
 import io.github.md2conf.indexer.ExtractTitleStrategy;
+import io.github.md2conf.indexer.Indexer;
 import io.github.md2conf.indexer.IndexerConfigurationProperties;
+import io.github.md2conf.indexer.PagesStructure;
 import org.apache.commons.lang3.NotImplementedException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -57,6 +60,9 @@ public class ConvertCommand implements Runnable {
         indexerConfigurationProperties.setIncludePattern(includePattern);
         indexerConfigurationProperties.setExcludePattern(excludePattern);
         indexerConfigurationProperties.setExtractTitleStrategy(extractTitleStrategy);
+
+        Indexer indexer = new DefaultIndexer(indexerConfigurationProperties);
+        PagesStructure pagesStructure = indexer.indexPath(inputDirectory);
 
         switch (converter){
             case MD2WIKI:

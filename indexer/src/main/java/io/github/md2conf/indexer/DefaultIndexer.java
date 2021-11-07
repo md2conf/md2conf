@@ -36,17 +36,18 @@ public class DefaultIndexer implements Indexer {
     }
 
     @Override
-    public ConfluenceContentModel indexPath(Path rootPath) {
+    public DefaultPagesStructure indexPath(Path rootPath) {
         try {
             Map<Path, DefaultPage> pageIndex = indexPages(rootPath);
             List<DefaultPage> allPages = linkPagesToParent(pageIndex);
             List<DefaultPage> topLevelPages = findTopLevelPages(allPages, rootPath);
-            return createConfluenceContentModel(topLevelPages);
+            return new DefaultPagesStructure(topLevelPages);
         } catch (IOException e) {
             throw new RuntimeException("Could not index directory " + rootPath + "using properties" + properties, e);
         }
     }
 
+    //todo move to appropriate place
     private ConfluenceContentModel createConfluenceContentModel(List<DefaultPage> topLevelPages) throws IOException {
         List<ConfluencePage> confluencePages = new ArrayList<>();
         for (DefaultPage topLevelPage : topLevelPages) { //use "for" loop to throw exception to caller
@@ -56,9 +57,9 @@ public class DefaultIndexer implements Indexer {
         return new ConfluenceContentModel(confluencePages);
     }
 
-    private ConfluencePage createConfluencePage(PagesStructureProvider.Page defaultPage) throws IOException {
+    private ConfluencePage createConfluencePage(Page defaultPage) throws IOException {
         ConfluencePage confluencePage = confluencePageFactory.pageByPath(defaultPage.path());
-        for (PagesStructureProvider.Page childPage : defaultPage.children()) {
+        for (Page childPage : defaultPage.children()) {
             ConfluencePage childConfluencePage = createConfluencePage(childPage);
             confluencePage.getChildren().add(childConfluencePage);
         }
@@ -86,9 +87,6 @@ public class DefaultIndexer implements Indexer {
         return new ArrayList<>(pageIndex.values());
     }
 
-    private Path absolutePathOfParentPage(ConfluencePage page) {
-        return Path.of(Path.of(page.getContentFilePath()).getParent().toString() + "." + properties.getFileExtension());
-    }
 
     private static List<DefaultPage> findTopLevelPages(List<DefaultPage> allPages, Path rootPath) {
         return allPages.stream()
@@ -106,7 +104,7 @@ public class DefaultIndexer implements Indexer {
     }
 
 
-    static class DefaultPage implements PagesStructureProvider.Page {
+    static class DefaultPage implements Page {
 
         private final Path path;
         private final List<DefaultPage> children;
@@ -122,12 +120,25 @@ public class DefaultIndexer implements Indexer {
         }
 
         @Override
-        public List<PagesStructureProvider.Page> children() {
+        public List<Page> children() {
             return unmodifiableList(this.children);
         }
 
         public void addChild(DefaultPage page) {
             this.children.add(page);
+        }
+    }
+
+    static class DefaultPagesStructure implements PagesStructure{
+        private final List<DefaultPage> pages;
+
+        public DefaultPagesStructure(List<DefaultPage> pages) {
+            this.pages = pages;
+        }
+
+        @Override
+        public List<? extends Page> pages() {
+            return pages;
         }
     }
 
