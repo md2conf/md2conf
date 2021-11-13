@@ -35,6 +35,9 @@ import picocli.CommandLine;
                 "  \\- refered as \"wiki\""
 )
 public class ModelOverviewCommand implements Runnable {
+    @CommandLine.Mixin
+    LoggingMixin loggingMixin;
+
     @Override
     public void run() {
 
