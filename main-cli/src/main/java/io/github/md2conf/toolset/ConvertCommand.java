@@ -11,6 +11,8 @@ import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.util.ModelReadWriteUtil;
 import org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -24,6 +26,11 @@ import static io.github.md2conf.converter.Converter.Type.MD2WIKI;
         description = "Convert files to `confluence-content-model` or from `confluence-content-model`")
 public class ConvertCommand implements Runnable {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @CommandLine.Mixin
+    LoggingMixin loggingMixin;
+
     @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
             defaultValue = "MD2WIKI",
             showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
@@ -32,7 +39,7 @@ public class ConvertCommand implements Runnable {
     @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "input directory")
     private Path inputDirectory;
 
-    @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory", defaultValue = ".md2conf/out")
+    @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
     private Path outputDirectory;
 
 //    @CommandLine.Option(names = {"-m", "--model"}, description = "output directory")
@@ -54,7 +61,9 @@ public class ConvertCommand implements Runnable {
 
     private void initParameters() {
         if (outputDirectory == null) {
-            outputDirectory = new File(inputDirectory.toFile(), ".md2conf/out").toPath();
+            String defaultOutput = ".md2conf/out";
+            logger.warn("Output directory is not specified, default is " + defaultOutput);
+            outputDirectory = new File(inputDirectory.toFile(), defaultOutput).toPath();
         }
     }
 

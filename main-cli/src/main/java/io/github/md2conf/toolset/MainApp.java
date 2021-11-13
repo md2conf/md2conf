@@ -14,9 +14,14 @@ import picocli.CommandLine;
         footer = "'confluence-content-model' is a representation of Confluence page trees and attachments on a local filesystem. See 'md2conf help md2conf' for details."
 )
 public class MainApp {
+
+    @CommandLine.Mixin
+    LoggingMixin loggingMixin;
+
+
     public static void main(String[] args) {
         CommandLine commandLine = new CommandLine(new MainApp());
         commandLine.setCaseInsensitiveEnumValuesAllowed(true);
-        commandLine.execute(args);
+        commandLine.setExecutionStrategy(LoggingMixin::executionStrategy).execute(args);
     }
 }
