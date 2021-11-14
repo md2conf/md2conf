@@ -45,7 +45,7 @@ public class TitleExtractor {
         }
         return lineWithHeader.map(s -> s.trim()
                                         .replaceFirst("h[123]\\.", "").trim())
-                             .orElseThrow(() -> new IllegalArgumentException("Cannot extract title from wiki content"));
+                             .orElseThrow(() -> new IllegalArgumentException("Cannot extract title from wiki content at path " + path));
 
     }
 }
