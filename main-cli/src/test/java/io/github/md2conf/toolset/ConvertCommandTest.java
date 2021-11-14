@@ -36,7 +36,7 @@ class ConvertCommandTest {
     }
 
     @Test
-    void invoke_no_converter() {
+    void invoke_no_converter_empty_dir() {
         MainApp mainApp = new MainApp();
         CommandLine cmd = new CommandLine(mainApp);
         cmd.setCaseInsensitiveEnumValuesAllowed(true);
@@ -82,7 +82,7 @@ class ConvertCommandTest {
     }
 
     @Test
-    void test_convert_wiki_page_tree() {
+    void invoke_no_converter_dir_with_wiki_page_tree() {
         MainApp mainApp = new MainApp();
         CommandLine cmd = new CommandLine(mainApp);
         StringWriter swOut = new StringWriter();
