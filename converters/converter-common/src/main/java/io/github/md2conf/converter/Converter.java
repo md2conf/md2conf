@@ -11,6 +11,7 @@ public interface Converter {
 
     enum Type {
         NO,
+        COPYING,
         MD2WIKI
     }
 }
