@@ -94,5 +94,22 @@ class ConvertCommandTest {
         int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ inputDir, "-o=" + outputPath.toString());
         Assertions.assertThat(exitCode).isEqualTo(0);
         Assertions.assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
+        Assertions.assertThat(outputPath).isDirectoryNotContaining("glob:**/*.wiki");
+    }
+
+    @Test
+    void invoke_copying_converter_dir_with_wiki_page_tree() {
+        MainApp mainApp = new MainApp();
+        CommandLine cmd = new CommandLine(mainApp);
+        StringWriter swOut = new StringWriter();
+        StringWriter swErr = new StringWriter();
+        cmd.setOut(new PrintWriter(swOut));
+        cmd.setErr(new PrintWriter(swErr));
+        String inputDir = "src/test/resources/wiki_page_tree";
+        Assertions.assertThat(outputPath).isEmptyDirectory();
+        int exitCode = cmd.execute("convert", "--converter=COPYING", "--input-dir="+ inputDir, "-o=" + outputPath.toString());
+        Assertions.assertThat(exitCode).isEqualTo(0);
+        Assertions.assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
+        Assertions.assertThat(outputPath).isDirectoryContaining("glob:**/*.wiki");
     }
 }

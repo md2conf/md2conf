@@ -3,6 +3,7 @@ package io.github.md2conf.toolset;
 import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.Converter;
 import io.github.md2conf.converter.ExtractTitleStrategy;
+import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
 import io.github.md2conf.indexer.DefaultIndexer;
 import io.github.md2conf.indexer.Indexer;
@@ -17,6 +18,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.github.md2conf.converter.Converter.Type.MD2WIKI;
@@ -83,12 +85,23 @@ public class ConvertCommand implements Runnable {
 
         ConfluenceContentModel model = null;
 
+        Converter converterService = null;
         switch (converter){
             case MD2WIKI:
                 throw new NotImplementedException();
             case NO:
-                NoopConverter noopConverter = new NoopConverter(confluencePageFactory);
-                model  = noopConverter.convert(pagesStructure);
+                converterService = new NoopConverter(confluencePageFactory);
+                break;
+            case COPYING:
+                converterService= new CopyingConverter(confluencePageFactory, outputDirectory);
+                break;
+        }
+
+        try {
+            model  = converterService.convert(pagesStructure);
+        } catch (IOException e) {
+            logger.error("Cannot convert provided input dir content with error", e);
+            return;
         }
 
         ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(model, outputDirectory);

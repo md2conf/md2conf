@@ -100,6 +100,11 @@ public class DefaultIndexer implements Indexer {
             return unmodifiableList(this.children);
         }
 
+        @Override
+        public List<String> attachments() {
+            return null; //todo implement
+        }
+
         public void addChild(DefaultPage page) {
             this.children.add(page);
         }
