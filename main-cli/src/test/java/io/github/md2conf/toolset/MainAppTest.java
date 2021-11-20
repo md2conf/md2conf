@@ -59,7 +59,7 @@ class MainAppTest {
         Assertions.assertThat(errOut).contains("Commands:");
         Assertions.assertThat(errOut).contains("convert");
         Assertions.assertThat(errOut).contains("conpub");
-        Assertions.assertThat(errOut).contains("md2conf help md2conf");
+        Assertions.assertThat(errOut).contains("md2conf help model");
 
     }
 
