@@ -29,4 +29,18 @@ class PublishCommandTest {
         Assertions.assertThat(errOut).isNotEmpty();
     }
 
+    @Test
+    void invoke_no_model() {
+        MainApp mainApp = new MainApp();
+        CommandLine cmd = new CommandLine(mainApp);
+        StringWriter swOut = new StringWriter();
+        StringWriter swErr = new StringWriter();
+        cmd.setOut(new PrintWriter(swOut));
+        cmd.setErr(new PrintWriter(swErr));
+        int exitCode = cmd.execute("publish", "-m", "null.json", "-url", "http://localhost", "-s", "TEST", "-pt", "Test" );
+        Assertions.assertThat(exitCode).isNotZero();
+        String errOut = swErr.toString();
+        Assertions.assertThat(swOut.toString()).isEmpty();
+        Assertions.assertThat(errOut).isNotEmpty();
+    }
 }
