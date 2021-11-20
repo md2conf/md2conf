@@ -66,8 +66,9 @@ TODO
 ### Command-line
 
 ```
-Usage: md2conf [COMMAND]
+Usage: md2conf [-v] [COMMAND]
 Set of tools to work with 'confluence-content-model': publish, dump, convert.
+  -v, --verbose   Increase verbosity.
 Commands:
   convert                      Convert files to `confluence-content-model` or
                                  from `confluence-content-model`
@@ -77,7 +78,7 @@ Commands:
   help                         Displays help information about the specified
                                  command
 'confluence-content-model' is a representation of Confluence page trees and
-attachments on a local filesystem. See 'md2conf help md2conf' for details.
+attachments on a local filesystem. See 'md2conf help model' for details.
 ```
 
 ### History and Motivation

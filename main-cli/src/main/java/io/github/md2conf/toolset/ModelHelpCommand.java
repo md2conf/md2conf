@@ -34,7 +34,7 @@ import picocli.CommandLine;
                 "* [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)\n" +
                 "  \\- refered as \"wiki\""
 )
-public class ModelOverviewCommand implements Runnable {
+public class ModelHelpCommand implements Runnable {
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
