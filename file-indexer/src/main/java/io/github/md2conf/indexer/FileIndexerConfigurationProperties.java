@@ -1,6 +1,6 @@
 package io.github.md2conf.indexer;
 
-public class IndexerConfigurationProperties {
+public class FileIndexerConfigurationProperties {
 
     private String fileExtension = "wiki";
     private String includePattern = "glob:**"; //todo drop - overcomplicated
@@ -32,7 +32,7 @@ public class IndexerConfigurationProperties {
 
     @Override
     public String toString() {
-        return "IndexerConfigurationProperties{" +
+        return "FileIndexerConfigurationProperties{" +
                 "fileExtension='" + fileExtension + '\'' +
                 ", includePattern='" + includePattern + '\'' +
                 ", excludePattern='" + excludePattern + '\'' +

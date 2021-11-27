@@ -17,14 +17,14 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-public class DefaultIndexer implements Indexer {
+public class DefaultFileIndexer implements FileIndexer {
 
-    private final IndexerConfigurationProperties properties;
+    private final FileIndexerConfigurationProperties properties;
     private final PathMatcher includePathMatcher;
     private final PathMatcher excludePathMatcher;
 
-    public DefaultIndexer(IndexerConfigurationProperties indexerConfigurationProperties) {
-        this.properties = indexerConfigurationProperties;
+    public DefaultFileIndexer(FileIndexerConfigurationProperties fileIndexerConfigurationProperties) {
+        this.properties = fileIndexerConfigurationProperties;
         FileSystem fileSystem = FileSystems.getDefault();
         this.includePathMatcher = fileSystem.getPathMatcher(properties.getIncludePattern());
         this.excludePathMatcher = fileSystem.getPathMatcher(properties.getExcludePattern());
@@ -45,7 +45,7 @@ public class DefaultIndexer implements Indexer {
     private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
         return Files.walk(rootPath)
                     .filter((path) -> isIncluded(path) && !isExcluded(path))
-                    .collect(toMap(DefaultIndexer::removeExtension, DefaultPage::new));
+                    .collect(toMap(DefaultFileIndexer::removeExtension, DefaultPage::new));
     }
 
     private static Path removeExtension(Path path) {

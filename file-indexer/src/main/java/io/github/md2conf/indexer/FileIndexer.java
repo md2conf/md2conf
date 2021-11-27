@@ -2,7 +2,7 @@ package io.github.md2conf.indexer;
 
 import java.nio.file.Path;
 
-public interface Indexer {
+public interface FileIndexer {
 
     /**
      * Produce PagesStructure by indexing files in given path

@@ -27,11 +27,11 @@ public final class IndexerConfigurationPropertiesBuilder {
         return this;
     }
 
-    public IndexerConfigurationProperties build() {
-        IndexerConfigurationProperties indexerConfigurationProperties = new IndexerConfigurationProperties();
-        indexerConfigurationProperties.setFileExtension(fileExtension);
-        indexerConfigurationProperties.setIncludePattern(includePattern);
-        indexerConfigurationProperties.setExcludePattern(excludePattern);
-        return indexerConfigurationProperties;
+    public FileIndexerConfigurationProperties build() {
+        FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
+        fileIndexerConfigurationProperties.setFileExtension(fileExtension);
+        fileIndexerConfigurationProperties.setIncludePattern(includePattern);
+        fileIndexerConfigurationProperties.setExcludePattern(excludePattern);
+        return fileIndexerConfigurationProperties;
     }
 }
