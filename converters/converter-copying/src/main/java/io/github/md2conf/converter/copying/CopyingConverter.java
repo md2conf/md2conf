@@ -1,5 +1,6 @@
 package io.github.md2conf.converter.copying;
 
+import io.github.md2conf.converter.AttachmentUtil;
 import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.Converter;
 import io.github.md2conf.indexer.Page;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class CopyingConverter implements Converter {
 
@@ -38,8 +40,12 @@ public class CopyingConverter implements Converter {
     }
 
     private ConfluencePage copyAndCreateConfluencePage(Page page, Path relativePart) throws IOException {
+        //copy
         Path targetPath = PathUtils.copyFileToDirectory(page.path(), outputPath.resolve(relativePart));
+        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(page.attachments(), targetPath);
+        // create ConfluencePage
         ConfluencePage result = confluencePageFactory.pageByPath(targetPath);
+        result.setAttachments(AttachmentUtil.toAttachmentsMap(copiedAttachments));
         if (page.children() != null && !page.children().isEmpty()) {
             String childrenDirAsStr = FilenameUtils.concat(
                     relativePart.toString(),
@@ -51,7 +57,6 @@ public class CopyingConverter implements Converter {
             for (Page childPage : page.children()) {
                 result.getChildren().add(copyAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir)));
             }
-            //todo copy attachments
         }
         return result;
     }
