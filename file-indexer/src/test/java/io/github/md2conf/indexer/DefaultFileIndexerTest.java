@@ -34,6 +34,20 @@ class DefaultFileIndexerTest {
     }
 
     @Test
+    void index_dir_with_attachments() {
+        String path = "src/test/resources/dir_with_attachments";
+        File f = new File(path);
+        PagesStructure structure = defaultIndexer.indexPath(f.toPath());
+        Assertions.assertThat(structure).isNotNull();
+        Assertions.assertThat(structure.pages()).isNotEmpty();
+        Assertions.assertThat(structure.pages()).hasSize(1);
+        Assertions.assertThat(structure.pages().get(0)).isNotNull();
+        Assertions.assertThat(structure.pages().get(0).children()).isNotEmpty();
+        Assertions.assertThat(structure.pages().get(0).attachments()).isNotEmpty();
+        Assertions.assertThat(structure.pages().get(0).attachments()).hasSize(2);
+    }
+
+    @Test
     void index_dir_with_xml_files() {
         DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("xml")

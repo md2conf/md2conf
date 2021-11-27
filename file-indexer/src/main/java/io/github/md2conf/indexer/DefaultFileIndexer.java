@@ -35,6 +35,7 @@ public class DefaultFileIndexer implements FileIndexer {
         try {
             Map<Path, DefaultPage> pageIndex = indexPages(rootPath);
             List<DefaultPage> allPages = linkPagesToParent(pageIndex);
+            allPages.forEach(this::findAttachments);
             List<DefaultPage> topLevelPages = findTopLevelPages(allPages, rootPath);
             return new DefaultPagesStructure(topLevelPages);
         } catch (IOException e) {
@@ -42,10 +43,12 @@ public class DefaultFileIndexer implements FileIndexer {
         }
     }
 
+
     private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
         return Files.walk(rootPath)
                     .filter((path) -> isIncluded(path) && !isExcluded(path))
-                    .collect(toMap(DefaultFileIndexer::removeExtension, DefaultPage::new));
+                    .collect(toMap(DefaultFileIndexer::removeExtension,
+                            DefaultPage::new));
     }
 
     private static Path removeExtension(Path path) {
@@ -53,7 +56,29 @@ public class DefaultFileIndexer implements FileIndexer {
     }
 
 
-    private List<DefaultPage> linkPagesToParent(Map<Path, DefaultPage> pageIndex) {
+    private void findAttachments(DefaultPage page) {
+        Path attachmentsPath = attachmentsPath(page.path());
+        if (!attachmentsPath.toFile().isDirectory()) {
+            return;
+        }
+        List<Path> list = null;
+        try {
+            list = Files.walk(attachmentsPath(page.path()), 1)
+                        .filter((path) ->  path.toFile().isFile() && !isExcluded(path))
+                        .collect(toList());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        page.attachments().addAll(list);
+    }
+
+
+    private static Path attachmentsPath(Path path) {
+        return Path.of(removeExtension(path) + "_attachments");
+    }
+
+
+    private static List<DefaultPage> linkPagesToParent(Map<Path, DefaultPage> pageIndex) {
         pageIndex.forEach((absolutePath, page) -> {
             pageIndex.computeIfPresent(page.path().getParent(), (ignored, parentPage) -> {
                 parentPage.addChild(page);
@@ -71,7 +96,7 @@ public class DefaultFileIndexer implements FileIndexer {
     }
 
     private boolean isExcluded(Path path) {
-       return excludePathMatcher.matches(path);
+        return excludePathMatcher.matches(path);
     }
 
     private boolean isIncluded(Path path) {
@@ -85,9 +110,12 @@ public class DefaultFileIndexer implements FileIndexer {
         private final Path path;
         private final List<DefaultPage> children;
 
+        private final List<Path> attachments;
+
         DefaultPage(Path path) {
             this.path = path;
             this.children = new ArrayList<>();
+            attachments = new ArrayList<>();
         }
 
         @Override
@@ -101,8 +129,8 @@ public class DefaultFileIndexer implements FileIndexer {
         }
 
         @Override
-        public List<String> attachments() {
-            return null; //todo implement
+        public List<Path> attachments() {
+            return attachments;
         }
 
         public void addChild(DefaultPage page) {
@@ -110,7 +138,7 @@ public class DefaultFileIndexer implements FileIndexer {
         }
     }
 
-    static class DefaultPagesStructure implements PagesStructure{
+    static class DefaultPagesStructure implements PagesStructure {
         private final List<DefaultPage> pages;
 
         public DefaultPagesStructure(List<DefaultPage> pages) {
