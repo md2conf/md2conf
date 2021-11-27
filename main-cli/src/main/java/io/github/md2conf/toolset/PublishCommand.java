@@ -13,7 +13,6 @@ import picocli.CommandLine.Command;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import static io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperties.ConfluenceClientConfigurationPropertiesBuilder.aConfluenceClientConfigurationProperties;
 
@@ -59,28 +58,21 @@ public class PublishCommand implements Runnable {
     }
 
     private ConfluenceContentModel tryToFindAndLoad() {
-
         ConfluenceContentModel res = null;
-        File file = null;
-
+        File file;
         if (confluenceContentModelPath == null) {
             logger.info("try to find {} in working directory", ConfluenceContentModel.DEFAULT_FILE_NAME);
             file = new File(ConfluenceContentModel.DEFAULT_FILE_NAME);
         } else {
             if (confluenceContentModelPath.toFile().exists()) {
-                if (confluenceContentModelPath.toFile().isFile()) {
-                    file = confluenceContentModelPath.toFile();
-                } else if (confluenceContentModelPath.toFile().isDirectory()) {
-                    file = Paths.get(confluenceContentModelPath.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME).toFile();
-                }
+                file = confluenceContentModelPath.toFile();
             } else {
                 logger.error("path {} doesn't exists", confluenceContentModelPath);
                 throw new IllegalArgumentException("provided confluenceContentModelPath doesn't exists");
             }
         }
-
-        if (file == null || !file.exists()) {
-            throw new IllegalArgumentException("Cannot find file " + file);
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File doesn't exists " + file);
         }
         try {
             res = ModelReadWriteUtil.readFromYamlOrJson(file);
@@ -88,7 +80,6 @@ public class PublishCommand implements Runnable {
             logger.error("Cannot parse", e);
         }
         return res;
-
     }
 
     @Override
