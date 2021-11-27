@@ -9,6 +9,6 @@ public interface Page {
 
     List<? extends Page> children();
 
-    List<String> attachments();
+    List<Path> attachments();
 
 }

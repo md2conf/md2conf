@@ -5,9 +5,9 @@ import io.github.md2conf.converter.Converter;
 import io.github.md2conf.converter.ExtractTitleStrategy;
 import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
-import io.github.md2conf.indexer.DefaultIndexer;
-import io.github.md2conf.indexer.Indexer;
-import io.github.md2conf.indexer.IndexerConfigurationProperties;
+import io.github.md2conf.indexer.DefaultFileIndexer;
+import io.github.md2conf.indexer.FileIndexer;
+import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.util.ModelReadWriteUtil;
@@ -73,13 +73,13 @@ public class ConvertCommand implements Runnable {
     public void run() {
         initParameters();
 
-        IndexerConfigurationProperties indexerConfigurationProperties = new IndexerConfigurationProperties();
-        indexerConfigurationProperties.setFileExtension(fileExtension);
-//        indexerConfigurationProperties.setIncludePattern(includePattern);
-        indexerConfigurationProperties.setExcludePattern(excludePattern);
+        FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
+        fileIndexerConfigurationProperties.setFileExtension(fileExtension);
+//        fileIndexerConfigurationProperties.setIncludePattern(includePattern);
+        fileIndexerConfigurationProperties.setExcludePattern(excludePattern);
 
-        Indexer indexer = new DefaultIndexer(indexerConfigurationProperties);
-        PagesStructure pagesStructure = indexer.indexPath(inputDirectory);
+        FileIndexer fileIndexer = new DefaultFileIndexer(fileIndexerConfigurationProperties);
+        PagesStructure pagesStructure = fileIndexer.indexPath(inputDirectory);
 
         ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(extractTitleStrategy);
 

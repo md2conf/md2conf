@@ -10,12 +10,12 @@ import java.nio.file.Path;
 import static io.github.md2conf.indexer.IndexerConfigurationPropertiesFactory.aDefaultIndexerConfigurationProperties;
 
 
-class DefaultIndexerTest {
+class DefaultFileIndexerTest {
 
     @TempDir
     private Path tmpDir;
 
-    private DefaultIndexer defaultIndexer = new DefaultIndexer(new IndexerConfigurationProperties());
+    private DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
 
     @Test
     void index_empty_dir() {
@@ -34,8 +34,22 @@ class DefaultIndexerTest {
     }
 
     @Test
+    void index_dir_with_attachments() {
+        String path = "src/test/resources/dir_with_attachments";
+        File f = new File(path);
+        PagesStructure structure = defaultIndexer.indexPath(f.toPath());
+        Assertions.assertThat(structure).isNotNull();
+        Assertions.assertThat(structure.pages()).isNotEmpty();
+        Assertions.assertThat(structure.pages()).hasSize(1);
+        Assertions.assertThat(structure.pages().get(0)).isNotNull();
+        Assertions.assertThat(structure.pages().get(0).children()).isNotEmpty();
+        Assertions.assertThat(structure.pages().get(0).attachments()).isNotEmpty();
+        Assertions.assertThat(structure.pages().get(0).attachments()).hasSize(2);
+    }
+
+    @Test
     void index_dir_with_xml_files() {
-        DefaultIndexer defaultIndexer = new DefaultIndexer(aDefaultIndexerConfigurationProperties()
+        DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("xml")
                 .withIncludePattern("glob:**")
                 .build());
@@ -55,7 +69,7 @@ class DefaultIndexerTest {
 
     @Test
     void test_dir_with_name_collision() {
-        DefaultIndexer defaultIndexer = new DefaultIndexer(aDefaultIndexerConfigurationProperties()
+        DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("wiki")
                 .withIncludePattern("glob:**")
                 .build());

@@ -2,9 +2,9 @@ package io.github.md2conf.converter.copying;
 
 import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.ExtractTitleStrategy;
-import io.github.md2conf.indexer.DefaultIndexer;
-import io.github.md2conf.indexer.Indexer;
-import io.github.md2conf.indexer.IndexerConfigurationProperties;
+import io.github.md2conf.indexer.DefaultFileIndexer;
+import io.github.md2conf.indexer.FileIndexer;
+import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import org.junit.jupiter.api.Test;
@@ -28,8 +28,8 @@ class CopyingConverterTest {
     @Test
     void copy_empty_dir() throws IOException {
         CopyingConverter copyingConverter = new CopyingConverter(new ConfluencePageFactory(ExtractTitleStrategy.FROM_FILENAME), outputPath);
-        Indexer indexer = new DefaultIndexer(new IndexerConfigurationProperties());
-        PagesStructure pagesStructure = indexer.indexPath(emptyDir);
+        FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+        PagesStructure pagesStructure = fileIndexer.indexPath(emptyDir);
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).isEmpty();
@@ -38,8 +38,8 @@ class CopyingConverterTest {
     @Test
     void copy_example_page_tree() throws IOException {
         CopyingConverter copyingConverter = new CopyingConverter(new ConfluencePageFactory(ExtractTitleStrategy.FROM_FILENAME), outputPath);
-        Indexer indexer = new DefaultIndexer(new IndexerConfigurationProperties());
-        PagesStructure pagesStructure = indexer.indexPath(Paths.get("src/test/resources/example_page_tree"));
+        FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/example_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(2);
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
         assertThat(model).isNotNull();

@@ -17,16 +17,14 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
-public class DefaultIndexer implements Indexer {
+public class DefaultFileIndexer implements FileIndexer {
 
-    private final IndexerConfigurationProperties properties;
-    private final PathMatcher includePathMatcher;
+    private final FileIndexerConfigurationProperties properties;
     private final PathMatcher excludePathMatcher;
 
-    public DefaultIndexer(IndexerConfigurationProperties indexerConfigurationProperties) {
-        this.properties = indexerConfigurationProperties;
+    public DefaultFileIndexer(FileIndexerConfigurationProperties fileIndexerConfigurationProperties) {
+        this.properties = fileIndexerConfigurationProperties;
         FileSystem fileSystem = FileSystems.getDefault();
-        this.includePathMatcher = fileSystem.getPathMatcher(properties.getIncludePattern());
         this.excludePathMatcher = fileSystem.getPathMatcher(properties.getExcludePattern());
     }
 
@@ -35,6 +33,7 @@ public class DefaultIndexer implements Indexer {
         try {
             Map<Path, DefaultPage> pageIndex = indexPages(rootPath);
             List<DefaultPage> allPages = linkPagesToParent(pageIndex);
+            allPages.forEach(this::findAttachments);
             List<DefaultPage> topLevelPages = findTopLevelPages(allPages, rootPath);
             return new DefaultPagesStructure(topLevelPages);
         } catch (IOException e) {
@@ -42,10 +41,12 @@ public class DefaultIndexer implements Indexer {
         }
     }
 
+
     private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
         return Files.walk(rootPath)
-                    .filter((path) -> isIncluded(path) && !isExcluded(path))
-                    .collect(toMap(DefaultIndexer::removeExtension, DefaultPage::new));
+                    .filter((path) -> isIncluded(path) && isNotExcluded(path))
+                    .collect(toMap(DefaultFileIndexer::removeExtension,
+                            DefaultPage::new));
     }
 
     private static Path removeExtension(Path path) {
@@ -53,7 +54,29 @@ public class DefaultIndexer implements Indexer {
     }
 
 
-    private List<DefaultPage> linkPagesToParent(Map<Path, DefaultPage> pageIndex) {
+    private void findAttachments(DefaultPage page) {
+        Path attachmentsPath = attachmentsPath(page.path());
+        if (!attachmentsPath.toFile().isDirectory()) {
+            return;
+        }
+        List<Path> list = null;
+        try {
+            list = Files.walk(attachmentsPath(page.path()), 1)
+                        .filter((path) ->  path.toFile().isFile() && isNotExcluded(path))
+                        .collect(toList());
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+        page.attachments().addAll(list);
+    }
+
+
+    private static Path attachmentsPath(Path path) {
+        return Path.of(removeExtension(path) + "_attachments");
+    }
+
+
+    private static List<DefaultPage> linkPagesToParent(Map<Path, DefaultPage> pageIndex) {
         pageIndex.forEach((absolutePath, page) -> {
             pageIndex.computeIfPresent(page.path().getParent(), (ignored, parentPage) -> {
                 parentPage.addChild(page);
@@ -70,13 +93,12 @@ public class DefaultIndexer implements Indexer {
                        .collect(toList());
     }
 
-    private boolean isExcluded(Path path) {
-       return excludePathMatcher.matches(path);
+    private boolean isNotExcluded(Path path) {
+        return !excludePathMatcher.matches(path);
     }
 
     private boolean isIncluded(Path path) {
-        return FilenameUtils.getExtension(path.toString()).equals(properties.getFileExtension())
-                && includePathMatcher.matches(path);
+        return FilenameUtils.getExtension(path.toString()).equals(properties.getFileExtension());
     }
 
 
@@ -85,9 +107,12 @@ public class DefaultIndexer implements Indexer {
         private final Path path;
         private final List<DefaultPage> children;
 
+        private final List<Path> attachments;
+
         DefaultPage(Path path) {
             this.path = path;
             this.children = new ArrayList<>();
+            attachments = new ArrayList<>();
         }
 
         @Override
@@ -101,8 +126,8 @@ public class DefaultIndexer implements Indexer {
         }
 
         @Override
-        public List<String> attachments() {
-            return null; //todo implement
+        public List<Path> attachments() {
+            return attachments;
         }
 
         public void addChild(DefaultPage page) {
@@ -110,7 +135,7 @@ public class DefaultIndexer implements Indexer {
         }
     }
 
-    static class DefaultPagesStructure implements PagesStructure{
+    static class DefaultPagesStructure implements PagesStructure {
         private final List<DefaultPage> pages;
 
         public DefaultPagesStructure(List<DefaultPage> pages) {

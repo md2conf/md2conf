@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.md2conf</groupId>
-            <artifactId>indexer</artifactId>
+            <artifactId>file-indexer</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -40,7 +40,7 @@
 
     <modules>
         <module>confluence-content-model</module>
-        <module>indexer</module>
+        <module>file-indexer</module>
         <module>converters</module>
         <module>confluence-client</module>
         <module>main-cli</module>
