@@ -30,7 +30,6 @@ public final class IndexerConfigurationPropertiesBuilder {
     public FileIndexerConfigurationProperties build() {
         FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
         fileIndexerConfigurationProperties.setFileExtension(fileExtension);
-        fileIndexerConfigurationProperties.setIncludePattern(includePattern);
         fileIndexerConfigurationProperties.setExcludePattern(excludePattern);
         return fileIndexerConfigurationProperties;
     }

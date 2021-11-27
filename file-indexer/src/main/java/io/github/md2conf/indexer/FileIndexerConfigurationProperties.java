@@ -3,16 +3,7 @@ package io.github.md2conf.indexer;
 public class FileIndexerConfigurationProperties {
 
     private String fileExtension = "wiki";
-    private String includePattern = "glob:**"; //todo drop - overcomplicated
     private String excludePattern = "glob:**/.*";
-
-    public String getIncludePattern() {
-        return includePattern;
-    }
-
-    public void setIncludePattern(String includePattern) {
-        this.includePattern = includePattern;
-    }
 
     public String getExcludePattern() {
         return excludePattern;
@@ -34,7 +25,6 @@ public class FileIndexerConfigurationProperties {
     public String toString() {
         return "FileIndexerConfigurationProperties{" +
                 "fileExtension='" + fileExtension + '\'' +
-                ", includePattern='" + includePattern + '\'' +
                 ", excludePattern='" + excludePattern + '\'' +
                 '}';
     }

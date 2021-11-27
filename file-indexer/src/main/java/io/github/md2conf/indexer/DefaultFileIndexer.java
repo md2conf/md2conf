@@ -20,13 +20,11 @@ import static java.util.stream.Collectors.toMap;
 public class DefaultFileIndexer implements FileIndexer {
 
     private final FileIndexerConfigurationProperties properties;
-    private final PathMatcher includePathMatcher;
     private final PathMatcher excludePathMatcher;
 
     public DefaultFileIndexer(FileIndexerConfigurationProperties fileIndexerConfigurationProperties) {
         this.properties = fileIndexerConfigurationProperties;
         FileSystem fileSystem = FileSystems.getDefault();
-        this.includePathMatcher = fileSystem.getPathMatcher(properties.getIncludePattern());
         this.excludePathMatcher = fileSystem.getPathMatcher(properties.getExcludePattern());
     }
 
@@ -46,7 +44,7 @@ public class DefaultFileIndexer implements FileIndexer {
 
     private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
         return Files.walk(rootPath)
-                    .filter((path) -> isIncluded(path) && !isExcluded(path))
+                    .filter((path) -> isIncluded(path) && isNotExcluded(path))
                     .collect(toMap(DefaultFileIndexer::removeExtension,
                             DefaultPage::new));
     }
@@ -64,7 +62,7 @@ public class DefaultFileIndexer implements FileIndexer {
         List<Path> list = null;
         try {
             list = Files.walk(attachmentsPath(page.path()), 1)
-                        .filter((path) ->  path.toFile().isFile() && !isExcluded(path))
+                        .filter((path) ->  path.toFile().isFile() && isNotExcluded(path))
                         .collect(toList());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
@@ -95,13 +93,12 @@ public class DefaultFileIndexer implements FileIndexer {
                        .collect(toList());
     }
 
-    private boolean isExcluded(Path path) {
-        return excludePathMatcher.matches(path);
+    private boolean isNotExcluded(Path path) {
+        return !excludePathMatcher.matches(path);
     }
 
     private boolean isIncluded(Path path) {
-        return FilenameUtils.getExtension(path.toString()).equals(properties.getFileExtension())
-                && includePathMatcher.matches(path);
+        return FilenameUtils.getExtension(path.toString()).equals(properties.getFileExtension());
     }
 
 
