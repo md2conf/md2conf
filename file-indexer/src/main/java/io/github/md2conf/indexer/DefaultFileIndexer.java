@@ -8,11 +8,11 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.md2conf.indexer.PathNameUtils.attachmentsDirectoryByPagePath;
 import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -45,23 +45,20 @@ public class DefaultFileIndexer implements FileIndexer {
     private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
         return Files.walk(rootPath)
                     .filter((path) -> isIncluded(path) && isNotExcluded(path))
-                    .collect(toMap(DefaultFileIndexer::removeExtension,
+                    .collect(toMap(PathNameUtils::removeExtension,
                             DefaultPage::new));
     }
 
-    private static Path removeExtension(Path path) {
-        return Paths.get(path.toString().substring(0, path.toString().lastIndexOf('.')));
-    }
 
 
     private void findAttachments(DefaultPage page) {
-        Path attachmentsPath = attachmentsPath(page.path());
+        Path attachmentsPath = attachmentsDirectoryByPagePath(page.path());
         if (!attachmentsPath.toFile().isDirectory()) {
             return;
         }
-        List<Path> list = null;
+        List<Path> list;
         try {
-            list = Files.walk(attachmentsPath(page.path()), 1)
+            list = Files.walk(attachmentsDirectoryByPagePath(page.path()), 1)
                         .filter((path) ->  path.toFile().isFile() && isNotExcluded(path))
                         .collect(toList());
         } catch (IOException e) {
@@ -70,10 +67,6 @@ public class DefaultFileIndexer implements FileIndexer {
         page.attachments().addAll(list);
     }
 
-
-    private static Path attachmentsPath(Path path) {
-        return Path.of(removeExtension(path) + "_attachments");
-    }
 
 
     private static List<DefaultPage> linkPagesToParent(Map<Path, DefaultPage> pageIndex) {

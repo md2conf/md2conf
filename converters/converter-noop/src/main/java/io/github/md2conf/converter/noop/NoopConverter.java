@@ -1,5 +1,6 @@
 package io.github.md2conf.converter.noop;
 
+import io.github.md2conf.converter.AttachmentUtil;
 import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.Converter;
 import io.github.md2conf.indexer.Page;
@@ -30,6 +31,7 @@ public class NoopConverter implements Converter {
 
     private ConfluencePage createConfluencePage(Page defaultPage) {
         ConfluencePage result = confluencePageFactory.pageByPath(defaultPage.path());
+        result.setAttachments(AttachmentUtil.toAttachmentsMap(defaultPage.attachments()));
         for (Page childPage : defaultPage.children()) {
             ConfluencePage childConfluencePage = createConfluencePage(childPage);
             result.getChildren().add(childConfluencePage);
