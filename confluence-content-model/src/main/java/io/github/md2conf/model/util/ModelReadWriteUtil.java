@@ -23,12 +23,16 @@ public class ModelReadWriteUtil {
         yamlObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public static ConfluenceContentModel readFromYamlOrJson(File file) throws IOException {
+    public static ConfluenceContentModel readFromYamlOrJson(File file) {
+        try {
             if (file.getName().endsWith(".yaml")) {
                 return yamlObjectMapper.readValue(file, ConfluenceContentModel.class);
             } else {
                 return jsonObjectMapper.readValue(file, ConfluenceContentModel.class);
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void saveConfluenceContentModelToFilesystem(ConfluenceContentModel confluenceContentModel, Path outputPath){

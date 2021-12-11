@@ -6,7 +6,7 @@ import picocli.CommandLine;
         name = "md2conf",
         subcommands = {ConvertCommand.class,
                 PublishCommand.class,
-                ConvertAndPublishCommand.class,
+                ConpubCommand.class,
                 DumpCommand.class,
                 ModelHelpCommand.class,
                 CommandLine.HelpCommand.class},

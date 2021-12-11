@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 
-class ConvertAndPublishCommandTest {
+class ConpubCommandTest {
 
     @TempDir
     private Path emptyDir;
