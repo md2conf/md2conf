@@ -33,6 +33,7 @@ class ConvertCommandTest {
         String errOut = swErr.toString();
         Assertions.assertThat(swOut.toString()).isEmpty();
         Assertions.assertThat(errOut).isNotEmpty();
+        Assertions.assertThat(errOut).doesNotContain("publish");
     }
 
     @Test
@@ -79,6 +80,7 @@ class ConvertCommandTest {
         int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ emptyDir.toString(), "-v",  "-o=" + outputPath.toString());
         String errOut = swErr.toString();
         Assertions.assertThat(exitCode).isEqualTo(0);
+        Assertions.assertThat(errOut).doesNotContain("publish");
     }
 
     @Test

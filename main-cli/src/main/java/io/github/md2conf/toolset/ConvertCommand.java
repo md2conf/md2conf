@@ -4,6 +4,7 @@ import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.Converter;
 import io.github.md2conf.converter.ExtractTitleStrategy;
 import io.github.md2conf.converter.copying.CopyingConverter;
+import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
 import io.github.md2conf.indexer.DefaultFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
@@ -11,7 +12,6 @@ import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.util.ModelReadWriteUtil;
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -28,83 +28,86 @@ import static io.github.md2conf.converter.Converter.Type.MD2WIKI;
         description = "Convert files to `confluence-content-model` or from `confluence-content-model`")
 public class ConvertCommand implements Runnable {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final static Logger logger = LoggerFactory.getLogger(ConvertCommand.class);
 
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
-    @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
-            defaultValue = "MD2WIKI",
-            showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private Converter.Type converter = MD2WIKI;
-
-    @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "input directory")
-    private Path inputDirectory;
-
-    @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
-    private Path outputDirectory;
-
-//    @CommandLine.Option(names = {"-m", "--model"}, description = "output directory")
-//    private String modelFileName;
-
-    @CommandLine.Option(names = {"--file-extension"}, description = "file extension to index as confluence content pages")
-    private String fileExtension = "wiki";
-
-//    @CommandLine.Option(names = {"--include-pattern"}, description = "Include pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
-//    private String includePattern = "glob:**";
-
-    @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
-    private String excludePattern = "glob:**/.*";
-
-    @CommandLine.Option(names = {"-et", "--extract-title-strategy"}, description = "Strategy to extract title from file",
-            defaultValue = "FROM_FIRST_HEADER",
-            showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private ExtractTitleStrategy extractTitleStrategy = ExtractTitleStrategy.FROM_FIRST_HEADER;
-
-    private void initParameters() {
-        if (outputDirectory == null) {
-            String defaultOutput = ".md2conf/out";
-            logger.warn("Output directory is not specified, default is " + defaultOutput);
-            outputDirectory = new File(inputDirectory.toFile(), defaultOutput).toPath();
-        }
-    }
+    @CommandLine.ArgGroup(exclusive = false)
+    private ConvertOptions convertOptions;
 
     @Override
     public void run() {
-        initParameters();
+        convert(this.convertOptions);
+    }
 
+    protected static void convert(ConvertOptions convertOptions) {
+        initOptionsIfRequired(convertOptions);
+        PagesStructure pagesStructure = indexInputDirectory(convertOptions);
+        Converter converterService = createConverter(convertOptions);
+        ConfluenceContentModel model = convert(pagesStructure, converterService);
+        ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(model, convertOptions.outputDirectory);
+    }
+
+
+    protected static void initOptionsIfRequired(ConvertOptions convertOptions) {
+        if (convertOptions.outputDirectory == null) {
+            String defaultOutput = ".md2conf/out";
+            logger.warn("Output directory is not specified, default is " + defaultOutput);
+            convertOptions.outputDirectory = new File(convertOptions.inputDirectory.toFile(), defaultOutput).toPath();
+        }
+    }
+
+    protected static PagesStructure indexInputDirectory(ConvertOptions convertOptions) {
         FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
-        fileIndexerConfigurationProperties.setFileExtension(fileExtension);
-//        fileIndexerConfigurationProperties.setIncludePattern(includePattern);
-        fileIndexerConfigurationProperties.setExcludePattern(excludePattern);
-
+        fileIndexerConfigurationProperties.setFileExtension(convertOptions.fileExtension);
+        fileIndexerConfigurationProperties.setExcludePattern(convertOptions.excludePattern);
         FileIndexer fileIndexer = new DefaultFileIndexer(fileIndexerConfigurationProperties);
-        PagesStructure pagesStructure = fileIndexer.indexPath(inputDirectory);
+        return fileIndexer.indexPath(convertOptions.inputDirectory);
+    }
 
-        ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(extractTitleStrategy);
-
-        ConfluenceContentModel model = null;
-
+    protected static Converter createConverter(ConvertOptions convertOptions) {
+        ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(convertOptions.extractTitleStrategy);
         Converter converterService = null;
-        switch (converter){
+        switch (convertOptions.converter){
             case MD2WIKI:
-                throw new NotImplementedException();
+                converterService = new Md2WikiConverter(confluencePageFactory, convertOptions.outputDirectory);
             case NO:
                 converterService = new NoopConverter(confluencePageFactory);
                 break;
             case COPYING:
-                converterService= new CopyingConverter(confluencePageFactory, outputDirectory);
+                converterService= new CopyingConverter(confluencePageFactory, convertOptions.outputDirectory);
                 break;
         }
-
-        try {
-            model  = converterService.convert(pagesStructure);
-        } catch (IOException e) {
-            logger.error("Cannot convert provided input dir content with error", e);
-            return;
-        }
-
-        ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(model, outputDirectory);
+        return converterService;
     }
 
+    protected static ConfluenceContentModel convert(PagesStructure pagesStructure, Converter converterService) {
+        try {
+            return converterService.convert(pagesStructure);
+        } catch (IOException e) {
+            logger.error("Cannot convert provided input dir content with error", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static class ConvertOptions{ //todo split on mandatory and additional
+        @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
+                defaultValue = "MD2WIKI",
+                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+        protected Converter.Type converter = MD2WIKI;
+        @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "input directory")
+        protected Path inputDirectory;
+        @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
+        protected Path outputDirectory;
+        @CommandLine.Option(names = {"--file-extension"}, description = "file extension to index as confluence content pages")
+        protected String fileExtension = "wiki";
+        @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
+        protected String excludePattern = "glob:**/.*";
+        @CommandLine.Option(names = {"-et", "--extract-title-strategy"}, description = "Strategy to extract title from file",
+                defaultValue = "FROM_FIRST_HEADER",
+                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+        protected ExtractTitleStrategy extractTitleStrategy = ExtractTitleStrategy.FROM_FIRST_HEADER;
+
+    }
 }

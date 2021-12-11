@@ -15,8 +15,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.github.md2conf.model.ConfluenceContentModel.Type.WIKI;
+import static io.github.md2conf.model.util.ModelReadWriteUtil.readFromYamlOrJson;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ModelReadWriteUtilTest {
@@ -83,7 +85,7 @@ class ModelReadWriteUtilTest {
     @Test
     void test_read_confluence_content_zero_page() throws IOException {
         File file = Paths.get(TEST_RESOURCES, "confluence-content-zero-page.json").toFile();
-        ConfluenceContentModel confluenceContentModel =  ModelReadWriteUtil.readFromYamlOrJson(file);
+        ConfluenceContentModel confluenceContentModel =  readFromYamlOrJson(file);
         assertNotNull(confluenceContentModel);
         assertTrue(confluenceContentModel.getPages().isEmpty());
     }
@@ -91,7 +93,7 @@ class ModelReadWriteUtilTest {
     @Test
     void test_read_confluence_content_confluence_content_non_model_fields() throws IOException {
         File file = Paths.get(TEST_RESOURCES, "confluence-content-non-model-fields.json").toFile();
-        ConfluenceContentModel confluenceContentModel =  ModelReadWriteUtil.readFromYamlOrJson(file);
+        ConfluenceContentModel confluenceContentModel =  readFromYamlOrJson(file);
         assertNotNull(confluenceContentModel);
         assertFalse(confluenceContentModel.getPages().isEmpty());
     }
@@ -99,7 +101,7 @@ class ModelReadWriteUtilTest {
     @Test
     void test_read_confluence_client_sample_config_yaml() throws IOException {
         File file = Paths.get(TEST_RESOURCES, "confluence-client-sample-config.yaml").toFile();
-        ConfluenceContentModel confluenceContentModel =  ModelReadWriteUtil.readFromYamlOrJson(file);
+        ConfluenceContentModel confluenceContentModel =  readFromYamlOrJson(file);
         assertNotNull(confluenceContentModel);
         assertFalse(confluenceContentModel.getPages().isEmpty());
     }
@@ -107,8 +109,16 @@ class ModelReadWriteUtilTest {
     @Test
     void test_read_confluence_client_sample_config_json() throws IOException {
         File file = Paths.get(TEST_RESOURCES, "confluence-client-sample-config.yaml").toFile();
-        ConfluenceContentModel confluenceContentModel =  ModelReadWriteUtil.readFromYamlOrJson(file);
+        ConfluenceContentModel confluenceContentModel =  readFromYamlOrJson(file);
         assertNotNull(confluenceContentModel);
         assertFalse(confluenceContentModel.getPages().isEmpty());
+    }
+
+    @Test
+    void test_read_bad_json() {
+        File file = Paths.get(TEST_RESOURCES, "bad-json.json").toFile();
+        Throwable exception = assertThrows(RuntimeException.class,
+                ()-> readFromYamlOrJson(file));
+        Assertions.assertThat(exception).hasCauseInstanceOf(IOException.class);
     }
 }

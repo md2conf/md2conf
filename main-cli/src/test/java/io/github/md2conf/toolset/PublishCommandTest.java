@@ -27,6 +27,7 @@ class PublishCommandTest {
         String errOut = swErr.toString();
         Assertions.assertThat(swOut.toString()).isEmpty();
         Assertions.assertThat(errOut).isNotEmpty();
+        Assertions.assertThat(errOut).doesNotContain("convert");
     }
 
     @Test
@@ -42,5 +43,6 @@ class PublishCommandTest {
         String errOut = swErr.toString();
         Assertions.assertThat(swOut.toString()).isEmpty();
         Assertions.assertThat(errOut).isNotEmpty();
+        Assertions.assertThat(errOut).doesNotContain("convert");
     }
 }
