@@ -26,7 +26,7 @@ class CopyingConverterTest {
     @TempDir
     private Path outputPath;
 
-    Condition<ConfluencePage> page_with_attachments = new Condition<ConfluencePage>(s -> !s.getAttachments().isEmpty(), "a page must have attchaments", "" );
+    Condition<ConfluencePage> page_with_attachments = new Condition<ConfluencePage>(s -> !s.getAttachments().isEmpty(), "a page must have attachments", "" );
 
 
     @Test
