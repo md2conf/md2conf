@@ -1,6 +1,6 @@
 package io.github.md2conf.toolset;
 
-import io.github.md2conf.confluence.client.ConfluenceClient;
+import io.github.md2conf.confluence.client.PublishConfluenceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -16,13 +16,13 @@ public class ConpubCommand implements Runnable {
     ConvertCommand.ConvertOptions convertOptions;
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
     PublishCommand.MandatoryPublishOptions mandatoryPublishOptions;
-    @CommandLine.ArgGroup(exclusive = false, heading = "Additional convert options\n")
+    @CommandLine.ArgGroup(exclusive = false, heading = "Additional publish options\n")
     PublishCommand.AdditionalPublishOptions additionalPublishOptions;
 
     @Override
     public void run() {
         ConvertCommand.convert(convertOptions);
-        ConfluenceClient confluenceClient = PublishCommand.prepareConfluenceClient(mandatoryPublishOptions, additionalPublishOptions);
+        PublishConfluenceClient confluenceClient = PublishCommand.prepareConfluenceClient(mandatoryPublishOptions, additionalPublishOptions);
         confluenceClient.publish();
     }
 
