@@ -3,13 +3,22 @@
 
 # md2conf toolset
 
-Set of tools to publish/dump confluence content from/to filesystem and
-various converters.
+Set of tools to **publish** markdown files to an Confluence and **dump** confluence content to markdown files.
+Contains extensible **converters** from markdown to Confluence wiki and from Confluence storage view to markdown.
+
+Notable features:
+
+- Full set of commands to work with Confluence content: publish, dump, convert.
+- Support attachments, inline images, etc.
+- Can be used with minimal configuration. In this mode directory structure and naming conventions used to build a page tree with confluence content model.
+- Has a lot of advanced configuration options for demanding users.
+- Idempotent publish (without creating of new version of pages in Confluence if nothing changed)
+- Extensible by design
 
 This toolset designed to support "docs-as-code" approach to use markdown
 as a docs source and Confluence as a publishing platform.
 
-## What's inside?
+## Parts of md2conf toolset
 
 * **confluence-content-model** - an abstraction to model confluence
   content on a filesystem.
@@ -18,12 +27,6 @@ as a docs source and Confluence as a publishing platform.
 * **confluence-client** - confluence client that utilize Confluence REST
   API for CRUD operation with content in a Confluence instance.
 
-## confluence-client
-
-**confluence-client** is a Java based confluence client that utilize
-Confluence REST API to create/update/delete content in a Confluence
-instance. It uses own domain model to describe Confluence content in
-json file. It is a part of md2conf toolset.
 
 ### Confluence Content model
 
@@ -54,6 +57,15 @@ pages using Confluence API. See Atlassian documentation for details:
   \- refered as "storage"
 * [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
   \- refered as "wiki"
+
+## confluence-client
+
+**confluence-client** is a Java based confluence client that utilize
+Confluence REST API to create/update/delete content in a Confluence
+instance. It uses own domain model to describe Confluence content in
+json file. It is a part of md2conf toolset.
+
+
 
 ### Example
 
