@@ -4,13 +4,13 @@
 # md2conf toolset
 
 Set of tools to **publish** markdown files to an Confluence and **dump** confluence content to markdown files.
-Contains extensible **converters** from markdown to Confluence wiki and from Confluence storage view to markdown.
+Contains extensible **converters** from markdown format to Confluence wiki format and from Confluence storage view format to markdown format.
 
 Notable features:
 
 - Full set of commands to work with Confluence content: publish, dump, convert.
 - Support attachments, inline images, etc.
-- Can be used with minimal configuration. In this mode directory structure and naming conventions used to build a page tree with confluence content model.
+- Can be used in minimal configuration. In this mode directory structure and naming conventions used to build a page tree with confluence content model.
 - Has a lot of advanced configuration options for demanding users.
 - Idempotent publish (without creating of new version of pages in Confluence if nothing changed)
 - Extensible by design
