@@ -5,7 +5,7 @@
     "number": 1
   },
   "body": {
-    "storage": {
+    "view": {
       "value": "Some content"
     }
   }

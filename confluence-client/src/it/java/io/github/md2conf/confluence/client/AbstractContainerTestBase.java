@@ -27,13 +27,14 @@ public class AbstractContainerTestBase {
     }
 
     static String PARENT_PAGE_TITLE = "Welcome to Confluence";
+    static String SPACE_KEY = "ds";
 
     ConfluenceClientConfigurationPropertiesBuilder aDefaultConfluenceClientConfigurationProperties(){
         return aConfluenceClientConfigurationProperties()
                 .withConfluenceUrl(confluenceBaseUrl())
                 .withUsername("admin")
                 .withPasswordOrPersonalAccessToken("admin")
-                .withSpaceKey("ds")
+                .withSpaceKey(SPACE_KEY)
                 .withParentPageTitle(PARENT_PAGE_TITLE);
     }
 

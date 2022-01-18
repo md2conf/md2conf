@@ -186,7 +186,7 @@ public class RestApiInternalClient implements ApiInternalClient {
 
     @Override
     public ConfluencePage getPageWithContentAndVersionById(String contentId) {
-        HttpGet pageByIdRequest = this.httpRequestFactory.getPageByIdRequest(contentId, "body.storage,version");
+        HttpGet pageByIdRequest = this.httpRequestFactory.getPageByIdRequest(contentId, "body.view,version");
 
         return sendRequestAndFailIfNot20x(pageByIdRequest, (response) -> {
             ConfluencePage confluencePage = extractConfluencePageWithContent(parseJsonResponse(response));
@@ -345,7 +345,7 @@ public class RestApiInternalClient implements ApiInternalClient {
     private static ConfluencePage extractConfluencePageWithContent(JsonNode jsonNode) {
         String id = extractIdFromJsonNode(jsonNode);
         String title = extractTitleFromJsonNode(jsonNode);
-        String content = jsonNode.path("body").path("storage").get("value").asText();
+        String content = jsonNode.path("body").path("view").get("value").asText();
         int version = extractVersionFromJsonNode(jsonNode);
 
         return new ConfluencePage(id, title, content, version);

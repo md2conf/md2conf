@@ -20,11 +20,13 @@ package io.github.md2conf.confluence.client;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import io.restassured.specification.RequestSpecification;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static io.github.md2conf.model.ConfluenceContentModel.Type.STORAGE;
 import static io.github.md2conf.model.ConfluenceContentModel.Type.WIKI;
@@ -44,9 +46,23 @@ import static org.junit.jupiter.api.Assertions.fail;
  * @author Christian Stettler
  * @author qwazer resheto@gmail.com
  */
-public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
+public class PublishConfluenceClientIntegrationTest extends AbstractContainerTestBase {
 
     private static final String ANCESTOR_ID = "65551"; //todo replace by dynamic resolution by title
+
+    @Test
+    void test_tryToPublishToNonExistingParentPage() {
+        String title = "Non_Exists "+ UUID.randomUUID();
+        ConfluencePage confluencePage = createConfluencePageWithAttachments(title, STORAGE, absolutePathTo("single-page/single-page.xhtml"), new HashMap<>());
+        ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
+        PublishConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
+
+        IllegalArgumentException exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            confluenceClient.publish(confluenceContentModel, SPACE_KEY, title);
+        });
+
+        Assertions.assertTrue(exception.getMessage().contains("There is no page with title"));
+    }
 
     @Test
     public void publish_singlePageStorageTypeWithAttachments_pageIsCreatedAndAttachmentsAddedInConfluence() {
@@ -59,10 +75,10 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
 
         ConfluencePage confluencePage = createConfluencePageWithAttachments(title, STORAGE, absolutePathTo("single-page/single-page.xhtml"), attachments);
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
-        ConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
+        PublishConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
 
         // act
-        confluenceClient.publish();
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
 
         // assert
         givenAuthenticatedAsPublisher()
@@ -88,10 +104,10 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
 
         ConfluencePage confluencePage = createConfluencePageWithAttachments(title, WIKI, absolutePathTo("single-page/confluence_wiki_sample.confluence"), attachments);
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
-        ConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
+        PublishConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
 
         // act
-        confluenceClient.publish();
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
 
         // assert
         givenAuthenticatedAsPublisher()
@@ -115,11 +131,11 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
 
         ConfluencePage confluencePage = createConfluencePageWithAttachments(title, STORAGE, absolutePathTo("single-page/single-page.xhtml"), attachments);
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
-        ConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
+        PublishConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
 
         // act
-        confluenceClient.publish();
-        confluenceClient.publish();
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
 
         // assert
         givenAuthenticatedAsPublisher()
@@ -139,10 +155,10 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
 
         ConfluencePage confluencePage = createConfluencePageWithAttachments(title, STORAGE, absolutePathTo("single-page/single-page.xhtml"), attachments);
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
-        ConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
+        PublishConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
 
         // act
-        confluenceClient.publish();
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
 
         // assert
 
@@ -166,7 +182,7 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
                 .body("results.title", anyOf(hasItem("attachmentTwo.txt"), hasItem("attachmentOne.txt")));
 
         // act
-        confluenceClient.publish();
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
 
         // assert
         givenAuthenticatedAsPublisher()
@@ -183,11 +199,11 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
         String title = uniqueTitle("Single Page");
         ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"));
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
-        ConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
+        PublishConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
 
         // act
-        confluenceClient.publish();
-        confluenceClient.publish();
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
 
         // assert
         givenAuthenticatedAsPublisher()
@@ -202,20 +218,20 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
 
         ConfluencePage confluencePage = createConfluencePageWithAttachments(title, absolutePathTo("single-page/single-page.xhtml"));
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
-        ConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
+        PublishConfluenceClient confluenceClient = createConfluenceClient(confluenceContentModel);
 
         // act
-        confluenceClient.publish();
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
 
         confluencePage.setContentFilePath(absolutePathTo("single-page/invalid-xhtml.xhtml"));
         try {
-            confluenceClient.publish();
+            confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
             fail("publish with invalid XHTML is expected to fail");
         } catch (Exception ignored) {
         }
 
         confluencePage.setContentFilePath(absolutePathTo("single-page/single-page.xhtml"));
-        confluenceClient.publish();
+        confluenceClient.publish(confluenceContentModel, SPACE_KEY, PARENT_PAGE_TITLE);
 
         // assert
         givenAuthenticatedAsPublisher()
@@ -279,9 +295,9 @@ public class ConfluenceClientIntegrationTest extends AbstractContainerTestBase {
                 .path("results.find({it.title == '" + title + "'}).id");
     }
 
-    private ConfluenceClient createConfluenceClient(ConfluenceContentModel confluenceContentModel) {
+    private PublishConfluenceClient createConfluenceClient(ConfluenceContentModel confluenceContentModel) {
         ConfluenceClientConfigurationProperties properties = aDefaultConfluenceClientConfigurationProperties().build();
-        return ConfluenceClientFactory.confluenceClient(properties, confluenceContentModel, null );
+        return ConfluenceClientFactory.publishConfluenceClient(properties, confluenceContentModel, null );
     }
 
     private static RequestSpecification givenAuthenticatedAsPublisher() {

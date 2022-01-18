@@ -43,7 +43,7 @@
         <module>file-indexer</module>
         <module>converters</module>
         <module>confluence-client</module>
-        <module>main-cli</module>
+        <module>main-application</module>
     </modules>
 
 

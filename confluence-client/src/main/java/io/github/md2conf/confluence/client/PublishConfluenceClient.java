@@ -16,10 +16,10 @@
 
 package io.github.md2conf.confluence.client;
 
-import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
 import io.github.md2conf.confluence.client.http.ApiInternalClient;
+import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
 import io.github.md2conf.confluence.client.http.NotFoundException;
-import io.github.md2conf.confluence.client.metadata.ConfluenceContentInstance;
+import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 
 import java.io.FileInputStream;
@@ -31,64 +31,78 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
+import static io.github.md2conf.confluence.client.utils.AssertUtils.assertMandatoryParameter;
+import static io.github.md2conf.confluence.client.utils.InputStreamUtils.fileContent;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
-import static io.github.md2conf.confluence.client.utils.AssertUtils.assertMandatoryParameter;
-import static io.github.md2conf.confluence.client.utils.InputStreamUtils.fileContent;
 
 /**
  * @author Alain Sahli
  * @author Christian Stettler
+ * @author qwazer
  */
-public class ConfluenceClient {
+public class PublishConfluenceClient {
 
     static final String CONTENT_HASH_PROPERTY_KEY = "content-hash";
     static final int INITIAL_PAGE_VERSION = 1;
-
-    private final ConfluenceContentInstance metadata;
     private final PublishingStrategy publishingStrategy;
     private final OrphanRemovalStrategy orphanRemovalStrategy;
     private final ApiInternalClient apiInternalClient;
-    private final ConfluenceClientListener confluenceClientListener;
+    private final PublishConfluenceClientListener publishConfluenceClientListener;
     private final String versionMessage;
     private final boolean notifyWatchers;
 
-    public ConfluenceClient(ConfluenceContentInstance metadata, PublishingStrategy publishingStrategy, OrphanRemovalStrategy orphanRemovalStrategy,
-                            ApiInternalClient apiInternalClient, ConfluenceClientListener confluenceClientListener,
-                            String versionMessage, boolean notifyWatchers) {
-        this.metadata = metadata;
+    public PublishConfluenceClient( PublishingStrategy publishingStrategy, OrphanRemovalStrategy orphanRemovalStrategy,
+                                   ApiInternalClient apiInternalClient, PublishConfluenceClientListener publishConfluenceClientListener,
+                                   String versionMessage, boolean notifyWatchers) {
         this.publishingStrategy = publishingStrategy;
         this.orphanRemovalStrategy = orphanRemovalStrategy;
         this.apiInternalClient = apiInternalClient;
-        this.confluenceClientListener = confluenceClientListener != null ? confluenceClientListener : new NoOpConfluenceClientListener();
+        this.publishConfluenceClientListener = publishConfluenceClientListener != null ? publishConfluenceClientListener : new NoOpPublishConfluenceClientListener();
         this.versionMessage = versionMessage;
         this.notifyWatchers = notifyWatchers;
     }
 
-    public void publish() {
-        assertMandatoryParameter(isNotBlank(this.metadata.getSpaceKey()), "spaceKey");
-        assertMandatoryParameter(isNotBlank(this.metadata.getAncestorId()), "ancestorId");
-
+    public void publish(ConfluenceContentModel model, String spaceKey, String parentTitle) {
+        assertMandatoryParameter(model != null, "model");
+        assertMandatoryParameter(isNotBlank(spaceKey), "spaceKey");
+        assertMandatoryParameter(isNotBlank(parentTitle), "parentTitle");
+        String ancestorId = findPageIdByTitle(spaceKey, parentTitle);
         switch (this.publishingStrategy) {
             case APPEND_TO_ANCESTOR:
-                startPublishingUnderAncestorId(this.metadata.getPages(), this.metadata.getSpaceKey(), this.metadata.getAncestorId());
+                startPublishingUnderAncestorId(model.getPages(), spaceKey, ancestorId);
                 break;
             case REPLACE_ANCESTOR:
-                startPublishingReplacingAncestorId(singleRootPage(this.metadata), this.metadata.getSpaceKey(), this.metadata.getAncestorId());
+                startPublishingReplacingAncestorId(singleRootPage(model), spaceKey, ancestorId);
                 break;
             default:
                 throw new IllegalArgumentException("Invalid publishing strategy '" + this.publishingStrategy + "'");
         }
-
-        this.confluenceClientListener.publishCompleted();
+        this.publishConfluenceClientListener.publishCompleted();
     }
 
-    private static ConfluencePage singleRootPage(ConfluenceContentInstance metadata) {
+    private String findPageIdByTitle(String spaceKey, String parentTitle) {
+        String ancestorId;
+        try {
+            ancestorId = apiInternalClient.getPageByTitle(spaceKey, parentTitle);
+        } catch (NotFoundException e) {
+            throw new IllegalArgumentException(String.format("Cannot find pageId by title. There is no page with title %s in %s space found",
+                    parentTitle, spaceKey));
+        }
+        return ancestorId;
+    }
+
+    @Deprecated
+    public void publish() {
+        this.publishConfluenceClientListener.publishCompleted();
+    }
+
+    private static ConfluencePage singleRootPage(ConfluenceContentModel metadata) {
         List<ConfluencePage> rootPages = metadata.getPages();
 
         if (rootPages.size() > 1) {
@@ -146,7 +160,7 @@ public class ConfluenceClient {
             List<io.github.md2conf.confluence.client.http.ConfluencePage> pageScheduledForDeletionChildPagesOnConfluence = this.apiInternalClient.getChildPages(pageToDelete.getContentId());
             pageScheduledForDeletionChildPagesOnConfluence.forEach(parentPageToDelete -> this.deleteConfluencePagesNotPresentUnderAncestor(emptyList(), pageToDelete.getContentId()));
             this.apiInternalClient.deletePage(pageToDelete.getContentId());
-            this.confluenceClientListener.pageDeleted(pageToDelete);
+            this.publishConfluenceClientListener.pageDeleted(pageToDelete);
         });
     }
 
@@ -158,7 +172,7 @@ public class ConfluenceClient {
                 .forEach(confluenceAttachment -> {
                     this.apiInternalClient.deletePropertyByKey(contentId, getAttachmentHashKey(confluenceAttachment.getTitle()));
                     this.apiInternalClient.deleteAttachment(confluenceAttachment.getId());
-                    this.confluenceClientListener.attachmentDeleted(confluenceAttachment.getTitle(), contentId);
+                    this.publishConfluenceClientListener.attachmentDeleted(confluenceAttachment.getTitle(), contentId);
                 });
     }
 
@@ -172,7 +186,7 @@ public class ConfluenceClient {
             String content = fileContent(page.getContentFilePath(), UTF_8);
             contentId = this.apiInternalClient.addPageUnderAncestor(spaceKey, ancestorId, page.getTitle(), content, page.getType(), this.versionMessage );
             this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, hash(content));
-            this.confluenceClientListener.pageAdded(new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), content, INITIAL_PAGE_VERSION));
+            this.publishConfluenceClientListener.pageAdded(new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), INITIAL_PAGE_VERSION));
         }
 
         return contentId;
@@ -189,7 +203,7 @@ public class ConfluenceClient {
             int newPageVersion = existingPage.getVersion() + 1;
             this.apiInternalClient.updatePage(contentId, ancestorId, page.getTitle(), content, page.getType(), newPageVersion, this.versionMessage, this.notifyWatchers);
             this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, newContentHash);
-            this.confluenceClientListener.pageUpdated(existingPage, new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), content, newPageVersion));
+            this.publishConfluenceClientListener.pageUpdated(existingPage, new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), newPageVersion));
         }
     }
 
@@ -212,14 +226,14 @@ public class ConfluenceClient {
                 }
                 this.apiInternalClient.updateAttachmentContent(contentId, attachmentId, fileInputStream(absoluteAttachmentPath), this.notifyWatchers);
                 this.apiInternalClient.setPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName), newAttachmentHash);
-                this.confluenceClientListener.attachmentUpdated(attachmentFileName, contentId);
+                this.publishConfluenceClientListener.attachmentUpdated(attachmentFileName, contentId);
             }
 
         } catch (NotFoundException e) {
             this.apiInternalClient.deletePropertyByKey(contentId, getAttachmentHashKey(attachmentFileName));
             this.apiInternalClient.addAttachment(contentId, attachmentFileName, fileInputStream(absoluteAttachmentPath));
             this.apiInternalClient.setPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName), newAttachmentHash);
-            this.confluenceClientListener.attachmentAdded(attachmentFileName, contentId);
+            this.publishConfluenceClientListener.attachmentAdded(attachmentFileName, contentId);
         }
     }
 
@@ -277,7 +291,7 @@ public class ConfluenceClient {
     }
 
 
-    private static class NoOpConfluenceClientListener implements ConfluenceClientListener {
+    private static class NoOpPublishConfluenceClientListener implements PublishConfluenceClientListener {
 
         @Override
         public void pageAdded(io.github.md2conf.confluence.client.http.ConfluencePage addedPage) {
