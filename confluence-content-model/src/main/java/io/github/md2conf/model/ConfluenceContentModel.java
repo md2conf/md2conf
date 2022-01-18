@@ -31,6 +31,6 @@ public class ConfluenceContentModel {
     }
 
     public enum Type {
-        STORAGE, WIKI
+        STORAGE, WIKI, VIEW
     }
 }

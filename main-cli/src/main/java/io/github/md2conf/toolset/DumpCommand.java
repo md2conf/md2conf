@@ -28,7 +28,7 @@ public class DumpCommand  implements Runnable {
     @Override
     public void run() {
         PublishConfluenceClient confluenceClient = prepareConfluenceClient(mandatoryPublishOptions, additionalPublishOptions);
-        confluenceClient.publish();
+     //todo   confluenceClient.publish();
     }
 
     @NotNull

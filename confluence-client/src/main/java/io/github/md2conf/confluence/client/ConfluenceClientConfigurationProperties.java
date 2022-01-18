@@ -1,6 +1,6 @@
 package io.github.md2conf.confluence.client;
 
-public class ConfluenceClientConfigurationProperties {
+public class ConfluenceClientConfigurationProperties { //todo rename or delete?
 
     private String confluenceUrl;
     private String username;

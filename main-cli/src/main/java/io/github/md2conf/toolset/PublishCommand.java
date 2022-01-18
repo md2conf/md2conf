@@ -3,7 +3,6 @@ package io.github.md2conf.toolset;
 import io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperties;
 import io.github.md2conf.confluence.client.ConfluenceClientFactory;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
-import io.github.md2conf.confluence.client.PublishConfluenceClient;
 import io.github.md2conf.model.ConfluenceContentModel;
 import org.apache.commons.io.file.PathUtils;
 import org.jetbrains.annotations.NotNull;
@@ -30,17 +29,13 @@ public class PublishCommand implements Runnable {
 
     @Override
     public void run() {
-        PublishConfluenceClient confluenceClient = prepareConfluenceClient(mandatory, additional);
-        confluenceClient.publish();
-    }
-
-    @NotNull
-    protected static PublishConfluenceClient prepareConfluenceClient(MandatoryPublishOptions mandatory, AdditionalPublishOptions additional) {
         var model = loadConfluenceContentModel(mandatory);
         var clientProps = buildConfluenceClientConfigurationProperties(mandatory, additional);
-        PublishConfluenceClient confluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null); //todo listener
-        return confluenceClient;
+        var publishConfluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null); //todo listener
+        publishConfluenceClient.publish(model, mandatory.spaceKey, mandatory.parentPageTitle);
     }
+
+
 
     protected static ConfluenceClientConfigurationProperties buildConfluenceClientConfigurationProperties(MandatoryPublishOptions options, AdditionalPublishOptions additional){
         var propertiesBuilder = aConfluenceClientConfigurationProperties()
