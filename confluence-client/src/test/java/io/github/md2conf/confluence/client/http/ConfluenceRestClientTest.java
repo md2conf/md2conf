@@ -252,13 +252,13 @@ public class ConfluenceRestClientTest {
         RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
-        ConfluencePage confluencePage = confluenceRestClient.getPageWithContentAndVersionById("1234");
+        ConfluenceApiPage confluenceApiPage = confluenceRestClient.getPageWithContentAndVersionById("1234");
 
         // assert
-        assertThat(confluencePage.getContentId(), is("1234"));
-        assertThat(confluencePage.getTitle(), is("Some title"));
-        assertThat(confluencePage.getContent(), is("Some content"));
-        assertThat(confluencePage.getVersion(), is(1));
+        assertThat(confluenceApiPage.getContentId(), is("1234"));
+        assertThat(confluenceApiPage.getTitle(), is("Some title"));
+        assertThat(confluenceApiPage.getContent(), is("Some content"));
+        assertThat(confluenceApiPage.getVersion(), is(1));
     }
 
     @Test
@@ -270,11 +270,11 @@ public class ConfluenceRestClientTest {
         String contentId = "1234";
 
         // act
-        List<ConfluencePage> childPages = confluenceRestClient.getChildPages(contentId);
+        List<ConfluenceApiPage> childPages = confluenceRestClient.getChildPages(contentId);
 
         // assert
-        ConfluencePage childOne = new ConfluencePage("1", "Page 1", 1);
-        ConfluencePage childTwo = new ConfluencePage("2", "Page 2", 1);
+        ConfluenceApiPage childOne = new ConfluenceApiPage("1", "Page 1", 1);
+        ConfluenceApiPage childTwo = new ConfluenceApiPage("2", "Page 2", 1);
         assertThat(childPages, contains(childOne, childTwo));
     }
 
@@ -291,7 +291,7 @@ public class ConfluenceRestClientTest {
         ArgumentCaptor<HttpGet> httpGetArgumentCaptor = ArgumentCaptor.forClass(HttpGet.class);
 
         // act
-        List<ConfluencePage> childPages = confluenceRestClient.getChildPages(contentId);
+        List<ConfluenceApiPage> childPages = confluenceRestClient.getChildPages(contentId);
 
         // assert
         assertThat(childPages.size(), is(25));
@@ -313,7 +313,7 @@ public class ConfluenceRestClientTest {
         ArgumentCaptor<HttpGet> httpGetArgumentCaptor = ArgumentCaptor.forClass(HttpGet.class);
 
         // act
-        List<ConfluencePage> childPages = confluenceRestClient.getChildPages(contentId);
+        List<ConfluenceApiPage> childPages = confluenceRestClient.getChildPages(contentId);
 
         // assert
         assertThat(childPages.size(), is(49));

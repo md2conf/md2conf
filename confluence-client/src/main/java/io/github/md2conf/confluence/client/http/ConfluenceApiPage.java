@@ -19,18 +19,18 @@ package io.github.md2conf.confluence.client.http;
 /**
  * @author Alain Sahli
  */
-public class ConfluencePage {
+public class ConfluenceApiPage {
 
     private final String contentId;
     private final String title;
     private final String content;
     private final int version;
 
-    public ConfluencePage(String contentId, String title, int version) {
+    public ConfluenceApiPage(String contentId, String title, int version) {
         this(contentId, title, null, version);
     }
 
-    public ConfluencePage(String contentId, String title, String content, int version) {
+    public ConfluenceApiPage(String contentId, String title, String content, int version) {
         this.contentId = contentId;
         this.title = title;
         this.content = content;
@@ -58,7 +58,7 @@ public class ConfluencePage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ConfluencePage that = (ConfluencePage) o;
+        ConfluenceApiPage that = (ConfluenceApiPage) o;
 
         if (this.version != that.version) return false;
         if (!this.contentId.equals(that.contentId)) return false;
@@ -79,7 +79,7 @@ public class ConfluencePage {
 
     @Override
     public String toString() {
-        return "ConfluencePage{" +
+        return "ConfluenceApiPage{" +
                 "contentId='" + this.contentId + '\'' +
                 ", title='" + this.title + '\'' +
                 ", content='" + this.content + '\'' +

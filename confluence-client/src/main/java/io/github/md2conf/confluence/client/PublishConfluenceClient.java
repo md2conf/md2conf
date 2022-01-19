@@ -17,6 +17,7 @@
 package io.github.md2conf.confluence.client;
 
 import io.github.md2conf.confluence.client.http.ApiInternalClient;
+import io.github.md2conf.confluence.client.http.ConfluenceApiPage;
 import io.github.md2conf.confluence.client.http.ConfluenceAttachment;
 import io.github.md2conf.confluence.client.http.NotFoundException;
 import io.github.md2conf.model.ConfluenceContentModel;
@@ -150,14 +151,14 @@ public class PublishConfluenceClient {
     }
 
     private void deleteConfluencePagesNotPresentUnderAncestor(List<ConfluencePage> pagesToKeep, String ancestorId) {
-        List<io.github.md2conf.confluence.client.http.ConfluencePage> childPagesOnConfluence = this.apiInternalClient.getChildPages(ancestorId);
+        List<ConfluenceApiPage> childPagesOnConfluence = this.apiInternalClient.getChildPages(ancestorId);
 
-        List<io.github.md2conf.confluence.client.http.ConfluencePage> childPagesOnConfluenceToDelete = childPagesOnConfluence.stream()
-                                                                                                                             .filter(childPageOnConfluence -> pagesToKeep.stream().noneMatch(page -> page.getTitle().equals(childPageOnConfluence.getTitle())))
-                                                                                                                             .collect(toList());
+        List<ConfluenceApiPage> childPagesOnConfluenceToDelete = childPagesOnConfluence.stream()
+                                                                                       .filter(childPageOnConfluence -> pagesToKeep.stream().noneMatch(page -> page.getTitle().equals(childPageOnConfluence.getTitle())))
+                                                                                       .collect(toList());
 
         childPagesOnConfluenceToDelete.forEach(pageToDelete -> {
-            List<io.github.md2conf.confluence.client.http.ConfluencePage> pageScheduledForDeletionChildPagesOnConfluence = this.apiInternalClient.getChildPages(pageToDelete.getContentId());
+            List<ConfluenceApiPage> pageScheduledForDeletionChildPagesOnConfluence = this.apiInternalClient.getChildPages(pageToDelete.getContentId());
             pageScheduledForDeletionChildPagesOnConfluence.forEach(parentPageToDelete -> this.deleteConfluencePagesNotPresentUnderAncestor(emptyList(), pageToDelete.getContentId()));
             this.apiInternalClient.deletePage(pageToDelete.getContentId());
             this.publishConfluenceClientListener.pageDeleted(pageToDelete);
@@ -186,7 +187,7 @@ public class PublishConfluenceClient {
             String content = fileContent(page.getContentFilePath(), UTF_8);
             contentId = this.apiInternalClient.addPageUnderAncestor(spaceKey, ancestorId, page.getTitle(), content, page.getType(), this.versionMessage );
             this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, hash(content));
-            this.publishConfluenceClientListener.pageAdded(new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), INITIAL_PAGE_VERSION));
+            this.publishConfluenceClientListener.pageAdded(new ConfluenceApiPage(contentId, page.getTitle(), INITIAL_PAGE_VERSION));
         }
 
         return contentId;
@@ -194,7 +195,7 @@ public class PublishConfluenceClient {
 
     private void updatePage(String contentId, String ancestorId, ConfluencePage page) {
         String content = fileContent(page.getContentFilePath(), UTF_8);
-        io.github.md2conf.confluence.client.http.ConfluencePage existingPage = this.apiInternalClient.getPageWithContentAndVersionById(contentId);
+        ConfluenceApiPage existingPage = this.apiInternalClient.getPageWithContentAndVersionById(contentId);
         String existingContentHash = this.apiInternalClient.getPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
         String newContentHash = hash(content);
 
@@ -203,7 +204,7 @@ public class PublishConfluenceClient {
             int newPageVersion = existingPage.getVersion() + 1;
             this.apiInternalClient.updatePage(contentId, ancestorId, page.getTitle(), content, page.getType(), newPageVersion, this.versionMessage, this.notifyWatchers);
             this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, newContentHash);
-            this.publishConfluenceClientListener.pageUpdated(existingPage, new io.github.md2conf.confluence.client.http.ConfluencePage(contentId, page.getTitle(), newPageVersion));
+            this.publishConfluenceClientListener.pageUpdated(existingPage, new ConfluenceApiPage(contentId, page.getTitle(), newPageVersion));
         }
     }
 
@@ -294,15 +295,15 @@ public class PublishConfluenceClient {
     private static class NoOpPublishConfluenceClientListener implements PublishConfluenceClientListener {
 
         @Override
-        public void pageAdded(io.github.md2conf.confluence.client.http.ConfluencePage addedPage) {
+        public void pageAdded(ConfluenceApiPage addedPage) {
         }
 
         @Override
-        public void pageUpdated(io.github.md2conf.confluence.client.http.ConfluencePage existingPage, io.github.md2conf.confluence.client.http.ConfluencePage updatedPage) {
+        public void pageUpdated(ConfluenceApiPage existingPage, ConfluenceApiPage updatedPage) {
         }
 
         @Override
-        public void pageDeleted(io.github.md2conf.confluence.client.http.ConfluencePage deletedPage) {
+        public void pageDeleted(ConfluenceApiPage deletedPage) {
         }
 
         @Override
