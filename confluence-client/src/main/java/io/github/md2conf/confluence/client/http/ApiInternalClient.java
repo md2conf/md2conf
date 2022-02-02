@@ -18,6 +18,7 @@ package io.github.md2conf.confluence.client.http;
 
 import io.github.md2conf.model.ConfluenceContentModel;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
@@ -34,6 +35,8 @@ public interface ApiInternalClient {
 
     String getPageByTitle(String spaceKey, String title) throws NotFoundException, MultipleResultsException;
 
+    void saveUrlToFile(String downloadUrl, File outputFile);
+
     void addAttachment(String contentId, String attachmentFileName, InputStream attachmentContent);
 
     void updateAttachmentContent(String contentId, String attachmentId, InputStream attachmentContent, boolean notifyWatchers);
@@ -42,7 +45,7 @@ public interface ApiInternalClient {
 
     ConfluenceAttachment getAttachmentByFileName(String contentId, String attachmentFileName) throws NotFoundException, MultipleResultsException;
 
-    ConfluenceApiPage getPageWithContentAndVersionById(String contentId);
+    ConfluenceApiPage getPageWithViewContentAndVersionById(String contentId);
 
     List<ConfluenceApiPage> getChildPages(String contentId);
 

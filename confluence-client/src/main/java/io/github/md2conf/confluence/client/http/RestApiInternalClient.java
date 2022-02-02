@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.RateLimiter;
 import io.github.md2conf.confluence.client.utils.AssertUtils;
 import io.github.md2conf.model.ConfluenceContentModel;
+import org.apache.commons.io.FileUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -40,6 +42,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.ssl.SSLContextBuilder;
 
 import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -137,6 +140,20 @@ public class RestApiInternalClient implements ApiInternalClient {
     }
 
     @Override
+    public void saveUrlToFile(String downloadUrl, File outputFile) {
+        HttpGet getByDownloadUrl = this.httpRequestFactory.getByDownloadUrl(downloadUrl);
+        sendRequestAndFailIfNot20x(getByDownloadUrl, (response) -> {
+            HttpEntity httpEntity = response.getEntity();
+            try (InputStream inputStream= httpEntity.getContent()){
+                FileUtils.copyToFile(inputStream, outputFile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        });
+    }
+
+    @Override
     public void addAttachment(String contentId, String attachmentFileName, InputStream attachmentContent) {
         HttpPost addAttachmentRequest = this.httpRequestFactory.addAttachmentRequest(contentId, attachmentFileName, attachmentContent);
         sendRequestAndFailIfNot20x(addAttachmentRequest, (response) -> {
@@ -185,7 +202,7 @@ public class RestApiInternalClient implements ApiInternalClient {
     }
 
     @Override
-    public ConfluenceApiPage getPageWithContentAndVersionById(String contentId) {
+    public ConfluenceApiPage getPageWithViewContentAndVersionById(String contentId) {
         HttpGet pageByIdRequest = this.httpRequestFactory.getPageByIdRequest(contentId, "body.view,version");
 
         return sendRequestAndFailIfNot20x(pageByIdRequest, (response) -> {

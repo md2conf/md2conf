@@ -187,6 +187,18 @@ class HttpRequestFactory {
         return getAttachmentByFileNameRequest;
     }
 
+    HttpGet getByDownloadUrl(String downloadUrl){
+        assertMandatoryParameter(isNotBlank(downloadUrl), "downloadUrl");
+        URIBuilder uriBuilder = createUriBuilder(this.rootConfluenceUrl + downloadUrl);
+        HttpGet result;
+        try {
+            result = new HttpGet(uriBuilder.build().toString());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Invalid URL", e);
+        }
+        return result;
+    }
+
     private static URIBuilder createUriBuilder(String path) {
         try {
             return new URIBuilder(path);
