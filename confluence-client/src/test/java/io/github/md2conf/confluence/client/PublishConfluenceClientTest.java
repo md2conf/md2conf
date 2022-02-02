@@ -258,7 +258,7 @@ public class PublishConfluenceClientTest {
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn(PARENT_PAGE_ID);
         when(confluenceRestClientMock.getPageByTitle("~personalSpace", "Existing Page")).thenReturn("3456");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("3456")).thenReturn(existingPage);
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("3456")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("3456", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("someWrongHash");
 
         PublishConfluenceClientListener publishConfluenceClientListenerMock = mock(PublishConfluenceClientListener.class);
@@ -285,7 +285,7 @@ public class PublishConfluenceClientTest {
 
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn(PARENT_PAGE_ID);
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("1234")).thenReturn(existingPage);
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("1234")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("1234", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("someWrongHash");
 
         PublishConfluenceClientListener publishConfluenceClientListenerMock = mock(PublishConfluenceClientListener.class);
@@ -312,7 +312,7 @@ public class PublishConfluenceClientTest {
 
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn(PARENT_PAGE_ID);
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("1234")).thenReturn(existingPage);
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("1234")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("1234", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
         PublishConfluenceClientListener publishConfluenceClientListenerMock = mock(PublishConfluenceClientListener.class);
@@ -339,7 +339,7 @@ public class PublishConfluenceClientTest {
 
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn("72189173");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(existingPage);
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("72189173")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("72189173", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
         PublishConfluenceClientListener publishConfluenceClientListenerMock = mock(PublishConfluenceClientListener.class);
@@ -362,7 +362,7 @@ public class PublishConfluenceClientTest {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn("72189173");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
         when(confluenceRestClientMock.getAttachmentByFileName("72189173", "attachmentOne.txt")).thenReturn(new ConfluenceAttachment("att1", "attachmentOne.txt", "/download/attachmentOne.txt", 1));
@@ -387,7 +387,7 @@ public class PublishConfluenceClientTest {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn("72189173");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
         when(confluenceRestClientMock.getAttachmentByFileName("72189173", "attachmentOne.txt")).thenReturn(new ConfluenceAttachment("att1", "attachmentOne.txt", "", 1));
@@ -427,7 +427,7 @@ public class PublishConfluenceClientTest {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn("72189173");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
         ArgumentCaptor<InputStream> content = ArgumentCaptor.forClass(InputStream.class);
@@ -464,7 +464,7 @@ public class PublishConfluenceClientTest {
         //arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn("72189173");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
         when(confluenceRestClientMock.getAttachments("72189173")).thenReturn(asList(
@@ -499,7 +499,7 @@ public class PublishConfluenceClientTest {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn("72189173");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("72189173")).thenReturn(new ConfluenceApiPage("72189173", "Existing Page (Old Title)", "<h1>Some Confluence Content</h1>", 1));
         when(confluenceRestClientMock.getPropertyByKey("72189173", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(SOME_CONFLUENCE_CONTENT_SHA256_HASH);
 
         when(confluenceRestClientMock.getAttachments("72189173")).thenReturn(asList(
@@ -539,7 +539,7 @@ public class PublishConfluenceClientTest {
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getChildPages("1234")).thenReturn(singletonList(existingPage));
         when(confluenceRestClientMock.getPageByTitle("~personalSpace", "Some Confluence Content")).thenReturn("12");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("12")).thenReturn(existingPage);
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("12")).thenReturn(existingPage);
         when(confluenceRestClientMock.getPropertyByKey("12", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn(null);
 
         PublishConfluenceClient confluenceClient = confluencePublisher(confluenceRestClientMock);
@@ -620,7 +620,7 @@ public class PublishConfluenceClientTest {
 
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn(PARENT_PAGE_ID);
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("1234")).thenReturn(ancestorPage);
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("1234")).thenReturn(ancestorPage);
         when(confluenceRestClientMock.getChildPages("1234")).thenReturn(singletonList(existingParentPage));
         when(confluenceRestClientMock.getChildPages("2345")).thenReturn(singletonList(existingChildPage));
 
@@ -650,7 +650,7 @@ public class PublishConfluenceClientTest {
 
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle("~personalSpace", "Some Confluence Content")).thenReturn("2345");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("2345")).thenReturn(confluenceApiPage);
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("2345")).thenReturn(confluenceApiPage);
         when(confluenceRestClientMock.getPropertyByKey("2345", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("7a901829ba6a0b6f7f084ae4313bdb5d83bc2c4ea21b452ba7073c0b0c60faae");
         when(confluenceRestClientMock.getLabels("2345")).thenReturn(emptyList());
 
@@ -673,7 +673,7 @@ public class PublishConfluenceClientTest {
 
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
         when(confluenceRestClientMock.getPageByTitle("~personalSpace", "Some Confluence Content")).thenReturn("2345");
-        when(confluenceRestClientMock.getPageWithContentAndVersionById("2345")).thenReturn(confluenceApiPage);
+        when(confluenceRestClientMock.getPageWithViewContentAndVersionById("2345")).thenReturn(confluenceApiPage);
         when(confluenceRestClientMock.getPropertyByKey("2345", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("7a901829ba6a0b6f7f084ae4313bdb5d83bc2c4ea21b452ba7073c0b0c60faae");
         when(confluenceRestClientMock.getLabels("2345")).thenReturn(asList("label-two", "obsolete-label"));
 

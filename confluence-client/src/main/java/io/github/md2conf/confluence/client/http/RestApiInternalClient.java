@@ -185,7 +185,7 @@ public class RestApiInternalClient implements ApiInternalClient {
     }
 
     @Override
-    public ConfluenceApiPage getPageWithContentAndVersionById(String contentId) {
+    public ConfluenceApiPage getPageWithViewContentAndVersionById(String contentId) {
         HttpGet pageByIdRequest = this.httpRequestFactory.getPageByIdRequest(contentId, "body.view,version");
 
         return sendRequestAndFailIfNot20x(pageByIdRequest, (response) -> {

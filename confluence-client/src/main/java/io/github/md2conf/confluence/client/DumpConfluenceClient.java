@@ -25,7 +25,7 @@ public class DumpConfluenceClient {
 
     public ConfluenceContentModel dump(String spaceKey, String title) throws IOException {
         String contentId = apiInternalClient.getPageByTitle(spaceKey, title);
-        ConfluenceApiPage apiPage = apiInternalClient.getPageWithContentAndVersionById(contentId);
+        ConfluenceApiPage apiPage = apiInternalClient.getPageWithViewContentAndVersionById(contentId);
 
         ConfluenceContentModel res = new ConfluenceContentModel();
 
