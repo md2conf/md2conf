@@ -1,17 +1,17 @@
 package io.github.md2conf.confluence.client;
 
-import io.github.md2conf.confluence.client.http.ConfluencePage;
+import io.github.md2conf.confluence.client.http.ConfluenceApiPage;
 
 /**
  * @author Christian Stettler
  */
 public interface PublishConfluenceClientListener {
 
-    void pageAdded(ConfluencePage addedPage);
+    void pageAdded(ConfluenceApiPage addedPage);
 
-    void pageUpdated(ConfluencePage existingPage, ConfluencePage updatedPage);
+    void pageUpdated(ConfluenceApiPage existingPage, ConfluenceApiPage updatedPage);
 
-    void pageDeleted(ConfluencePage deletedPage);
+    void pageDeleted(ConfluenceApiPage deletedPage);
 
     void attachmentAdded(String attachmentFileName, String contentId);
 

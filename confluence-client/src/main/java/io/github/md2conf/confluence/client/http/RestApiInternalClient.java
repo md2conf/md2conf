@@ -185,13 +185,13 @@ public class RestApiInternalClient implements ApiInternalClient {
     }
 
     @Override
-    public ConfluencePage getPageWithContentAndVersionById(String contentId) {
+    public ConfluenceApiPage getPageWithContentAndVersionById(String contentId) {
         HttpGet pageByIdRequest = this.httpRequestFactory.getPageByIdRequest(contentId, "body.view,version");
 
         return sendRequestAndFailIfNot20x(pageByIdRequest, (response) -> {
-            ConfluencePage confluencePage = extractConfluencePageWithContent(parseJsonResponse(response));
+            ConfluenceApiPage confluenceApiPage = extractConfluencePageWithContent(parseJsonResponse(response));
 
-            return confluencePage;
+            return confluenceApiPage;
         });
     }
 
@@ -233,14 +233,14 @@ public class RestApiInternalClient implements ApiInternalClient {
     }
 
     @Override
-    public List<ConfluencePage> getChildPages(String contentId) {
+    public List<ConfluenceApiPage> getChildPages(String contentId) {
         int start = 0;
         int limit = 25;
 
-        ArrayList<ConfluencePage> childPages = new ArrayList<>();
+        ArrayList<ConfluenceApiPage> childPages = new ArrayList<>();
         boolean fetchMore = true;
         while (fetchMore) {
-            List<ConfluencePage> nextChildPages = getNextChildPages(contentId, limit, start);
+            List<ConfluenceApiPage> nextChildPages = getNextChildPages(contentId, limit, start);
             childPages.addAll(nextChildPages);
 
             start+=limit;
@@ -268,8 +268,8 @@ public class RestApiInternalClient implements ApiInternalClient {
         return attachments;
     }
 
-    private List<ConfluencePage> getNextChildPages(String contentId, int limit, int start) {
-        List<ConfluencePage> pages = new ArrayList<>(limit);
+    private List<ConfluenceApiPage> getNextChildPages(String contentId, int limit, int start) {
+        List<ConfluenceApiPage> pages = new ArrayList<>(limit);
         HttpGet getChildPagesByIdRequest = this.httpRequestFactory.getChildPagesByIdRequest(contentId, limit, start, "version");
 
         return sendRequestAndFailIfNot20x(getChildPagesByIdRequest, (response) -> {
@@ -342,21 +342,21 @@ public class RestApiInternalClient implements ApiInternalClient {
         sendRequestAndFailIfNot20x(deleteLabelRequest);
     }
 
-    private static ConfluencePage extractConfluencePageWithContent(JsonNode jsonNode) {
+    private static ConfluenceApiPage extractConfluencePageWithContent(JsonNode jsonNode) {
         String id = extractIdFromJsonNode(jsonNode);
         String title = extractTitleFromJsonNode(jsonNode);
         String content = jsonNode.path("body").path("view").get("value").asText();
         int version = extractVersionFromJsonNode(jsonNode);
 
-        return new ConfluencePage(id, title, content, version);
+        return new ConfluenceApiPage(id, title, content, version);
     }
 
-    private static ConfluencePage extractConfluencePageWithoutContent(JsonNode jsonNode) {
+    private static ConfluenceApiPage extractConfluencePageWithoutContent(JsonNode jsonNode) {
         String id = extractIdFromJsonNode(jsonNode);
         String title = extractTitleFromJsonNode(jsonNode);
         int version = extractVersionFromJsonNode(jsonNode);
 
-        return new ConfluencePage(id, title, version);
+        return new ConfluenceApiPage(id, title, version);
     }
 
     private static ConfluenceAttachment extractConfluenceAttachment(JsonNode jsonNode) {
