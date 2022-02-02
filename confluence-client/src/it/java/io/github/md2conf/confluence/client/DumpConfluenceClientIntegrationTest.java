@@ -34,11 +34,15 @@ public class DumpConfluenceClientIntegrationTest extends AbstractContainerTestBa
         ConfluenceClientConfigurationProperties properties = aDefaultConfluenceClientConfigurationProperties().build();
         ApiInternalClient internalClient = ConfluenceClientFactory.createApiInternalClient(properties);
         DumpConfluenceClient dumpConfluenceClient = new DumpConfluenceClient(internalClient, tmpDir);
-        ConfluenceContentModel confluenceContentInstance =  dumpConfluenceClient.dump("ds", "What is Confluence? (step 1 of 9)");
-        assertThat(confluenceContentInstance).isNotNull();
-        assertThat(confluenceContentInstance.getPages()).hasSize(1);
-        assertThat(confluenceContentInstance.getPages().get(0).getContentFilePath()).isNotNull();
-        Path path = Path.of(confluenceContentInstance.getPages().get(0).getContentFilePath());
+        ConfluenceContentModel contentModel =  dumpConfluenceClient.dump("ds", "Welcome to Confluence");
+        assertThat(contentModel).isNotNull();
+        assertThat(contentModel.getPages()).hasSize(1);
+        assertThat(contentModel.getPages().get(0).getContentFilePath()).isNotNull();
+        Path path = Path.of(contentModel.getPages().get(0).getContentFilePath());
         assertThat(path).isNotEmptyFile();
+        assertThat(path.toString()).endsWith(".xhtml");
+        assertThat(contentModel.getPages().get(0).getAttachments()).hasSize(1);
+        assertThat(contentModel.getPages().get(0).getAttachments()).containsKey("welcome.png");
+        assertThat(contentModel.getPages().get(0).getAttachments().get("welcome.png")).endsWith("/welcome.png");
     }
 }
