@@ -42,7 +42,7 @@ public class CopyingConverter implements Converter {
     private ConfluencePage copyAndCreateConfluencePage(Page page, Path relativePart) throws IOException {
         //copy
         Path targetPath = PathUtils.copyFileToDirectory(page.path(), outputPath.resolve(relativePart));
-        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(page.attachments(), targetPath);
+        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments());
         // create ConfluencePage
         ConfluencePage result = confluencePageFactory.pageByPath(targetPath);
         result.setAttachments(AttachmentUtil.toAttachmentsMap(copiedAttachments));

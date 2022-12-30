@@ -26,6 +26,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Md2WikiConverter implements Converter {
 
@@ -65,14 +68,19 @@ public class Md2WikiConverter implements Converter {
         Node document = parser.parse(markdown);
         String wiki = renderer.render(document);
 
+        //extract images and convert to local file paths if exists
+        Set<String> imageUrls = ImageUrlCollector.collectImageUrls(document);
+        List<Path> imagePaths = ImagePathUtil.filterExistingPaths(imageUrls, page.path().getParent());
+
+        //calculate output file names
         String targetFileName = FilenameUtils.getBaseName(page.path().toString())+".wiki";
         Path targetPath = outputPath.resolve(relativePart).resolve(targetFileName);
+
+        //copy converted content and attachments
         FileUtils.writeStringToFile(targetPath.toFile(), wiki, Charset.defaultCharset());
+        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments(), imagePaths);
 
-        ///todo extract attachments from md
-        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(page.attachments(), targetPath);
-
-        // create ConfluencePage
+        // create ConfluencePage model
         ConfluencePage result = confluencePageFactory.pageByPath(targetPath);
         result.setAttachments(AttachmentUtil.toAttachmentsMap(copiedAttachments));
         if (page.children() != null && !page.children().isEmpty()) {

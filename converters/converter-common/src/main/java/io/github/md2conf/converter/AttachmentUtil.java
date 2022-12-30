@@ -6,9 +6,11 @@ import org.apache.commons.io.file.PathUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.github.md2conf.indexer.PathNameUtils.attachmentsDirectoryByPagePath;
 
@@ -21,9 +23,13 @@ public class AttachmentUtil {
                                Path::toString));
     }
 
-    public static List<Path> copyPageAttachments(List<Path> sourceAttachments, Path destinationPagePath) throws IOException {
+    @SafeVarargs
+    public static List<Path> copyPageAttachments(Path destinationPagePath, List<Path>... sourceAttachments) throws IOException {
         List<Path> copiedAttachments = new ArrayList<>();
-        for (Path sourceAttachment : sourceAttachments){
+        List<Path> sources = Arrays.stream(sourceAttachments)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+        for (Path sourceAttachment : sources){
             Path directoryWithAttachments = attachmentsDirectoryByPagePath(destinationPagePath);
             if(!directoryWithAttachments.toFile().mkdirs()){
                 throw new IOException("Cannot create dirs for path " + directoryWithAttachments);
