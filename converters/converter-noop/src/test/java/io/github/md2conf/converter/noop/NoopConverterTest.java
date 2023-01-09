@@ -30,8 +30,8 @@ class NoopConverterTest {
         Assertions.assertThat(model).isNotNull();
         Assertions.assertThat(model.getPages().get(0)).isNotNull();
         Assertions.assertThat(model.getPages().get(0).getAttachments()).hasSize(2);
-        Assertions.assertThat(model.getPages().get(0).getAttachments().keySet()).contains("1");
-        Assertions.assertThat(model.getPages().get(0).getAttachments().keySet()).contains("attach");
+        Assertions.assertThat(model.getPages().get(0).getAttachments().keySet()).contains("1.txt");
+        Assertions.assertThat(model.getPages().get(0).getAttachments().keySet()).contains("attach.wiki");
         Assertions.assertThat(model.getPages().get(0).getChildren()).hasSize(1);
     }
 }
