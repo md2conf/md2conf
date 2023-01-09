@@ -11,7 +11,7 @@ import picocli.CommandLine.Command;
 import static io.github.md2conf.toolset.PublishCommand.buildConfluenceClientConfigurationProperties;
 import static io.github.md2conf.toolset.PublishCommand.loadConfluenceContentModel;
 
-@Command(name = "conpub", aliases = "convert-and-convert", description = "Convert and convert docs to a Confluence instance")
+@Command(name = "conpub", aliases = "convert-and-publish", description = "Convert and publish docs to a Confluence instance")
 public class ConpubCommand implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
