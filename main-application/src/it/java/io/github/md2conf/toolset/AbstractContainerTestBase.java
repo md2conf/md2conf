@@ -8,6 +8,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
@@ -48,6 +49,19 @@ public class AbstractContainerTestBase {
         return givenAuthenticatedAsPublisher()
                 .when().get(childPages())
                 .path("results.find({it.title == '" + title + "'}).id");
+    }
+    public String pageBodyStorageById(String id) {
+        return givenAuthenticatedAsPublisher()
+                .when()
+                .get(confluenceBaseUrl()+ "/rest/api/content/"+id + "?expand=body.storage")
+                .path("body.storage.value");
+    }
+
+    public List<String> pageAttachmentsTitles(String id) {
+        return givenAuthenticatedAsPublisher()
+                .when()
+                .get(confluenceBaseUrl()+ "/rest/api/content/"+id + "/child/attachment")
+                .path("results.title");
     }
 
     public void deletePageIfExists(String title) {

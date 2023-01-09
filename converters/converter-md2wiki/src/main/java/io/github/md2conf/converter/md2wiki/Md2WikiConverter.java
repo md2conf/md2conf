@@ -82,6 +82,7 @@ public class Md2WikiConverter implements Converter {
 
         // create ConfluencePage model
         ConfluencePage result = confluencePageFactory.pageByPath(targetPath);
+        result.setType(ConfluenceContentModel.Type.WIKI);
         result.setAttachments(AttachmentUtil.toAttachmentsMap(copiedAttachments));
         if (page.children() != null && !page.children().isEmpty()) {
             String childrenDirAsStr = FilenameUtils.concat(

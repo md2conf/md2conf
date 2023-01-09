@@ -109,7 +109,7 @@ class ConvertCommandTest {
         cmd.setErr(new PrintWriter(swErr));
         String inputDir = "src/test/resources/wiki_page_tree";
         Assertions.assertThat(outputPath).isEmptyDirectory();
-        int exitCode = cmd.execute("convert", "--converter=COPYING", "--input-dir="+ inputDir, "-o=" + outputPath.toString());
+        int exitCode = cmd.execute("convert", "--converter=COPYING", "--input-dir="+ inputDir, "-o=" + outputPath.toString(), "--file-extension", "wiki");
         Assertions.assertThat(exitCode).isEqualTo(0);
         Assertions.assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
         Assertions.assertThat(outputPath).isDirectoryContaining("glob:**/*.wiki");

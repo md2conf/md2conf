@@ -30,6 +30,8 @@ public class ConvertCommand implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(ConvertCommand.class);
 
+    public final static String DEFAULT_OUTPUT = ".md2conf";
+
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
@@ -52,9 +54,8 @@ public class ConvertCommand implements Runnable {
 
     protected static void initOptionsIfRequired(ConvertOptions convertOptions) {
         if (convertOptions.outputDirectory == null) {
-            String defaultOutput = ".md2conf/out";
-            logger.warn("Output directory is not specified, default is " + defaultOutput);
-            convertOptions.outputDirectory = new File(convertOptions.inputDirectory.toFile(), defaultOutput).toPath();
+            logger.warn("Output directory is not specified, default is " + DEFAULT_OUTPUT);
+            convertOptions.outputDirectory = new File(convertOptions.inputDirectory.toFile(), DEFAULT_OUTPUT).toPath();
         }
     }
 
@@ -63,7 +64,12 @@ public class ConvertCommand implements Runnable {
         fileIndexerConfigurationProperties.setFileExtension(convertOptions.fileExtension);
         fileIndexerConfigurationProperties.setExcludePattern(convertOptions.excludePattern);
         FileIndexer fileIndexer = new DefaultFileIndexer(fileIndexerConfigurationProperties);
-        return fileIndexer.indexPath(convertOptions.inputDirectory);
+        PagesStructure pagesStructure =  fileIndexer.indexPath(convertOptions.inputDirectory);
+        if (pagesStructure.pages().isEmpty()){
+            logger.warn("No files found in input directory. Used file indexer options {}",
+                    fileIndexerConfigurationProperties  );
+        }
+        return pagesStructure;
     }
 
     protected static Converter createConverter(ConvertOptions convertOptions) {
@@ -72,6 +78,7 @@ public class ConvertCommand implements Runnable {
         switch (convertOptions.converter){
             case MD2WIKI:
                 converterService = new Md2WikiConverter(confluencePageFactory, convertOptions.outputDirectory);
+                break;
             case NO:
                 converterService = new NoopConverter(confluencePageFactory);
                 break;
@@ -101,7 +108,7 @@ public class ConvertCommand implements Runnable {
         @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
         protected Path outputDirectory;
         @CommandLine.Option(names = {"--file-extension"}, description = "file extension to index as confluence content pages")
-        protected String fileExtension = "wiki";
+        protected String fileExtension = "md"; //todo change fileExtension based on converter
         @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
         protected String excludePattern = "glob:**/.*";
         @CommandLine.Option(names = {"-et", "--extract-title-strategy"}, description = "Strategy to extract title from file",
