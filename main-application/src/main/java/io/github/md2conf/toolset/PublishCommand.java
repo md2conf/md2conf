@@ -29,7 +29,7 @@ public class PublishCommand implements Runnable {
 
     @Override
     public void run() {
-        var model = loadConfluenceContentModel(mandatory);
+        var model = loadConfluenceContentModel(mandatory, PathUtils.current());
         var clientProps = buildConfluenceClientConfigurationProperties(mandatory, additional);
         var publishConfluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null); //todo listener
         publishConfluenceClient.publish(model, mandatory.spaceKey, mandatory.parentPageTitle);
@@ -54,8 +54,8 @@ public class PublishCommand implements Runnable {
         return propertiesBuilder.build();
     }
 
-    protected static ConfluenceContentModel loadConfluenceContentModel(MandatoryPublishOptions options) {
-        Path path = findFilePathWithModel(options);
+    protected static ConfluenceContentModel loadConfluenceContentModel(MandatoryPublishOptions options, Path searchDir) {
+        Path path = findFilePathWithModel(options, searchDir);
         if (!path.toFile().exists()) {
             throw new IllegalArgumentException("File doesn't exists at path " + path);
         }
@@ -63,11 +63,11 @@ public class PublishCommand implements Runnable {
     }
 
     @NotNull
-    private static Path findFilePathWithModel(MandatoryPublishOptions options) {
+    private static Path findFilePathWithModel(MandatoryPublishOptions options, Path searchDir) {
         Path result = options.confluenceContentModelPath;
         if (result==null){
-            logger.info("No path to confluence content model provided, will load from current directory using default name");
-            result = PathUtils.current().resolve(ConfluenceContentModel.DEFAULT_FILE_NAME);
+            result = searchDir.resolve(ConfluenceContentModel.DEFAULT_FILE_NAME);
+            logger.info("Load confluence content model from "  + result);
         }
         return  result;
     }
@@ -84,7 +84,7 @@ public class PublishCommand implements Runnable {
         @CommandLine.Option(names = {"-pt", "--parent-page-title"}, required = true, description = "The parent page to publish `confluence-content-model`", order = 5)
         protected String parentPageTitle;
         @CommandLine.Option(names = {"-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file.")
-        protected Path confluenceContentModelPath; //todo move
+        protected Path confluenceContentModelPath; //todo move to additional? review from compub point of view
     }
 
     public static class AdditionalPublishOptions {

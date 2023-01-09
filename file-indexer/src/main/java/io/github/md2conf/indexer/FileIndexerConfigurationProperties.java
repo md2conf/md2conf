@@ -2,7 +2,8 @@ package io.github.md2conf.indexer;
 
 public class FileIndexerConfigurationProperties {
 
-    private String fileExtension = "wiki";
+    private String fileExtension = "wiki"; //todo cwiki
+    //maybe need to support several extensions in the same directory?
     private String excludePattern = "glob:**/.*";
 
     public String getExcludePattern() {

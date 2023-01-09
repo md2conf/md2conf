@@ -33,6 +33,7 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
+        assertThat(model.getPages().get(0).getType()).isEqualTo(ConfluenceContentModel.Type.WIKI);
         assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/index.wiki");
         assertThat(outputPath.resolve("index")).isDirectoryContaining("glob:**/child-1.wiki");

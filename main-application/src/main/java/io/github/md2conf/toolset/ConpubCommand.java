@@ -2,6 +2,7 @@ package io.github.md2conf.toolset;
 
 import io.github.md2conf.confluence.client.ConfluenceClientFactory;
 import io.github.md2conf.confluence.client.PublishConfluenceClient;
+import org.apache.commons.io.file.PathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -23,10 +24,11 @@ public class ConpubCommand implements Runnable {
     @CommandLine.ArgGroup(exclusive = false, heading = "Additional publish options\n")
     PublishCommand.AdditionalPublishOptions additionalPublishOptions;
 
+    //make output dir parameter computable
     @Override
     public void run() {
         ConvertCommand.convert(convertOptions);
-        var model = loadConfluenceContentModel(mandatoryPublishOptions);
+        var model = loadConfluenceContentModel(mandatoryPublishOptions, convertOptions.outputDirectory);
         var clientProps = buildConfluenceClientConfigurationProperties(mandatoryPublishOptions, additionalPublishOptions);
         PublishConfluenceClient confluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null);
         confluenceClient.publish(model, mandatoryPublishOptions.spaceKey, mandatoryPublishOptions.parentPageTitle);
