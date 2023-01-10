@@ -12,7 +12,7 @@ jobs:
 
   # Prepare and publish the plugin to the Marketplace repository
   release:
-    name: Publish Plugin
+    name: Publish to Maven Central
     runs-on: ubuntu-latest
     permissions:
       contents: write
