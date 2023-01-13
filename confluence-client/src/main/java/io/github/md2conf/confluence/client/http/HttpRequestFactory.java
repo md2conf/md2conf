@@ -60,6 +60,7 @@ import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
 
 /**
  * @author Alain Sahli
+ * @author Michael Wirth
  */
 class HttpRequestFactory {
 
@@ -353,7 +354,6 @@ class HttpRequestFactory {
     private static HttpEntity multipartEntity(String attachmentFileName, InputStream attachmentContent, boolean notifyWatchers) {
         MultipartEntityBuilder multipartEntityBuilder = MultipartEntityBuilder.create();
         multipartEntityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        multipartEntityBuilder.setCharset(UTF_8);
 
         InputStreamBody inputStreamBody;
         if (isNotBlank(attachmentFileName)) {
