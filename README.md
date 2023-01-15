@@ -3,7 +3,7 @@
 
 # md2conf toolset
 
-Set of tools to **publish** markdown files to an Confluence and **dump** confluence content to markdown files.
+Set of tools to **publish** markdown files to a Confluence and **dump** confluence content to markdown files.
 Contains extensible **converters** from markdown format to Confluence wiki format and from Confluence storage view format to markdown format.
 
 Notable features:
