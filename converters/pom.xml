@@ -16,6 +16,7 @@
 
 
     <modules>
+        <module>flexmark-ext-local-attachments</module>
         <module>converter-common</module>
         <module>converter-noop</module>
         <module>converter-copying</module>

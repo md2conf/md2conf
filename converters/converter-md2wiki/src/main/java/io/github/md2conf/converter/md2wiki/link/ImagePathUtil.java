@@ -1,4 +1,4 @@
-package io.github.md2conf.converter.md2wiki;
+package io.github.md2conf.converter.md2wiki.link;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package io.github.md2conf.converter.md2wiki;
+package io.github.md2conf.converter.md2wiki.link;
 
 import org.junit.jupiter.api.Test;
 
@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 
-import static io.github.md2conf.converter.md2wiki.ImagePathUtil.filterExistingPaths;
+import static io.github.md2conf.converter.md2wiki.link.ImagePathUtil.filterExistingPaths;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ImagePathUtilTest {
