@@ -1,5 +1,6 @@
 package io.github.md2conf.converter.md2wiki;
 
+import com.vladsch.flexmark.ast.Image;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
@@ -12,6 +13,9 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.github.md2conf.converter.AttachmentUtil;
 import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.Converter;
+import io.github.md2conf.converter.md2wiki.ext.AttachmentLinkExtension;
+import io.github.md2conf.converter.md2wiki.link.ImagePathUtil;
+import io.github.md2conf.converter.md2wiki.link.InlineLinkUrlUtil;
 import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
@@ -27,15 +31,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Md2WikiConverter implements Converter {
 
-    static final DataHolder OPTIONS = new MutableDataSet()
+    public static final DataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(
                     TablesExtension.create(),
                     StrikethroughExtension.create(),
+//                    AttachmentLinkExtension.create(),
                     JiraConverterExtension.create()
             ));
     private final Parser parser;
@@ -69,7 +72,7 @@ public class Md2WikiConverter implements Converter {
         String wiki = renderer.render(document);
 
         //extract images and convert to local file paths if exists
-        Set<String> imageUrls = ImageUrlCollector.collectImageUrls(document);
+        Set<String> imageUrls = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Image.class);
         List<Path> imagePaths = ImagePathUtil.filterExistingPaths(imageUrls, page.path().getParent());
 
         //calculate output file names
@@ -96,6 +99,7 @@ public class Md2WikiConverter implements Converter {
                 result.getChildren().add(convertAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir)));
             }
         }
+        //todo local links attachments
         //todo cross-links
         //todo title -postprocessors
         return result;
