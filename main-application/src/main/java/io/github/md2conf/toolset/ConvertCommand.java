@@ -35,7 +35,7 @@ public class ConvertCommand implements Runnable {
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
-    @CommandLine.ArgGroup(exclusive = false)
+    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
     private ConvertOptions convertOptions;
 
     @Override
@@ -64,10 +64,10 @@ public class ConvertCommand implements Runnable {
         fileIndexerConfigurationProperties.setFileExtension(convertOptions.fileExtension);
         fileIndexerConfigurationProperties.setExcludePattern(convertOptions.excludePattern);
         FileIndexer fileIndexer = new DefaultFileIndexer(fileIndexerConfigurationProperties);
-        PagesStructure pagesStructure =  fileIndexer.indexPath(convertOptions.inputDirectory);
-        if (pagesStructure.pages().isEmpty()){
+        PagesStructure pagesStructure = fileIndexer.indexPath(convertOptions.inputDirectory);
+        if (pagesStructure.pages().isEmpty()) {
             logger.warn("No files found in input directory. Used file indexer options {}",
-                    fileIndexerConfigurationProperties  );
+                    fileIndexerConfigurationProperties);
         }
         return pagesStructure;
     }
@@ -75,7 +75,7 @@ public class ConvertCommand implements Runnable {
     protected static Converter createConverter(ConvertOptions convertOptions) {
         ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(convertOptions.extractTitleStrategy);
         Converter converterService = null;
-        switch (convertOptions.converter){
+        switch (convertOptions.converter) {
             case MD2WIKI:
                 converterService = new Md2WikiConverter(confluencePageFactory, convertOptions.outputDirectory);
                 break;
@@ -83,7 +83,7 @@ public class ConvertCommand implements Runnable {
                 converterService = new NoopConverter(confluencePageFactory);
                 break;
             case COPYING:
-                converterService= new CopyingConverter(confluencePageFactory, convertOptions.outputDirectory);
+                converterService = new CopyingConverter(confluencePageFactory, convertOptions.outputDirectory);
                 break;
         }
         return converterService;
@@ -98,7 +98,7 @@ public class ConvertCommand implements Runnable {
         }
     }
 
-    public static class ConvertOptions{ //todo split on mandatory and additional
+    public static class ConvertOptions { //todo split on mandatory and additional
         @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "MD2WIKI",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)

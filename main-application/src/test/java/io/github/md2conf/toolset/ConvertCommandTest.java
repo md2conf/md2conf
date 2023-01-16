@@ -32,8 +32,8 @@ class ConvertCommandTest {
         Assertions.assertThat(exitCode).isNotZero();
         String errOut = swErr.toString();
         Assertions.assertThat(swOut.toString()).isEmpty();
-        Assertions.assertThat(errOut).isNotEmpty();
-        Assertions.assertThat(errOut).doesNotContain("publish");
+        Assertions.assertThat(errOut).isNotEmpty().contains("Missing required argument");
+        Assertions.assertThat(errOut).doesNotContain("publish").doesNotContain("Exception");
     }
 
     @Test
