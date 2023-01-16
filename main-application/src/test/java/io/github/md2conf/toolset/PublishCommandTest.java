@@ -27,7 +27,7 @@ class PublishCommandTest {
         String errOut = swErr.toString();
         Assertions.assertThat(swOut.toString()).isEmpty();
         Assertions.assertThat(errOut).isNotEmpty();
-        Assertions.assertThat(errOut).doesNotContain("convert");
+        Assertions.assertThat(errOut).doesNotContain("convert").doesNotContain("Exception");
     }
 
     @Test

@@ -27,7 +27,7 @@ class ConpubCommandTest {
         Assertions.assertThat(exitCode).isNotZero();
         String errOut = swErr.toString();
         Assertions.assertThat(swOut.toString()).isEmpty();
-        Assertions.assertThat(errOut).isNotEmpty();
+        Assertions.assertThat(errOut).isNotEmpty().doesNotContain("Exception");
     }
 
 }
