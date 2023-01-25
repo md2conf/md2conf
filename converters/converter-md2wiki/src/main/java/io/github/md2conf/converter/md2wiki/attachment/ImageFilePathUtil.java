@@ -1,4 +1,4 @@
-package io.github.md2conf.converter.md2wiki.link;
+package io.github.md2conf.converter.md2wiki.attachment;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ImagePathUtil {
+public class ImageFilePathUtil {
     public static List<Path> filterExistingPaths(Set<String> imageUrls, Path basePath) {
         //remove http and https links
         return imageUrls.stream()

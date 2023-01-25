@@ -1,9 +1,10 @@
-package io.github.md2conf.converter.md2wiki.link;
+package io.github.md2conf.converter.md2wiki.attachment;
 
 import com.vladsch.flexmark.ast.Image;
 import com.vladsch.flexmark.ast.Link;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
+import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import java.util.Set;
 
 import static io.github.md2conf.converter.md2wiki.Md2WikiConverter.OPTIONS;
 
-class UrlCollectorVisitorTest {
+class ImageUrlCollectorVisitorTest {
 
     @Test
     void test_extract_link_local_image_relative_path() throws IOException {
@@ -24,7 +25,7 @@ class UrlCollectorVisitorTest {
         String markdown = FileUtils.readFileToString(path.toFile(), Charset.defaultCharset());
         Parser parser = Parser.builder(OPTIONS).build();
         Node document = parser.parse(markdown);
-        Set<String> set = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Image.class);
+        Set<String> set = ImageUrlUtil.collectUrlsOfImages(document);
         Assertions.assertThat(set).hasSize(1);
         Assertions.assertThat(set).contains("gif.gif");
     }
@@ -35,7 +36,7 @@ class UrlCollectorVisitorTest {
         String markdown = FileUtils.readFileToString(path.toFile(), Charset.defaultCharset());
         Parser parser = Parser.builder(OPTIONS).build();
         Node document = parser.parse(markdown);
-        Set<String> set = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Image.class);
+        Set<String> set = ImageUrlUtil.collectUrlsOfImages(document);
         Assertions.assertThat(set).hasSize(1);
         Assertions.assertThat(set).contains("/tmp/image.png");
     }
@@ -46,7 +47,7 @@ class UrlCollectorVisitorTest {
         String markdown = FileUtils.readFileToString(path.toFile(), Charset.defaultCharset());
         Parser parser = Parser.builder(OPTIONS).build();
         Node document = parser.parse(markdown);
-        Set<String> set = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Image.class);
+        Set<String> set = ImageUrlUtil.collectUrlsOfImages(document);
         Assertions.assertThat(set).hasSize(1);
         Assertions.assertThat(set).contains("http://link.com/image.png");
     }
@@ -57,46 +58,10 @@ class UrlCollectorVisitorTest {
         String markdown = FileUtils.readFileToString(path.toFile(), Charset.defaultCharset());
         Parser parser = Parser.builder(OPTIONS).build();
         Node document = parser.parse(markdown);
-        Set<String> set = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Image.class);
+        Set<String> set = ImageUrlUtil.collectUrlsOfImages(document);
         Assertions.assertThat(set).hasSize(1);
         Assertions.assertThat(set).contains("sample.gif");
     }
-
-
-    @Test
-    void test_extract_link_local_file_link() throws IOException {
-        Path path = Paths.get("src/test/resources/markdown_examples/local_link_relative_path.md");
-        String markdown = FileUtils.readFileToString(path.toFile(), Charset.defaultCharset());
-        Parser parser = Parser.builder(OPTIONS).build();
-        Node document = parser.parse(markdown);
-        Set<String> set = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Link.class);
-        Assertions.assertThat(set).hasSize(1);
-        Assertions.assertThat(set).contains("attach.txt");
-    }
-
-
-    @Test
-    void test_extract_local_link_absolute_path() throws IOException {
-        Path path = Paths.get("src/test/resources/markdown_examples/local_link_absolute_path.md");
-        String markdown = FileUtils.readFileToString(path.toFile(), Charset.defaultCharset());
-        Parser parser = Parser.builder(OPTIONS).build();
-        Node document = parser.parse(markdown);
-        Set<String> set = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Link.class);
-        Assertions.assertThat(set).hasSize(1);
-        Assertions.assertThat(set).contains("/tmp/attach.txt");
-    }
-
-    @Test
-    void test_extract_remote_link() throws IOException {
-        Path path = Paths.get("src/test/resources/markdown_examples/remote_http_link.md");
-        String markdown = FileUtils.readFileToString(path.toFile(), Charset.defaultCharset());
-        Parser parser = Parser.builder(OPTIONS).build();
-        Node document = parser.parse(markdown);
-        Set<String> set = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Link.class);
-        Assertions.assertThat(set).hasSize(1);
-        Assertions.assertThat(set).contains("http://example.com");
-    }
-
 
 
 }
