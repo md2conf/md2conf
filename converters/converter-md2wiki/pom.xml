@@ -30,6 +30,11 @@
             <version>0.62.2</version>
         </dependency>
         <dependency>
+            <groupId>io.github.md2conf</groupId>
+            <artifactId>flexmark-ext-local-attachments</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>

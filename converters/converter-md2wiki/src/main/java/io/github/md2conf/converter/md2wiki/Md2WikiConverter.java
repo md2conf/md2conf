@@ -1,21 +1,19 @@
 package io.github.md2conf.converter.md2wiki;
 
-import com.vladsch.flexmark.ast.Image;
 import com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.jira.converter.JiraConverterExtension;
 import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.ast.IRender;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.github.md2conf.converter.AttachmentUtil;
 import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.Converter;
-import io.github.md2conf.converter.md2wiki.ext.AttachmentLinkExtension;
-import io.github.md2conf.converter.md2wiki.link.ImagePathUtil;
-import io.github.md2conf.converter.md2wiki.link.InlineLinkUrlUtil;
+import io.github.md2conf.converter.md2wiki.attachment.ImageFilePathUtil;
+import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
+import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLinkExtension;
 import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
@@ -32,17 +30,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static io.github.md2conf.converter.md2wiki.attachment.LocalAttachmentUtil.collectLocalAttachmentPaths;
+
 public class Md2WikiConverter implements Converter {
 
     public static final DataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(
                     TablesExtension.create(),
                     StrikethroughExtension.create(),
-//                    AttachmentLinkExtension.create(),
+                    LocalAttachmentLinkExtension.create(),
                     JiraConverterExtension.create()
             ));
-    private final Parser parser;
-    private final IRender renderer;
 
     private final ConfluencePageFactory confluencePageFactory;
     private final Path outputPath;
@@ -50,8 +48,6 @@ public class Md2WikiConverter implements Converter {
     public Md2WikiConverter(ConfluencePageFactory confluencePageFactory, Path outputPath) {
         this.confluencePageFactory = confluencePageFactory;
         this.outputPath = outputPath;
-        this.parser = Parser.builder(OPTIONS).build();
-        this.renderer = HtmlRenderer.builder(OPTIONS).build();
     }
 
     @Override
@@ -65,15 +61,29 @@ public class Md2WikiConverter implements Converter {
         return new ConfluenceContentModel(confluencePages);
     }
 
+    /**
+     *
+     * @param page - a Page
+     * @param relativePart - relative path to target path, used to process children recursively
+     * @return ConfluencePage
+     */
     private ConfluencePage convertAndCreateConfluencePage(Page page, Path relativePart) throws IOException {
 
+        //read markdown file from Page path
         String markdown = FileUtils.readFileToString(page.path().toFile(), Charset.defaultCharset()); //todo extract charset as parameter
+
+        //Convert to wiki using FlexMark parser and renderer
+        DataHolder flexmarkOptions = OPTIONS.toMutable()
+                .set(LocalAttachmentLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
+                .toImmutable();
+        Parser parser = Parser.builder(flexmarkOptions).build();
+        HtmlRenderer renderer = HtmlRenderer.builder(flexmarkOptions).build();
         Node document = parser.parse(markdown);
         String wiki = renderer.render(document);
 
-        //extract images and convert to local file paths if exists
-        Set<String> imageUrls = InlineLinkUrlUtil.collectUrlsOfNodeType(document, Image.class);
-        List<Path> imagePaths = ImagePathUtil.filterExistingPaths(imageUrls, page.path().getParent());
+        //extract images Urls and convert to local file paths if exists
+        List<Path> imagePaths = extractLocalImagePaths(page, document);
+        List<Path> localAttachmentPaths = collectLocalAttachmentPaths(document);
 
         //calculate output file names
         String targetFileName = FilenameUtils.getBaseName(page.path().toString())+".wiki";
@@ -81,12 +91,13 @@ public class Md2WikiConverter implements Converter {
 
         //copy converted content and attachments
         FileUtils.writeStringToFile(targetPath.toFile(), wiki, Charset.defaultCharset());
-        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments(), imagePaths);
+        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments(), imagePaths, localAttachmentPaths);
 
         // create ConfluencePage model
         ConfluencePage result = confluencePageFactory.pageByPath(targetPath);
         result.setType(ConfluenceContentModel.Type.WIKI);
         result.setAttachments(AttachmentUtil.toAttachmentsMap(copiedAttachments));
+        // process children
         if (page.children() != null && !page.children().isEmpty()) {
             String childrenDirAsStr = FilenameUtils.concat(
                     relativePart.toString(),
@@ -99,9 +110,13 @@ public class Md2WikiConverter implements Converter {
                 result.getChildren().add(convertAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir)));
             }
         }
-        //todo local links attachments
         //todo cross-links
         //todo title -postprocessors
         return result;
+    }
+
+    private static List<Path> extractLocalImagePaths(Page page, Node document) {
+        Set<String> imageUrls = ImageUrlUtil.collectUrlsOfImages(document);
+        return ImageFilePathUtil.filterExistingPaths(imageUrls, page.path().getParent());
     }
 }

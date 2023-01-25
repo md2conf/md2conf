@@ -59,4 +59,22 @@ class Md2WikiConverterTest {
         assertThat(outputPath.resolve(dirWithAttachments)).isDirectoryContaining("glob:**/sample.gif");
     }
 
+    @Test
+    void convert_markdown_page_tree_with_local_attachment_link() throws IOException {
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(new ConfluencePageFactory(ExtractTitleStrategy.FROM_FILENAME), outputPath);
+        var prop = new FileIndexerConfigurationProperties();
+        prop.setFileExtension("md");
+        FileIndexer fileIndexer = new DefaultFileIndexer(prop);
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_with_local_attachment"));
+        assertThat(pagesStructure.pages()).hasSize(1);
+        ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
+        assertThat(model).isNotNull();
+        assertThat(model.getPages()).hasSize(1);
+        assertThat(outputPath).isNotEmptyDirectory();
+        assertThat(outputPath).isDirectoryContaining("glob:**/index.wiki");
+        String dirWithAttachments = "index"+ATTACHMENTS_SUFFIX;
+        assertThat(outputPath.resolve(dirWithAttachments)).isDirectory().exists();
+        assertThat(outputPath.resolve(dirWithAttachments)).isDirectoryContaining("glob:**/sample.txt");
+    }
+
 }
