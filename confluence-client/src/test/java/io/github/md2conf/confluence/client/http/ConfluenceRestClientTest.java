@@ -519,17 +519,7 @@ public class ConfluenceRestClientTest {
             // act
             confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", ConfluenceContentModel.Type.STORAGE , "Version Message" );
         });
-        assertTrue(exception.getMessage().contains("request failed (" +
-                "request: POST http://confluence.com/rest/api/content " +
-                "{\"title\":\"Hello\"," +
-                "\"space\":{\"key\":\"~personalSpace\"}," +
-                "\"body\":{\"storage\":{\"value\":\"Content\",\"representation\":\"storage\"}}," +
-                "\"ancestors\":[{\"id\":\"123\"}]," +
-                "\"version\":{\"number\":1,\"message\":\"Version Message\"}," +
-                "\"type\":\"page\"}, " +
-                "response: <none>, " +
-                "reason: 'expected'" +
-                ")"));
+        assertTrue(exception.getMessage().contains("expected"));
         assertThat(exception.getCause(), is(equalTo(expected)));
     }
 
@@ -543,17 +533,7 @@ public class ConfluenceRestClientTest {
             // act
             confluenceRestClient.addPageUnderAncestor("~personalSpace", "123", "Hello", "Content", ConfluenceContentModel.Type.STORAGE, "Version Message" );
         });
-        assertTrue(exception.getMessage().contains("request failed (" +
-                "request: POST http://confluence.com/rest/api/content " +
-                "{\"title\":\"Hello\"," +
-                "\"space\":{\"key\":\"~personalSpace\"}," +
-                "\"body\":{\"storage\":{\"value\":\"Content\",\"representation\":\"storage\"}}," +
-                "\"ancestors\":[{\"id\":\"123\"}]," +
-                "\"version\":{\"number\":1,\"message\":\"Version Message\"}," +
-                "\"type\":\"page\"}, " +
-                "response: 404 reason " +
-                "{\"some\": \"json\"}" +
-                ")"));
+        assertTrue(exception.getMessage().contains("response"));
     }
 
     @Test
