@@ -77,4 +77,23 @@ class Md2WikiConverterTest {
         assertThat(outputPath.resolve(dirWithAttachments)).isDirectoryContaining("glob:**/sample.txt");
     }
 
+    @Test
+    void convert_markdown_crosslinks() throws IOException {
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(new ConfluencePageFactory(ExtractTitleStrategy.FROM_FIRST_HEADER), outputPath);
+        var prop = new FileIndexerConfigurationProperties();
+        prop.setFileExtension("md");
+        FileIndexer fileIndexer = new DefaultFileIndexer(prop);
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_crosslinks"));
+        assertThat(pagesStructure.pages()).hasSize(2);
+        ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
+        assertThat(model).isNotNull();
+        assertThat(model.getPages()).hasSize(2);
+        assertThat(outputPath).isNotEmptyDirectory();
+        assertThat(outputPath).isDirectoryContaining("glob:**/a.wiki");
+        assertThat(outputPath).isDirectoryContaining("glob:**/b.wiki");
+        assertThat(outputPath.resolve("a.wiki")).content().contains("Page B");
+        assertThat(outputPath.resolve("b.wiki")).content().contains("Page A");
+
+    }
+
 }

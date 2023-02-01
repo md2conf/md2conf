@@ -13,6 +13,7 @@ import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.Converter;
 import io.github.md2conf.converter.md2wiki.attachment.ImageFilePathUtil;
 import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
+import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension;
 import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLinkExtension;
 import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
@@ -39,6 +40,7 @@ public class Md2WikiConverter implements Converter {
                     TablesExtension.create(),
                     StrikethroughExtension.create(),
                     LocalAttachmentLinkExtension.create(),
+                    CrosspageLinkExtension.create(),
                     JiraConverterExtension.create()
             ));
 
@@ -55,19 +57,19 @@ public class Md2WikiConverter implements Converter {
         List<ConfluencePage> confluencePages = new ArrayList<>();
         for (Page topLevelPage : pagesStructure.pages()) { //use "for" loop to throw exception to caller
             ConfluencePage confluencePage;
-            confluencePage = convertAndCreateConfluencePage(topLevelPage, Paths.get(""));
+            confluencePage = convertAndCreateConfluencePage(topLevelPage, Paths.get(""), pagesStructure);
             confluencePages.add(confluencePage);
         }
         return new ConfluenceContentModel(confluencePages);
     }
 
     /**
-     *
-     * @param page - a Page
-     * @param relativePart - relative path to target path, used to process children recursively
+     * @param page           - a Page
+     * @param relativePart   - relative path to target path, used to process children recursively
+     * @param pagesStructure - page structure
      * @return ConfluencePage
      */
-    private ConfluencePage convertAndCreateConfluencePage(Page page, Path relativePart) throws IOException {
+    private ConfluencePage convertAndCreateConfluencePage(Page page, Path relativePart, PagesStructure pagesStructure) throws IOException {
 
         //read markdown file from Page path
         String markdown = FileUtils.readFileToString(page.path().toFile(), Charset.defaultCharset()); //todo extract charset as parameter
@@ -75,6 +77,9 @@ public class Md2WikiConverter implements Converter {
         //Convert to wiki using FlexMark parser and renderer
         DataHolder flexmarkOptions = OPTIONS.toMutable()
                 .set(LocalAttachmentLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
+                .set(CrosspageLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
+                .set(CrosspageLinkExtension.PAGES_STRUCTURE, pagesStructure)
+                .set(CrosspageLinkExtension.EXTRACT_TITLE_STRATEGY, confluencePageFactory.getExtractTitleStrategy())
                 .toImmutable();
         Parser parser = Parser.builder(flexmarkOptions).build();
         HtmlRenderer renderer = HtmlRenderer.builder(flexmarkOptions).build();
@@ -107,11 +112,9 @@ public class Md2WikiConverter implements Converter {
                 throw new IOException("Cannot create dirs in " + childrenDir);
             }
             for (Page childPage : page.children()) {
-                result.getChildren().add(convertAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir)));
+                result.getChildren().add(convertAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir), pagesStructure));
             }
         }
-        //todo cross-links
-        //todo title -postprocessors
         return result;
     }
 
