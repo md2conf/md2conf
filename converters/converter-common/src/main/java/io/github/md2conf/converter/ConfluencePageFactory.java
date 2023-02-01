@@ -27,4 +27,7 @@ public class ConfluencePageFactory {
         return page;
     }
 
+    public ExtractTitleStrategy getExtractTitleStrategy() {
+        return extractTitleStrategy;
+    }
 }
