@@ -95,14 +95,14 @@ public class DefaultFileIndexer implements FileIndexer {
     }
 
 
-    static class DefaultPage implements Page {
+    public static class DefaultPage implements Page {
 
         private final Path path;
         private final List<DefaultPage> children;
 
         private final List<Path> attachments;
 
-        DefaultPage(Path path) {
+        public DefaultPage(Path path) {
             this.path = path;
             this.children = new ArrayList<>();
             attachments = new ArrayList<>();
@@ -128,7 +128,7 @@ public class DefaultFileIndexer implements FileIndexer {
         }
     }
 
-    static class DefaultPagesStructure implements PagesStructure {
+    public static class DefaultPagesStructure implements PagesStructure {
         private final List<DefaultPage> pages;
 
         public DefaultPagesStructure(List<DefaultPage> pages) {
