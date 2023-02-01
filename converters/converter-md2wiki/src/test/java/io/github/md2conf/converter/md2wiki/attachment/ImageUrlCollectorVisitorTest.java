@@ -1,10 +1,7 @@
 package io.github.md2conf.converter.md2wiki.attachment;
 
-import com.vladsch.flexmark.ast.Image;
-import com.vladsch.flexmark.ast.Link;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
-import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
