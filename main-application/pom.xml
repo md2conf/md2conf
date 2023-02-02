@@ -12,6 +12,10 @@
     <artifactId>main-application</artifactId>
     <version>0.0.2-SNAPSHOT</version>
 
+    <properties>
+        <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.github.md2conf</groupId>
