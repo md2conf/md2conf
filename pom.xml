@@ -44,6 +44,7 @@
         <module>converters</module>
         <module>confluence-client</module>
         <module>main-application</module>
+        <module>md2conf-cli</module>
     </modules>
 
 
