@@ -23,7 +23,7 @@
 
 Start this project.
 
-Reasons why not to contribure to existing projects:
+Reasons why not to contribute to existing projects:
 
 * The main problem with `bsorrentino/maven-confluence-plugin` that it has very complicated and hard-maintainable code. It hard to add new functionality.
 * The main problem with `confluence-publisher` that it doesn't support markdown and it's not modularized properly. Hard to add own extension.
