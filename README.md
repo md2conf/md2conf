@@ -33,7 +33,7 @@ as a docs source and Confluence as a publishing platform.
 Confluence Content is a collection of Confluence Pages.
 
 
-![confluence-content.png](doc/plantuml/confluence-content.png)
+![confluence-content.png](docs/plantuml/confluence-content.png)
 
 ### Confluence Page
 
