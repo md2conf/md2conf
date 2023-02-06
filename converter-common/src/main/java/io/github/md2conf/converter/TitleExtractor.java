@@ -6,11 +6,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class TitleExtractor {
 
 
-    public static String extractTitle(Path path, ExtractTitleStrategy strategy){
+    public static String extractTitle(Path path, ExtractTitleStrategy strategy) {
         switch (strategy) {
             case FROM_FILENAME:
                 return FilenameUtils.getBaseName(path.toString());
@@ -21,7 +22,7 @@ public class TitleExtractor {
         }
     }
 
-    private static String readHeaderFromFile(Path path)  {
+    private static String readHeaderFromFile(Path path) {
         String res = null;
         String extension = FilenameUtils.getExtension(path.toString());
         if (extension.equalsIgnoreCase("wiki")) {
@@ -34,18 +35,18 @@ public class TitleExtractor {
 
     }
 
-    private static String readFirstWikiHeader(Path path)  {
+    private static String readFirstWikiHeader(Path path) {
         Optional<String> lineWithHeader;
-        try {
-            lineWithHeader = Files.lines(path)
-                                  .filter(v -> v.trim().startsWith("h1.") || v.trim().startsWith("h2.") || v.trim().startsWith("h3."))
-                                  .findFirst();
+        try (Stream<String> lines = Files.lines(path)) {
+            lineWithHeader = lines
+                    .filter(v -> v.trim().startsWith("h1.") || v.trim().startsWith("h2.") || v.trim().startsWith("h3."))
+                    .findFirst();
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            throw new RuntimeException(e);
         }
         return lineWithHeader.map(s -> s.trim()
-                                        .replaceFirst("h[123]\\.", "").trim())
-                             .orElseThrow(() -> new IllegalArgumentException("Cannot extract title from wiki content at path " + path));
+                        .replaceFirst("h[123]\\.", "").trim())
+                .orElseThrow(() -> new IllegalArgumentException("Cannot extract title from wiki content at path " + path));
 
     }
 }
