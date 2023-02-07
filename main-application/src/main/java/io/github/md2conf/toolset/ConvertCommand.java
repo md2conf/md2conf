@@ -73,7 +73,7 @@ public class ConvertCommand implements Runnable {
     }
 
     protected static Converter createConverter(ConvertOptions convertOptions) {
-        ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(convertOptions.extractTitleStrategy);
+        ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(convertOptions.titleExtract);
         Converter converterService = null;
         switch (convertOptions.converter) {
             case MD2WIKI:
@@ -111,10 +111,18 @@ public class ConvertCommand implements Runnable {
         protected String fileExtension = "md"; //todo change fileExtension based on converter
         @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
         protected String excludePattern = "glob:**/.*";
-        @CommandLine.Option(names = {"-et", "--extract-title-strategy"}, description = "Strategy to extract title from file",
+
+        @CommandLine.Option(names = {"-te", "--title-extract"}, description = "Strategy to extract title from file",
                 defaultValue = "FROM_FIRST_HEADER",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected ExtractTitleStrategy extractTitleStrategy = ExtractTitleStrategy.FROM_FIRST_HEADER;
+        protected ExtractTitleStrategy titleExtract = ExtractTitleStrategy.FROM_FIRST_HEADER;
+
+        @CommandLine.Option(names = {"-tp", "--title-prefix"}, description = "Title prefix common for all pages")
+        private String titlePrefix;
+        @CommandLine.Option(names = {"-ts","--title-suffix"}, description = "Title suffix common for all pages")
+        private String titleSuffix;
+        @CommandLine.Option(names = {"-tc", "--title-child-prefixed"}, description = "Add title prefix of root page if page is a child")
+        private boolean titleChildPrefixed;
 
     }
 }
