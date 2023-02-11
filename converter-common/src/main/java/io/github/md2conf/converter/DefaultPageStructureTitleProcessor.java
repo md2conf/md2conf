@@ -3,6 +3,7 @@ package io.github.md2conf.converter;
 import io.github.md2conf.indexer.PagesStructure;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultPageStructureTitleProcessor implements PageStructureTitleProcessor {
@@ -21,6 +22,6 @@ public class DefaultPageStructureTitleProcessor implements PageStructureTitlePro
 
     @Override
     public Map<Path, String> toTitleMap(PagesStructure pagesStructure) {
-        return null;
+        return new HashMap<>();
     }
 }

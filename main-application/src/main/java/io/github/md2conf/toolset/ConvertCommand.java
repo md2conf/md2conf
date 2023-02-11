@@ -1,8 +1,6 @@
 package io.github.md2conf.toolset;
 
-import io.github.md2conf.converter.ConfluencePageFactory;
-import io.github.md2conf.converter.Converter;
-import io.github.md2conf.converter.ExtractTitleStrategy;
+import io.github.md2conf.converter.*;
 import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
@@ -73,14 +71,19 @@ public class ConvertCommand implements Runnable {
     }
 
     protected static Converter createConverter(ConvertOptions convertOptions) {
-        ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(convertOptions.titleExtract);
+        ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(convertOptions.titleExtract); //todo drop
+        PageStructureTitleProcessor pageStructureTitleProcessor =
+                new DefaultPageStructureTitleProcessor(convertOptions.titleExtract,
+                convertOptions.titlePrefix,
+                convertOptions.titleSuffix,
+                convertOptions.titleChildPrefixed);
         Converter converterService = null;
         switch (convertOptions.converter) {
             case MD2WIKI:
                 converterService = new Md2WikiConverter(confluencePageFactory, convertOptions.outputDirectory);
                 break;
             case NO:
-                converterService = new NoopConverter(confluencePageFactory);
+                converterService = new NoopConverter(pageStructureTitleProcessor);
                 break;
             case COPYING:
                 converterService = new CopyingConverter(confluencePageFactory, convertOptions.outputDirectory);
