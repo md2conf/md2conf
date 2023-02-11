@@ -19,7 +19,6 @@ class ConvertCommandTest {
     @TempDir
     private Path outputPath;
 
-
     @Test
     void invoke_no_params() {
         MainApp mainApp = new MainApp();

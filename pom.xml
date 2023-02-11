@@ -41,7 +41,12 @@
     <modules>
         <module>confluence-content-model</module>
         <module>file-indexer</module>
-        <module>converters</module>
+        <module>flexmark-ext-local-attachments</module>
+        <module>flexmark-ext-crosspage-links</module>
+        <module>converter-common</module>
+        <module>converter-noop</module>
+        <module>converter-copying</module>
+        <module>converter-md2wiki</module>
         <module>confluence-client</module>
         <module>main-application</module>
         <module>md2conf-cli</module>
