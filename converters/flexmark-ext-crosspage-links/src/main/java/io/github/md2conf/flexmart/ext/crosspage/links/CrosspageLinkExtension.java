@@ -4,17 +4,14 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.DataKey;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
-import io.github.md2conf.converter.ExtractTitleStrategy;
 import io.github.md2conf.flexmart.ext.crosspage.links.internal.CrosspageLinkPostProcessor;
 import io.github.md2conf.flexmart.ext.crosspage.links.internal.CrosspageLinkRenderer;
-import io.github.md2conf.indexer.DefaultFileIndexer.DefaultPagesStructure;
-import io.github.md2conf.indexer.PagesStructure;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CrosspageLinkExtension implements Parser.ParserExtension, HtmlRenderer.HtmlRendererExtension{
 
@@ -25,8 +22,7 @@ public class CrosspageLinkExtension implements Parser.ParserExtension, HtmlRende
     /**
      * Pages structure
      */
-    final public static DataKey<PagesStructure> PAGES_STRUCTURE = new DataKey<>("PAGES_STRUCTURE", new DefaultPagesStructure(List.of()));
-    final public static DataKey<ExtractTitleStrategy> EXTRACT_TITLE_STRATEGY = new DataKey<>("PAGES_STRUCTURE", ExtractTitleStrategy.FROM_FILENAME);
+    final public static DataKey<Map<Path,String>> TITLE_MAP = new DataKey<>("TITLE_MAP", new HashMap<>());
 
     public static CrosspageLinkExtension create() {
         return new CrosspageLinkExtension();

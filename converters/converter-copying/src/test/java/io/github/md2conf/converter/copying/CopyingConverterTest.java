@@ -1,7 +1,8 @@
 package io.github.md2conf.converter.copying;
 
-import io.github.md2conf.converter.ConfluencePageFactory;
-import io.github.md2conf.converter.ExtractTitleStrategy;
+import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
+import io.github.md2conf.title.processor.TitleExtractStrategy;
+import io.github.md2conf.title.processor.PageStructureTitleProcessor;
 import io.github.md2conf.indexer.DefaultFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
@@ -28,10 +29,12 @@ class CopyingConverterTest {
 
     Condition<ConfluencePage> page_with_attachments = new Condition<ConfluencePage>(s -> !s.getAttachments().isEmpty(), "a page must have attachments", "" );
 
+    private final PageStructureTitleProcessor titleProcessor = new DefaultPageStructureTitleProcessor(TitleExtractStrategy.FROM_FILENAME, null, null, false);
+
 
     @Test
     void copy_empty_dir() throws IOException {
-        CopyingConverter copyingConverter = new CopyingConverter(new ConfluencePageFactory(ExtractTitleStrategy.FROM_FILENAME), outputPath);
+        CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath);
         FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
         PagesStructure pagesStructure = fileIndexer.indexPath(emptyDir);
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
@@ -41,7 +44,7 @@ class CopyingConverterTest {
 
     @Test
     void copy_example_page_tree() throws IOException {
-        CopyingConverter copyingConverter = new CopyingConverter(new ConfluencePageFactory(ExtractTitleStrategy.FROM_FILENAME), outputPath);
+        CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath);
         FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/example_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(2);
@@ -57,7 +60,7 @@ class CopyingConverterTest {
 
     @Test
     void attachments_are_copied() throws IOException {
-        CopyingConverter copyingConverter = new CopyingConverter(new ConfluencePageFactory(ExtractTitleStrategy.FROM_FILENAME), outputPath);
+        CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath);
         FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/example_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(2);

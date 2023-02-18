@@ -8,8 +8,6 @@ import java.nio.file.Path;
 
 public class CrosspageLink extends InlineLinkNode {
 
-    private Path path;
-
     public CrosspageLink(Link other) {
         super(other.baseSubSequence(other.getStartOffset(), other.getEndOffset()),
                 other.baseSubSequence(other.getStartOffset(), other.getTextOpeningMarker().getEndOffset()),
@@ -25,15 +23,7 @@ public class CrosspageLink extends InlineLinkNode {
     }
 
     @Override
-    public void setTextChars(BasedSequence textChars) {
-
+    public void setTextChars(BasedSequence textChars) { //no-op
     }
 
-    public Path getPath() {
-        return path;
-    }
-
-    public void setPath(Path path) {
-        this.path = path;
-    }
 }

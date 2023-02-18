@@ -1,13 +1,14 @@
 package io.github.md2conf.converter.noop;
 
-import io.github.md2conf.converter.ConfluencePageFactory;
 import io.github.md2conf.converter.Converter;
-import io.github.md2conf.converter.ExtractTitleStrategy;
+import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
+import io.github.md2conf.title.processor.PageStructureTitleProcessor;
 import io.github.md2conf.indexer.DefaultFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
+import io.github.md2conf.title.processor.TitleExtractStrategy;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -16,9 +17,9 @@ import java.io.IOException;
 
 class NoopConverterTest {
 
-    ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(ExtractTitleStrategy.FROM_FILENAME);
+    PageStructureTitleProcessor pageStructureTitleProcessor = new DefaultPageStructureTitleProcessor(TitleExtractStrategy.FROM_FILENAME, null, null, false);
     FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
-    Converter converter = new NoopConverter(confluencePageFactory);
+    Converter converter = new NoopConverter(pageStructureTitleProcessor);
 
     @Test
     void convert_dir_with_attachments() throws IOException {
