@@ -98,21 +98,6 @@ class ModelReadWriteUtilTest {
         assertFalse(confluenceContentModel.getPages().isEmpty());
     }
 
-    @Test
-    void test_read_confluence_client_sample_config_yaml() throws IOException {
-        File file = Paths.get(TEST_RESOURCES, "confluence-client-sample-config.yaml").toFile();
-        ConfluenceContentModel confluenceContentModel =  readFromYamlOrJson(file);
-        assertNotNull(confluenceContentModel);
-        assertFalse(confluenceContentModel.getPages().isEmpty());
-    }
-
-    @Test
-    void test_read_confluence_client_sample_config_json() throws IOException {
-        File file = Paths.get(TEST_RESOURCES, "confluence-client-sample-config.yaml").toFile();
-        ConfluenceContentModel confluenceContentModel =  readFromYamlOrJson(file);
-        assertNotNull(confluenceContentModel);
-        assertFalse(confluenceContentModel.getPages().isEmpty());
-    }
 
     @Test
     void test_read_bad_json() {

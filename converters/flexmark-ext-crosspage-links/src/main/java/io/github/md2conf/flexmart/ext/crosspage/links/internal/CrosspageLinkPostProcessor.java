@@ -7,27 +7,23 @@ import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.ast.NodeTracker;
 import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.sequence.BasedSequence;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLink;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension;
-import io.github.md2conf.indexer.DefaultFileIndexer;
-import io.github.md2conf.indexer.Page;
-import io.github.md2conf.indexer.PagesStructure;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public class CrosspageLinkPostProcessor extends NodePostProcessor {
     private final Path currentFilePath;
-    private final Set<Path> pagesPathes;
+    private final Map<Path,String> titleMap;
 
     public CrosspageLinkPostProcessor(Path currentFilePath,
-                                      Set<Path> pagesPathes) {
+                                      Map<Path,String> titleMap) {
         this.currentFilePath = currentFilePath;
-        this.pagesPathes = pagesPathes;
+        this.titleMap = titleMap;
     }
 
     @Override
@@ -53,10 +49,10 @@ public class CrosspageLinkPostProcessor extends NodePostProcessor {
             } else {
                 return;
             }
-            if (pagesPathes.contains(resolvedPath.toAbsolutePath())){
+            if (titleMap.containsKey(resolvedPath.toAbsolutePath())){
                 Node parent = node.getParent();
                 CrosspageLink crosspageLink = new CrosspageLink((Link) node);
-                crosspageLink.setPath(resolvedPath);
+                crosspageLink.setTitle(BasedSequence.of(titleMap.get(resolvedPath.toAbsolutePath())));
                 crosspageLink.takeChildren(node);
                 node.unlink();
                 if (parent != null) {
@@ -76,27 +72,14 @@ public class CrosspageLinkPostProcessor extends NodePostProcessor {
     public static class Factory extends NodePostProcessorFactory {
 
         private final Path currentFilePath;
-        private final PagesStructure pagesStructure;
+        private final Map<Path,String> titleMap;
 
+        @SuppressWarnings("unchecked")
         public Factory(DataHolder options) {
             super(false);
             currentFilePath = (Path) options.getAll().get(CrosspageLinkExtension.CURRENT_FILE_PATH);
-            PagesStructure optpagesStructure =  (PagesStructure) options.getAll().get(CrosspageLinkExtension.PAGES_STRUCTURE);
-            if (optpagesStructure==null){
-                pagesStructure = new DefaultFileIndexer.DefaultPagesStructure(List.of());
-            }else {
-                pagesStructure = (PagesStructure) options.getAll().get(CrosspageLinkExtension.PAGES_STRUCTURE);
-            }
+            this.titleMap = (Map<Path, String>) options.getAll().get(CrosspageLinkExtension.TITLE_MAP);
             addNodes(Link.class);
-        }
-
-        private Set<Path> toPaths(List<? extends Page> pages) {
-            Set<Path> paths = new HashSet<>();
-            for (Page page: pages){
-                paths.add(page.path().toAbsolutePath());
-                paths.addAll(toPaths(page.children()));
-            }
-            return paths;
         }
 
         @NotNull
@@ -104,7 +87,7 @@ public class CrosspageLinkPostProcessor extends NodePostProcessor {
         public NodePostProcessor apply(@NotNull Document document) {
             return new CrosspageLinkPostProcessor(
                     currentFilePath,
-                    toPaths(pagesStructure.pages()));
+                    titleMap);
         }
     }
 }

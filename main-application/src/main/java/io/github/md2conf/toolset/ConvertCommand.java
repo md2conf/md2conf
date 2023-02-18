@@ -1,8 +1,6 @@
 package io.github.md2conf.toolset;
 
-import io.github.md2conf.converter.ConfluencePageFactory;
-import io.github.md2conf.converter.Converter;
-import io.github.md2conf.converter.ExtractTitleStrategy;
+import io.github.md2conf.converter.*;
 import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
@@ -12,6 +10,9 @@ import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.util.ModelReadWriteUtil;
+import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
+import io.github.md2conf.title.processor.TitleExtractStrategy;
+import io.github.md2conf.title.processor.PageStructureTitleProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -21,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static io.github.md2conf.converter.Converter.Type.MD2WIKI;
+import static io.github.md2conf.toolset.ConvertCommand.ConverterType.MD2WIKI;
 
 
 @Command(name = "convert",
@@ -73,17 +74,21 @@ public class ConvertCommand implements Runnable {
     }
 
     protected static Converter createConverter(ConvertOptions convertOptions) {
-        ConfluencePageFactory confluencePageFactory = new ConfluencePageFactory(convertOptions.extractTitleStrategy);
+        PageStructureTitleProcessor pageStructureTitleProcessor =
+                new DefaultPageStructureTitleProcessor(convertOptions.titleExtract,
+                convertOptions.titlePrefix,
+                convertOptions.titleSuffix,
+                convertOptions.titleChildPrefixed);
         Converter converterService = null;
         switch (convertOptions.converter) {
             case MD2WIKI:
-                converterService = new Md2WikiConverter(confluencePageFactory, convertOptions.outputDirectory);
+                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory);
                 break;
             case NO:
-                converterService = new NoopConverter(confluencePageFactory);
+                converterService = new NoopConverter(pageStructureTitleProcessor);
                 break;
             case COPYING:
-                converterService = new CopyingConverter(confluencePageFactory, convertOptions.outputDirectory);
+                converterService = new CopyingConverter(pageStructureTitleProcessor, convertOptions.outputDirectory);
                 break;
         }
         return converterService;
@@ -102,7 +107,7 @@ public class ConvertCommand implements Runnable {
         @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "MD2WIKI",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected Converter.Type converter = MD2WIKI;
+        protected ConverterType converter = MD2WIKI;
         @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "input directory")
         protected Path inputDirectory;
         @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
@@ -111,10 +116,24 @@ public class ConvertCommand implements Runnable {
         protected String fileExtension = "md"; //todo change fileExtension based on converter
         @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
         protected String excludePattern = "glob:**/.*";
-        @CommandLine.Option(names = {"-et", "--extract-title-strategy"}, description = "Strategy to extract title from file",
+
+        @CommandLine.Option(names = {"-te", "--title-extract"}, description = "Strategy to extract title from file",
                 defaultValue = "FROM_FIRST_HEADER",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected ExtractTitleStrategy extractTitleStrategy = ExtractTitleStrategy.FROM_FIRST_HEADER;
+        protected TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
 
+        @CommandLine.Option(names = {"-tp", "--title-prefix"}, description = "Title prefix common for all pages")
+        private String titlePrefix;
+        @CommandLine.Option(names = {"-ts","--title-suffix"}, description = "Title suffix common for all pages")
+        private String titleSuffix;
+        @CommandLine.Option(names = {"-tc", "--title-child-prefixed"}, description = "Add title prefix of root page if page is a child")
+        private boolean titleChildPrefixed;
+
+    }
+
+    public enum ConverterType {
+        NO,
+        COPYING,
+        MD2WIKI
     }
 }

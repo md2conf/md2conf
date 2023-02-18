@@ -9,9 +9,4 @@ public interface Converter {
 
     ConfluenceContentModel convert(PagesStructure pagesStructure) throws IOException;
 
-    enum Type {
-        NO,
-        COPYING,
-        MD2WIKI
-    }
 }

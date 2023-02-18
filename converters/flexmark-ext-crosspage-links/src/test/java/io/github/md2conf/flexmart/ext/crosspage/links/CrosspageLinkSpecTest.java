@@ -7,39 +7,34 @@ import com.vladsch.flexmark.test.util.spec.ResourceLocation;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-import io.github.md2conf.converter.ExtractTitleStrategy;
-import io.github.md2conf.indexer.DefaultFileIndexer;
-import io.github.md2conf.indexer.PagesStructure;
 import org.jetbrains.annotations.NotNull;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-import static io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension.*;
+import static io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension.CURRENT_FILE_PATH;
+import static io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension.TITLE_MAP;
 
-public class CrosspageLinkTitleFromFirstHeaderSpecTest extends RendererSpecTest {
-    final private static String SPEC_RESOURCE = "/crosspage_link_title_from_header_spec_test.md";
+public class CrosspageLinkSpecTest extends RendererSpecTest {
+    final private static String SPEC_RESOURCE = "/crosspage_link_title_spec_test.md";
     final public static @NotNull ResourceLocation RESOURCE_LOCATION = ResourceLocation.of(SPEC_RESOURCE);
 
-    final private static Path sample_page_path = new File("src/test/resources/sample_page.md").toPath();
-    final private static PagesStructure TEST_PAGES_STRUCTURE = new DefaultFileIndexer.DefaultPagesStructure(
-            List.of(new DefaultFileIndexer.DefaultPage(sample_page_path.toAbsolutePath()))
-    );
+    final private static Map<Path,String> titleMap =
+            Map.of(Path.of("src/test/resources/sample_page.md").toAbsolutePath(), "sample_page");
 
     final private static DataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(
                     JiraConverterExtension.create(),
                     CrosspageLinkExtension.create()))
             .set(CURRENT_FILE_PATH, Path.of(""))
-            .set(PAGES_STRUCTURE, TEST_PAGES_STRUCTURE)
-            .set(EXTRACT_TITLE_STRATEGY, ExtractTitleStrategy.FROM_FIRST_HEADER)
+            .set(TITLE_MAP, titleMap)
             .toImmutable();
 
 
-    public CrosspageLinkTitleFromFirstHeaderSpecTest(@NotNull SpecExample example) {
+    public CrosspageLinkSpecTest(@NotNull SpecExample example) {
         super(example, null, OPTIONS);
     }
 

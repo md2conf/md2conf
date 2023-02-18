@@ -1,4 +1,4 @@
-package io.github.md2conf.flexmart.ext.crosspage.links.internal;
+package io.github.md2conf.title.processor;
 
 import com.vladsch.flexmark.ast.Heading;
 import com.vladsch.flexmark.parser.Parser;
@@ -11,18 +11,19 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 
-public class FlexmarkTitleExtractor {
+public class MarkdownTitleExtractor implements TitleExtractor {
 
-    public static String extractTitle(Path path) {
-        Parser parser = Parser.builder().build();
+    private final Parser PARSER = Parser.builder().build();
+
+    public String extractTitle(Path path) throws IOException {
         String markdown = null;
-        try {
             markdown = FileUtils.readFileToString(path.toFile(), Charset.defaultCharset());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        Node document = PARSER.parse(markdown);
+        String res =  findTitle(document);
+        if (res==null){
+            throw new IllegalArgumentException("Cannot extract title from markdown file at path " + path);
         }
-        Node document = parser.parse(markdown);
-        return findTitle(document);
+        return res;
     }
 
     private static String findTitle(Node root) {
