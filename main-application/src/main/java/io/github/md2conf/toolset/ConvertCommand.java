@@ -131,7 +131,7 @@ public class ConvertCommand implements Runnable {
         private String titleSuffix;
         @CommandLine.Option(names = {"-tc", "--title-child-prefixed"}, description = "Add title prefix of root page if page is a child")
         private boolean titleChildPrefixed;
-        @CommandLine.Option(names = {"-tr", "--title-remove-from-content"}, description = "Remove title from from content, to avoid duplicate titles rendering in Confluence")
+        @CommandLine.Option(names = {"-tr", "--title-remove-from-content"}, description = "Remove title from converted content, to avoid duplicate titles rendering in an Confluence")
         private Boolean titleRemoveFromContent;
 
     }
