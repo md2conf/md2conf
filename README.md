@@ -3,37 +3,67 @@
 
 # md2conf toolset
 
-Set of tools to publish markdown files to a Confluence.
+Set of command-line tools to publish markdown files to a Confluence.
 
 Notable features:
 
-- Support attachments, inline images, etc.
-- Can be used in minimal configuration. In this mode directory structure and naming conventions used to build a page tree with confluence content model.
-- Has a lot of advanced configuration options
-- Idempotent publish (without creating of new version of pages in Confluence if nothing changed)
-- Extensible by design
+- Automatically index input directory to build confluence content model based on file name conventions.
+- Avoid limitation of Confluence REST API, that create a new version of a page on every update.
+- Highly configurable and extensible by design
+- Support markdown features: cross-page links, inline images, etc.
 
 This toolset designed to support "docs-as-code" approach to use markdown
 as a docs source and Confluence as a publishing platform.
 
-## Parts of md2conf toolset
+## Installation
 
-* **confluence-content-model** - an abstraction to model confluence
-  content on a filesystem.
-* **converters** - tools to convert directories with files to
-  `confluence-content-model` or from `confluence-content-model`
-* **confluence-client** - confluence client that utilize Confluence REST
-  API for CRUD operation with content in a Confluence instance.
+Download latest release from maven central
 
+### Play locally
+
+Need to have:  `java` and `docker` in your PATH, an input directory with markdown files.
+
+Start Confluence locally:
+
+```bash
+docker run -p 8090:8090 -p 8091:8091 qwazer/atlassian-sdk-confluence
+```
+
+After Confluence starts it will be accessible at http://localhost:8090 with admin:admin credentials.
+
+Run this command
+
+```bash
+java -jar md2conf-cli.jar conpub -i=main-application/src/it/resources/several-pages --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://localhost:8090
+```
+
+See results at http://localhost:8090/display/ds/Sample
+
+### Publish to remote Confluence instance
+
+Change `url`, `space-key`, `parent-page-title`, `username`, `password` and run new command.
+
+## Main processing steps
+
+1. Index input directory and build page structure based on file name conventions. Each page is a prototype for future
+   Confluence Page. Page represented by file path, attachments and children pages.
+2. Convert page structure to Confluence Content Model with set of Confluence Pages. Each Confluence Page receive
+   confluence-specific attributes like "title", "labels" and "type" ("storage" or "wiki").
+3. Publish Confluence Content Model to a Confluence Instance via Confluence REST API.
+
+### Index by file-indexer
+
+### Convert by converters
+
+### Publish using confluence-client
 
 ### Confluence Content model
 
 Confluence Content is a collection of Confluence Pages.
 
-
 ![confluence-content.png](docs/plantuml/confluence-content.png)
 
-### Confluence Page
+#### Confluence Page
 
 Confluence Page has next attributes
 
@@ -55,21 +85,6 @@ pages using Confluence API. See Atlassian documentation for details:
   \- refered as "storage"
 * [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
   \- refered as "wiki"
-
-## confluence-client
-
-**confluence-client** is a Java based confluence client that utilize
-Confluence REST API to create/update/delete content in a Confluence
-instance. It uses own domain model to describe Confluence content in
-json file. It is a part of md2conf toolset.
-
-
-
-### Example
-
-TODO
-
-<!--TODO add example-->
 
 ## Usage
 
@@ -98,14 +113,6 @@ Originally written by Christian Stettler and others as part of
 tool to publish ascii docs to confluence.
 
 Forked to separate project to use as standalone tool in md2conf toolset.
-
-Plan to add next features:
-
-* Support for Confluence Wiki Markup content type
-* Externalized configuration
-* Command line interface
-* Performance optimizations for idempotency feature
-
 
 ### License
 

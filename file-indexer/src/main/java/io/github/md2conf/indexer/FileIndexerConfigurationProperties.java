@@ -2,9 +2,14 @@ package io.github.md2conf.indexer;
 
 public class FileIndexerConfigurationProperties {
 
+
     private String fileExtension = "wiki"; //todo cwiki
     //maybe need to support several extensions in the same directory?
     private String excludePattern = "glob:**/.*";
+//    private String attachmentDirectorySuffix; //todo
+//    private String attachmentDirectoryBaseName;
+//    private String childrenDirectorySuffix;
+//    private String childrenDirectoryBaseName;
 
     public String getExcludePattern() {
         return excludePattern;
