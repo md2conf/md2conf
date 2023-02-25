@@ -39,7 +39,7 @@ class ConpubIntegrationTest extends AbstractContainerTestBase{
         // check appendix page
         String appendixId = super.pageIdBy("Appendix 01");
         assertThat(appendixId).isNotNull();
-        assertThat(pageBodyStorageById(appendixId)).contains("<h1>Appendix 01</h1>");
+        assertThat(pageBodyStorageById(appendixId)).doesNotContain("<h1>Appendix 01</h1>"); //first header removed from content and becomes the title
         assertThat(pageAttachmentsTitles(appendixId)).isEmpty();
 
     }
