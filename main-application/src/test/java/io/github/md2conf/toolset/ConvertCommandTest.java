@@ -148,6 +148,22 @@ class ConvertCommandTest {
     }
 
     @Test
+    void invoke_md2wiki_converter_low_case() {
+        MainApp mainApp = new MainApp();
+        CommandLine cmd = new CommandLine(mainApp);
+        StringWriter swOut = new StringWriter();
+        StringWriter swErr = new StringWriter();
+        cmd.setOut(new PrintWriter(swOut));
+        cmd.setErr(new PrintWriter(swErr));
+        String inputDir = "src/test/resources/markdown_example";
+        assertThat(outputPath).isEmptyDirectory();
+        int exitCode = cmd.execute("convert", "--converter=md2wiki", "--input-dir="+ inputDir, "-o=" + outputPath);
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
+        assertThat(outputPath.resolve("index.wiki")).isRegularFile().content().doesNotContain("Header");
+    }
+
+    @Test
     void invoke_md2wiki_converter_no_remove_first_header() {
         MainApp mainApp = new MainApp();
         CommandLine cmd = new CommandLine(mainApp);
