@@ -23,7 +23,7 @@ Download latest release from maven central
 
 ### Play locally
 
-Need to have:  java and docker in your PATH, an input directory with markdown files.
+Need to have:  `java` and `docker` in your PATH, an input directory with markdown files.
 
 Start Confluence locally:
 
@@ -36,11 +36,18 @@ After Confluence start it will be accessible at http://localhost:8090 with admin
 Run this command
 
 ```
-java md2conf-cli
+java -jar md2conf-cli.jar conpub -i=main-application/src/it/resources/several-pages --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://localhost:8090
 ```
+
+See results at http://localhost:8090/display/ds/Sample
+
+### Publish to another Confluence instance
+
+Change `url`, `space-key`, `parent-page-title`, `username`, `password` and run new command.
 
 
 ## Parts of md2conf toolset
+
 
 * **confluence-content-model** - an abstraction to model confluence
   content on a filesystem.
