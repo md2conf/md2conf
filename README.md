@@ -51,16 +51,11 @@ Change `url`, `space-key`, `parent-page-title`, `username`, `password` and run n
    confluence-specific attributes like "title", "labels" and "type" ("storage" or "wiki").
 3. Publish Confluence Content Model to a Confluence Instance via Confluence REST API.
 
-
 ### Index by file-indexer
-
-
 
 ### Convert by converters
 
 ### Publish using confluence-client
-
-
 
 ### Confluence Content model
 
@@ -91,7 +86,6 @@ pages using Confluence API. See Atlassian documentation for details:
 * [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
   \- refered as "wiki"
 
-
 ## Usage
 
 ### Command-line
@@ -119,7 +113,6 @@ Originally written by Christian Stettler and others as part of
 tool to publish ascii docs to confluence.
 
 Forked to separate project to use as standalone tool in md2conf toolset.
-
 
 ### License
 
