@@ -1,7 +1,6 @@
 package io.github.md2conf.toolset;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
@@ -33,14 +32,14 @@ class ConpubIntegrationTest extends AbstractContainerTestBase{
         // check sample page
         String id = super.pageIdBy("Sample");
         assertThat(id).isNotNull();
-        assertThat(pageBodyStorageById(id)).contains("<h1>Sample</h1>");
+        assertThat(pageBodyStorageById(id)).doesNotContain("<h1>Sample</h1>"); //first header removed from content and becomes the title
         assertThat(pageBodyStorageById(id)).contains("<ac:image><ri:attachment ri:filename=\"sample.gif\" /></ac:image>");
         assertThat(pageAttachmentsTitles(id)).contains("attachment.txt", "sample.gif" ).hasSize(2);
 
         // check appendix page
         String appendixId = super.pageIdBy("Appendix 01");
         assertThat(appendixId).isNotNull();
-        assertThat(pageBodyStorageById(appendixId)).contains("<h1>Appendix 01</h1>");
+        assertThat(pageBodyStorageById(appendixId)).doesNotContain("<h1>Appendix 01</h1>"); //first header removed from content and becomes the title
         assertThat(pageAttachmentsTitles(appendixId)).isEmpty();
 
     }

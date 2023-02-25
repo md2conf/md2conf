@@ -19,6 +19,7 @@ import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
+import io.github.md2conf.title.processor.WikiTitleRemover;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -43,10 +44,12 @@ public class Md2WikiConverter implements Converter {
 
     private final PageStructureTitleProcessor pagesStructureTitleProcessor;
     private final Path outputPath;
+    private final boolean needToRemoveTitle;
 
-    public Md2WikiConverter(PageStructureTitleProcessor pagesStructureTitleProcessor, Path outputPath) {
+    public Md2WikiConverter(PageStructureTitleProcessor pagesStructureTitleProcessor, Path outputPath, boolean needToRemoveTitle) {
         this.pagesStructureTitleProcessor = pagesStructureTitleProcessor;
         this.outputPath = outputPath;
+        this.needToRemoveTitle = needToRemoveTitle;
     }
 
     @Override
@@ -114,6 +117,9 @@ public class Md2WikiConverter implements Converter {
             for (Page childPage : page.children()) {
                 result.getChildren().add(convertAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir), titleMap));
             }
+        }
+        if (needToRemoveTitle){
+            WikiTitleRemover.removeTitle(targetPath);
         }
         return result;
     }

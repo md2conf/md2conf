@@ -1,6 +1,6 @@
 package io.github.md2conf.toolset;
 
-import io.github.md2conf.converter.*;
+import io.github.md2conf.converter.Converter;
 import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
@@ -11,8 +11,8 @@ import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.util.ModelReadWriteUtil;
 import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
-import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
+import io.github.md2conf.title.processor.TitleExtractStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -79,16 +79,19 @@ public class ConvertCommand implements Runnable {
                 convertOptions.titlePrefix,
                 convertOptions.titleSuffix,
                 convertOptions.titleChildPrefixed);
+        boolean needToRemoveTitle = convertOptions.titleRemoveFromContent!=null ?
+                convertOptions.titleRemoveFromContent :
+                convertOptions.titleExtract.equals(TitleExtractStrategy.FROM_FIRST_HEADER);
         Converter converterService = null;
         switch (convertOptions.converter) {
             case MD2WIKI:
-                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory);
+                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle);
                 break;
             case NO:
-                converterService = new NoopConverter(pageStructureTitleProcessor);
+                converterService = new NoopConverter(pageStructureTitleProcessor, needToRemoveTitle);
                 break;
             case COPYING:
-                converterService = new CopyingConverter(pageStructureTitleProcessor, convertOptions.outputDirectory);
+                converterService = new CopyingConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle);
                 break;
         }
         return converterService;
@@ -128,6 +131,8 @@ public class ConvertCommand implements Runnable {
         private String titleSuffix;
         @CommandLine.Option(names = {"-tc", "--title-child-prefixed"}, description = "Add title prefix of root page if page is a child")
         private boolean titleChildPrefixed;
+        @CommandLine.Option(names = {"-tr", "--title-remove-from-content"}, description = "Remove title from converted content, to avoid duplicate titles rendering in an Confluence")
+        private Boolean titleRemoveFromContent;
 
     }
 

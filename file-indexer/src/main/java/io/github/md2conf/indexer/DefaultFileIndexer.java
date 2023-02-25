@@ -3,11 +3,7 @@ package io.github.md2conf.indexer;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +33,7 @@ public class DefaultFileIndexer implements FileIndexer {
             List<DefaultPage> topLevelPages = findTopLevelPages(allPages, rootPath);
             return new DefaultPagesStructure(topLevelPages);
         } catch (IOException e) {
-            throw new RuntimeException("Could not index directory " + rootPath + "using properties" + properties, e);
+            throw new RuntimeException("Could not index directory " + rootPath + " using properties" + properties, e);
         }
     }
 
