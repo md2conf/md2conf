@@ -6,23 +6,12 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static io.github.md2conf.title.processor.WikiTitleExtractor.isConfluenceWikiHeaderLine;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class WikiTitleExtractorTest {
 
-    private WikiTitleExtractor titleExtractor = new WikiTitleExtractor();
+    private final WikiTitleExtractor titleExtractor = new WikiTitleExtractor();
 
-    @Test
-    void test_isConfluenceWikiHeaderLine() {
-        Assertions.assertThat(isConfluenceWikiHeaderLine("h1. abc")).isTrue();
-        Assertions.assertThat(isConfluenceWikiHeaderLine("h2. abc")).isTrue();
-        Assertions.assertThat(isConfluenceWikiHeaderLine("h3. abc")).isTrue();
-        Assertions.assertThat(isConfluenceWikiHeaderLine("   h3.")).isFalse();
-        Assertions.assertThat(isConfluenceWikiHeaderLine("   h3. 1")).isTrue();
-        Assertions.assertThat(isConfluenceWikiHeaderLine("h4. abc")).isFalse();
-        Assertions.assertThat(isConfluenceWikiHeaderLine("abc")).isFalse();
-    }
 
     @Test
     void extract_title_from_wiki_content_h1() throws IOException {

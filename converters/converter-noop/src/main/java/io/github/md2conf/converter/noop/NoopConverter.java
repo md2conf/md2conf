@@ -7,6 +7,7 @@ import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
+import io.github.md2conf.title.processor.WikiTitleRemover;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -17,10 +18,13 @@ import java.util.Map;
 public class NoopConverter implements Converter {
 
     private final PageStructureTitleProcessor pageStructureTitleProcessor;
+    private final boolean needToRemoveTitle;
 
-    public NoopConverter(PageStructureTitleProcessor pageStructureTitleProcessor) {
+    public NoopConverter(PageStructureTitleProcessor pageStructureTitleProcessor, boolean needToRemoveTitle) {
         this.pageStructureTitleProcessor = pageStructureTitleProcessor;
+        this.needToRemoveTitle = needToRemoveTitle;
     }
+
 
     @Override
     public ConfluenceContentModel convert(PagesStructure pagesStructure) throws IOException {
@@ -42,6 +46,9 @@ public class NoopConverter implements Converter {
         for (Page childPage : page.children()) {
             ConfluencePage childConfluencePage = createConfluencePage(childPage, titleMap);
             result.getChildren().add(childConfluencePage);
+        }
+        if (needToRemoveTitle){
+            WikiTitleRemover.removeTitle(page.path());
         }
         return result;
     }

@@ -12,7 +12,7 @@ public class WikiTitleExtractor implements TitleExtractor {
         Optional<String> lineWithHeader;
         try (Stream<String> lines = Files.lines(path)) {
             lineWithHeader = lines
-                    .filter(WikiTitleExtractor::isConfluenceWikiHeaderLine)
+                    .filter(WikiTitleUtil::isConfluenceWikiHeaderLine)
                     .findFirst();
         }
         return lineWithHeader.map(s -> s.trim()
@@ -20,11 +20,4 @@ public class WikiTitleExtractor implements TitleExtractor {
                 .orElseThrow(() -> new IllegalArgumentException("Cannot extract title from wiki content at path " + path));
     }
 
-    protected static boolean isConfluenceWikiHeaderLine(String v) {
-        String s = v.trim();
-        return (s.startsWith("h1.")
-                || s.startsWith("h2.")
-                || s.startsWith("h3."))
-                && s.length() > 3;
-    }
 }

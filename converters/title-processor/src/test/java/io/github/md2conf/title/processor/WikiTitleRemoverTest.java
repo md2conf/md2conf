@@ -1,7 +1,6 @@
 package io.github.md2conf.title.processor;
 
 import org.apache.commons.io.FileUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -9,10 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static io.github.md2conf.title.processor.TitleUtil.isConfluenceWikiHeaderLine;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TitleUtilTest {
+class WikiTitleRemoverTest {
 
     @TempDir
     Path tmpPath;
@@ -24,7 +22,7 @@ class TitleUtilTest {
         Path copied = Path.of(tmpPath.toString()).resolve(path);
         FileUtils.copyFile(file, copied.toFile());
         assertThat(copied).content().contains("h1. My header");
-        TitleUtil.removeTitleFromContentAtPath("My header", copied);
+        WikiTitleRemover.removeTitle(copied);
         assertThat(copied).content().doesNotContain("h1. My header");
         assertThat(copied).content().contains("h2. another header");
     }
@@ -36,7 +34,7 @@ class TitleUtilTest {
         Path copied = Path.of(tmpPath.toString()).resolve(path);
         FileUtils.copyFile(file, copied.toFile());
         assertThat(copied).content().contains("text");
-        TitleUtil.removeTitleFromContentAtPath("text", copied);
+        WikiTitleRemover.removeTitle(copied);
         assertThat(copied).content().contains("text");
     }
 

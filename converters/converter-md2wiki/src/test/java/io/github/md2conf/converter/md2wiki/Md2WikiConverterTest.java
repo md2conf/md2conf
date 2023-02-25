@@ -9,6 +9,7 @@ import io.github.md2conf.model.ConfluencePage;
 import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -31,7 +32,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_single_page() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false);
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -50,7 +51,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_page_tree() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false);
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -68,8 +69,25 @@ class Md2WikiConverterTest {
     }
 
     @Test
+    void convert_markdown_page_tree_heading_removed() throws IOException {
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, true);
+        var prop = new FileIndexerConfigurationProperties();
+        prop.setFileExtension("md");
+        FileIndexer fileIndexer = new DefaultFileIndexer(prop);
+        Path input = Paths.get("src/test/resources/markdown_page_tree");
+        Assertions.assertThat(input.resolve("index.md")).isRegularFile().content().contains("Heading");
+        PagesStructure pagesStructure = fileIndexer.indexPath(input);
+        assertThat(pagesStructure.pages()).hasSize(1);
+        ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
+        assertThat(model).isNotNull();
+        assertThat(model.getPages()).hasSize(1);
+        assertThat(model.getPages().get(0).getType()).isEqualTo(ConfluenceContentModel.Type.WIKI);
+        assertThat(outputPath.resolve("index.wiki")).isRegularFile().content().doesNotContain("Heading");
+    }
+
+    @Test
     void convert_markdown_page_tree_with_inline_local_image() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false);
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -87,7 +105,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_page_tree_with_local_attachment_link() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false);
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -105,7 +123,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_crosslinks() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false);
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
