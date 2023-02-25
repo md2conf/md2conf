@@ -7,7 +7,7 @@ import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
-import io.github.md2conf.title.processor.WikiTitleRemover;
+import io.github.md2conf.title.processor.wiki.WikiHeaderRemover;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,11 +18,11 @@ import java.util.Map;
 public class NoopConverter implements Converter {
 
     private final PageStructureTitleProcessor pageStructureTitleProcessor;
-    private final boolean needToRemoveTitle;
+    private final boolean needToRemoveHeaderWithTitle;
 
-    public NoopConverter(PageStructureTitleProcessor pageStructureTitleProcessor, boolean needToRemoveTitle) {
+    public NoopConverter(PageStructureTitleProcessor pageStructureTitleProcessor, boolean needToRemoveHeaderWithTitle) {
         this.pageStructureTitleProcessor = pageStructureTitleProcessor;
-        this.needToRemoveTitle = needToRemoveTitle;
+        this.needToRemoveHeaderWithTitle = needToRemoveHeaderWithTitle;
     }
 
 
@@ -47,8 +47,8 @@ public class NoopConverter implements Converter {
             ConfluencePage childConfluencePage = createConfluencePage(childPage, titleMap);
             result.getChildren().add(childConfluencePage);
         }
-        if (needToRemoveTitle){
-            WikiTitleRemover.removeTitle(page.path());
+        if (needToRemoveHeaderWithTitle){
+            WikiHeaderRemover.removeFirstHeader(page.path());
         }
         return result;
     }

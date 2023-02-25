@@ -1,6 +1,6 @@
-package io.github.md2conf.title.processor;
+package io.github.md2conf.title.processor.wiki;
 
-public class WikiTitleUtil {
+public class WikiHeaderUtil {
 
 
     protected static boolean isConfluenceWikiHeaderLine(String v) {

@@ -1,4 +1,4 @@
-package io.github.md2conf.title.processor;
+package io.github.md2conf.title.processor.wiki;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -12,17 +12,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static io.github.md2conf.title.processor.WikiTitleUtil.isConfluenceWikiHeaderLine;
+import static io.github.md2conf.title.processor.wiki.WikiHeaderUtil.isConfluenceWikiHeaderLine;
 
-public class WikiTitleRemover {
+public class WikiHeaderRemover {
 
-    private static final Logger logger = LoggerFactory.getLogger(WikiTitleRemover.class);
+    private static final Logger logger = LoggerFactory.getLogger(WikiHeaderRemover.class);
 
     /**
      * remove first title from content at path
      * @param path content path
      */
-    public static void removeTitle(Path path) {
+    public static void removeFirstHeader(Path path) {
         AtomicBoolean firstTitleFound = new AtomicBoolean(false);
         try (Stream<String> lines = Files.lines(path)) {
             String res = lines

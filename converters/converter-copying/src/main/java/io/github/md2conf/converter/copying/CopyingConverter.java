@@ -7,7 +7,7 @@ import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
-import io.github.md2conf.title.processor.WikiTitleRemover;
+import io.github.md2conf.title.processor.wiki.WikiHeaderRemover;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.file.PathUtils;
 
@@ -23,13 +23,13 @@ public class CopyingConverter implements Converter {
 
     private final PageStructureTitleProcessor pagesStructureTitleProcessor;
     private final Path outputPath;
-    private final boolean needToRemoveTitle;
+    private final boolean needToRemoveHeaderWithTitle;
 
 
-    public CopyingConverter(PageStructureTitleProcessor pagesStructureTitleProcessor, Path outputPath, boolean needToRemoveTitle) {
+    public CopyingConverter(PageStructureTitleProcessor pagesStructureTitleProcessor, Path outputPath, boolean needToRemoveHeaderWithTitle) {
         this.pagesStructureTitleProcessor = pagesStructureTitleProcessor;
         this.outputPath = outputPath;
-        this.needToRemoveTitle = needToRemoveTitle;
+        this.needToRemoveHeaderWithTitle = needToRemoveHeaderWithTitle;
     }
 
     @Override
@@ -65,8 +65,8 @@ public class CopyingConverter implements Converter {
                 result.getChildren().add(copyAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir), titleMap));
             }
         }
-        if (needToRemoveTitle){
-            WikiTitleRemover.removeTitle(targetPath);
+        if (needToRemoveHeaderWithTitle){
+            WikiHeaderRemover.removeFirstHeader(targetPath);
         }
         return result;
     }

@@ -1,4 +1,4 @@
-package io.github.md2conf.title.processor;
+package io.github.md2conf.title.processor.wiki;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

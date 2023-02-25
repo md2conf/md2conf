@@ -1,4 +1,4 @@
-package io.github.md2conf.title.processor;
+package io.github.md2conf.title.processor.wiki;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class WikiTitleRemoverTest {
         Path copied = Path.of(tmpPath.toString()).resolve(path);
         FileUtils.copyFile(file, copied.toFile());
         assertThat(copied).content().contains("h1. My header");
-        WikiTitleRemover.removeTitle(copied);
+        WikiHeaderRemover.removeFirstHeader(copied);
         assertThat(copied).content().doesNotContain("h1. My header");
         assertThat(copied).content().contains("h2. another header");
     }
@@ -34,7 +34,7 @@ class WikiTitleRemoverTest {
         Path copied = Path.of(tmpPath.toString()).resolve(path);
         FileUtils.copyFile(file, copied.toFile());
         assertThat(copied).content().contains("text");
-        WikiTitleRemover.removeTitle(copied);
+        WikiHeaderRemover.removeFirstHeader(copied);
         assertThat(copied).content().contains("text");
     }
 

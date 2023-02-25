@@ -1,11 +1,11 @@
-package io.github.md2conf.title.processor;
+package io.github.md2conf.title.processor.wiki;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static io.github.md2conf.title.processor.WikiTitleUtil.isConfluenceWikiHeaderLine;
+import static io.github.md2conf.title.processor.wiki.WikiHeaderUtil.isConfluenceWikiHeaderLine;
 
-class WikiTitleUtilTest {
+class WikiHeaderUtilTest {
 
     @Test
     void test_isConfluenceWikiHeaderLine() {

@@ -1,5 +1,6 @@
 package io.github.md2conf.title.processor;
 
+import io.github.md2conf.title.processor.wiki.WikiTitleExtractor;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;

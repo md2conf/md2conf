@@ -79,19 +79,19 @@ public class ConvertCommand implements Runnable {
                 convertOptions.titlePrefix,
                 convertOptions.titleSuffix,
                 convertOptions.titleChildPrefixed);
-        boolean needToRemoveTitle = convertOptions.titleRemoveFromContent!=null ?
+        boolean needToRemoveHeaderWithTitle = convertOptions.titleRemoveFromContent!=null ?
                 convertOptions.titleRemoveFromContent :
                 convertOptions.titleExtract.equals(TitleExtractStrategy.FROM_FIRST_HEADER);
         Converter converterService = null;
         switch (convertOptions.converter) {
             case MD2WIKI:
-                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle);
+                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveHeaderWithTitle);
                 break;
             case NO:
-                converterService = new NoopConverter(pageStructureTitleProcessor, needToRemoveTitle);
+                converterService = new NoopConverter(pageStructureTitleProcessor, needToRemoveHeaderWithTitle);
                 break;
             case COPYING:
-                converterService = new CopyingConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle);
+                converterService = new CopyingConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveHeaderWithTitle);
                 break;
         }
         return converterService;

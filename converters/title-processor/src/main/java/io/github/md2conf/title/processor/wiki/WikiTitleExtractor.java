@@ -1,4 +1,6 @@
-package io.github.md2conf.title.processor;
+package io.github.md2conf.title.processor.wiki;
+
+import io.github.md2conf.title.processor.TitleExtractor;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,7 +14,7 @@ public class WikiTitleExtractor implements TitleExtractor {
         Optional<String> lineWithHeader;
         try (Stream<String> lines = Files.lines(path)) {
             lineWithHeader = lines
-                    .filter(WikiTitleUtil::isConfluenceWikiHeaderLine)
+                    .filter(WikiHeaderUtil::isConfluenceWikiHeaderLine)
                     .findFirst();
         }
         return lineWithHeader.map(s -> s.trim()
