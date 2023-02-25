@@ -1,6 +1,5 @@
 package io.github.md2conf.toolset;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
@@ -10,6 +9,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ConvertCommandTest {
 
@@ -29,11 +30,11 @@ class ConvertCommandTest {
         cmd.setOut(new PrintWriter(swOut));
         cmd.setErr(new PrintWriter(swErr));
         int exitCode = cmd.execute("convert");
-        Assertions.assertThat(exitCode).isNotZero();
+        assertThat(exitCode).isNotZero();
         String errOut = swErr.toString();
-        Assertions.assertThat(swOut.toString()).isEmpty();
-        Assertions.assertThat(errOut).isNotEmpty().contains("Missing required argument");
-        Assertions.assertThat(errOut).doesNotContain("publish").doesNotContain("Exception");
+        assertThat(swOut.toString()).isEmpty();
+        assertThat(errOut).isNotEmpty().contains("Missing required argument");
+        assertThat(errOut).doesNotContain("publish").doesNotContain("Exception");
     }
 
     @Test
@@ -43,8 +44,8 @@ class ConvertCommandTest {
         cmd.setCaseInsensitiveEnumValuesAllowed(true);
         StringWriter swOut = new StringWriter();
         cmd.setOut(new PrintWriter(swOut));
-        int exitCode = cmd.execute("convert", "--converter=no", "--input-dir="+ emptyDir.toString());
-        Assertions.assertThat(exitCode).isZero();
+        int exitCode = cmd.execute("convert", "--converter=no", "--input-dir="+ emptyDir);
+        assertThat(exitCode).isZero();
     }
 
 
@@ -59,10 +60,10 @@ class ConvertCommandTest {
         CommandLine cmd = new CommandLine(mainApp);
         StringWriter swOut = new StringWriter();
         cmd.setOut(new PrintWriter(swOut));
-        int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ emptyDir.toString());
+        int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ emptyDir);
         try {
-            Assertions.assertThat(exitCode).isZero();
-            Assertions.assertThat(outContent.toString()).contains("Output directory is not specified, default is");
+            assertThat(exitCode).isZero();
+            assertThat(outContent.toString()).contains("Output directory is not specified, default is");
         }
         finally {
             System.setOut(originalOut);
@@ -77,10 +78,25 @@ class ConvertCommandTest {
         StringWriter swErr = new StringWriter();
         cmd.setOut(new PrintWriter(swOut));
         cmd.setErr(new PrintWriter(swErr));
-        int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ emptyDir.toString(), "-v",  "-o=" + outputPath.toString());
+        int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ emptyDir, "-v",  "-o=" + outputPath);
         String errOut = swErr.toString();
-        Assertions.assertThat(exitCode).isEqualTo(0);
-        Assertions.assertThat(errOut).doesNotContain("publish");
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(errOut).doesNotContain("publish");
+    }
+
+
+    @Test
+    void convert_non_existing_dir() {
+        MainApp mainApp = new MainApp();
+        CommandLine cmd = new CommandLine(mainApp);
+        StringWriter swOut = new StringWriter();
+        StringWriter swErr = new StringWriter();
+        cmd.setOut(new PrintWriter(swOut));
+        cmd.setErr(new PrintWriter(swErr));
+        int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ outputPath + "/non_exists", "-v",  "-o=" + outputPath);
+        String errOut = swErr.toString();
+        assertThat(exitCode).isNotZero();
+        assertThat(errOut).contains("Could not index directory");
     }
 
     @Test
@@ -92,11 +108,11 @@ class ConvertCommandTest {
         cmd.setOut(new PrintWriter(swOut));
         cmd.setErr(new PrintWriter(swErr));
         String inputDir = "src/test/resources/wiki_page_tree";
-        Assertions.assertThat(outputPath).isEmptyDirectory();
-        int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ inputDir, "-o=" + outputPath.toString());
-        Assertions.assertThat(exitCode).isEqualTo(0);
-        Assertions.assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
-        Assertions.assertThat(outputPath).isDirectoryNotContaining("glob:**/*.wiki");
+        assertThat(outputPath).isEmptyDirectory();
+        int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ inputDir, "-o=" + outputPath);
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
+        assertThat(outputPath).isDirectoryNotContaining("glob:**/*.wiki");
     }
 
     @Test
@@ -108,10 +124,42 @@ class ConvertCommandTest {
         cmd.setOut(new PrintWriter(swOut));
         cmd.setErr(new PrintWriter(swErr));
         String inputDir = "src/test/resources/wiki_page_tree";
-        Assertions.assertThat(outputPath).isEmptyDirectory();
-        int exitCode = cmd.execute("convert", "--converter=COPYING", "--input-dir="+ inputDir, "-o=" + outputPath.toString(), "--file-extension", "wiki");
-        Assertions.assertThat(exitCode).isEqualTo(0);
-        Assertions.assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
-        Assertions.assertThat(outputPath).isDirectoryContaining("glob:**/*.wiki");
+        assertThat(outputPath).isEmptyDirectory();
+        int exitCode = cmd.execute("convert", "--converter=COPYING", "--input-dir="+ inputDir, "-o=" + outputPath, "--file-extension", "wiki");
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
+        assertThat(outputPath).isDirectoryContaining("glob:**/*.wiki");
+    }
+
+    @Test
+    void invoke_md2wiki_converter() {
+        MainApp mainApp = new MainApp();
+        CommandLine cmd = new CommandLine(mainApp);
+        StringWriter swOut = new StringWriter();
+        StringWriter swErr = new StringWriter();
+        cmd.setOut(new PrintWriter(swOut));
+        cmd.setErr(new PrintWriter(swErr));
+        String inputDir = "src/test/resources/markdown_example";
+        assertThat(outputPath).isEmptyDirectory();
+        int exitCode = cmd.execute("convert", "--converter=MD2WIKI", "--input-dir="+ inputDir, "-o=" + outputPath);
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
+        assertThat(outputPath.resolve("index.wiki")).isRegularFile().content().doesNotContain("Header");
+    }
+
+    @Test
+    void invoke_md2wiki_converter_no_remove_first_header() {
+        MainApp mainApp = new MainApp();
+        CommandLine cmd = new CommandLine(mainApp);
+        StringWriter swOut = new StringWriter();
+        StringWriter swErr = new StringWriter();
+        cmd.setOut(new PrintWriter(swOut));
+        cmd.setErr(new PrintWriter(swErr));
+        String inputDir = "src/test/resources/markdown_example";
+        assertThat(outputPath).isEmptyDirectory();
+        int exitCode = cmd.execute("convert", "--converter=MD2WIKI", "--input-dir="+ inputDir, "-o=" + outputPath, "--title-remove-from-content=false");
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
+        assertThat(outputPath.resolve("index.wiki")).isRegularFile().content().contains("Header");
     }
 }
