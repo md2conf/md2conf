@@ -16,6 +16,30 @@ Notable features:
 This toolset designed to support "docs-as-code" approach to use markdown
 as a docs source and Confluence as a publishing platform.
 
+
+## Installation
+
+Download latest release from maven central
+
+### Play locally
+
+Need to have:  java and docker in your PATH, an input directory with markdown files.
+
+Start Confluence locally:
+
+```
+docker run -p 8090:8090 -p 8091:8091 qwazer/atlassian-sdk-confluence
+```
+After Confluence start it will be accessible at http://localhost:8090 with admin:admin credentials.
+
+
+Run this command
+
+```
+java md2conf-cli
+```
+
+
 ## Parts of md2conf toolset
 
 * **confluence-content-model** - an abstraction to model confluence
