@@ -107,8 +107,8 @@ public class ConvertCommand implements Runnable {
     }
 
     public static class ConvertOptions { //todo split on mandatory and additional
-        @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
-                defaultValue = "MD2WIKI",
+        @CommandLine.Option(names = {"-c", "--converter"},  description = "Valid values: md2wiki, copying, no",// description = "Valid values: ${COMPLETION-CANDIDATES}",
+                defaultValue = "md2wiki",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
         protected ConverterType converter = MD2WIKI;
         @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "input directory")
@@ -120,8 +120,8 @@ public class ConvertCommand implements Runnable {
         @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
         protected String excludePattern = "glob:**/.*";
 
-        @CommandLine.Option(names = {"-te", "--title-extract"}, description = "Strategy to extract title from file",
-                defaultValue = "FROM_FIRST_HEADER",
+        @CommandLine.Option(names = {"-te", "--title-extract"}, description = "Strategy to extract title from file. Valid values: from_first_header or from_filename",
+                defaultValue = "from_first_header",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
         protected TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
 
@@ -137,8 +137,8 @@ public class ConvertCommand implements Runnable {
     }
 
     public enum ConverterType {
-        NO,
+        MD2WIKI,
         COPYING,
-        MD2WIKI
+        NO
     }
 }

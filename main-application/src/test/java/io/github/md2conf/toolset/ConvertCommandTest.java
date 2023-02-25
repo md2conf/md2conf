@@ -151,6 +151,7 @@ class ConvertCommandTest {
     void invoke_md2wiki_converter_low_case() {
         MainApp mainApp = new MainApp();
         CommandLine cmd = new CommandLine(mainApp);
+        cmd.setCaseInsensitiveEnumValuesAllowed(true);
         StringWriter swOut = new StringWriter();
         StringWriter swErr = new StringWriter();
         cmd.setOut(new PrintWriter(swOut));
