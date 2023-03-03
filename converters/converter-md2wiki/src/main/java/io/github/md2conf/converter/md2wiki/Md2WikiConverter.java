@@ -111,14 +111,12 @@ public class Md2WikiConverter implements Converter {
                     relativePart.toString(),
                     FilenameUtils.removeExtension(targetPath.getFileName().toString()));
             Path childrenDir = outputPath.resolve(childrenDirAsStr);
-            if (!childrenDir.toFile().mkdirs()) {
-                throw new IOException("Cannot create dirs in " + childrenDir);
-            }
+            FileUtils.forceMkdir(childrenDir.toFile());
             for (Page childPage : page.children()) {
                 result.getChildren().add(convertAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir), titleMap));
             }
         }
-        if (needToRemoveTitle){
+        if (needToRemoveTitle) {
             WikiTitleRemover.removeTitle(targetPath);
         }
         return result;
@@ -127,5 +125,10 @@ public class Md2WikiConverter implements Converter {
     private static List<Path> extractLocalImagePaths(Page page, Node document) {
         Set<String> imageUrls = ImageUrlUtil.collectUrlsOfImages(document);
         return ImageFilePathUtil.filterExistingPaths(imageUrls, page.path().getParent());
+    }
+
+    @Override
+    public String toString() {
+        return "Md2WikiConverter";
     }
 }

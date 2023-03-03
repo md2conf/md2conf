@@ -1,6 +1,8 @@
 package io.github.md2conf.indexer;
 
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -14,6 +16,8 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class DefaultFileIndexer implements FileIndexer {
+
+    private static final Logger logger = LoggerFactory.getLogger(DefaultFileIndexer.class);
 
     private final FileIndexerConfigurationProperties properties;
     private final PathMatcher excludePathMatcher;
@@ -33,7 +37,8 @@ public class DefaultFileIndexer implements FileIndexer {
             List<DefaultPage> topLevelPages = findTopLevelPages(allPages, rootPath);
             return new DefaultPagesStructure(topLevelPages);
         } catch (IOException e) {
-            throw new RuntimeException("Could not index directory " + rootPath + " using properties" + properties, e);
+            logger.error("Could not index directory {} using properties {}", rootPath, properties); ;
+            throw new RuntimeException(e);
         }
     }
 
@@ -136,5 +141,4 @@ public class DefaultFileIndexer implements FileIndexer {
             return pages;
         }
     }
-
 }

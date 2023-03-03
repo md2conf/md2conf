@@ -52,11 +52,28 @@ class CopyingConverterTest {
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(2);
+        assertPageTreeResult();
+    }
+
+    private void assertPageTreeResult() {
         assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/parent.wiki");
         assertThat(outputPath.resolve("parent")).isDirectoryContaining("glob:**/child-1.wiki");
         assertThat(outputPath).isDirectoryContaining("glob:**/page-a.wiki");
         assertThat(outputPath).isDirectoryNotContaining("glob:**/child-1");
+    }
+
+    @Test
+    void copy_example_page_tree_twice() throws IOException {
+        CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath, false);
+        FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/example_page_tree"));
+        assertThat(pagesStructure.pages()).hasSize(2);
+        ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
+        model = copyingConverter.convert(pagesStructure);
+        assertThat(model).isNotNull();
+        assertThat(model.getPages()).hasSize(2);
+        assertPageTreeResult();
     }
 
     @Test

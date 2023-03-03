@@ -40,8 +40,10 @@ class ModelReadWriteUtilTest {
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
 
         Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).doesNotExist();
-        ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(confluenceContentModel, outputTmpDir);
+        File res =  ModelReadWriteUtil.saveConfluenceContentModelAtPath(confluenceContentModel, outputTmpDir);
 
+        Assertions.assertThat(res).isFile().hasFileName(ConfluenceContentModel.DEFAULT_FILE_NAME);
+        Assertions.assertThat(res.toString()).isEqualTo(outputTmpDir.toString()+"/"+ ConfluenceContentModel.DEFAULT_FILE_NAME);
         Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).exists();
         Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).isNotEmptyFile();
         Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).hasExtension("json");
@@ -56,14 +58,14 @@ class ModelReadWriteUtilTest {
         Path path =  Paths.get(absolutePathTo("single-page/single-page.wiki"));
         Assertions.assertThat(path).exists();
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> {
-            ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(new ConfluenceContentModel(), path );
+            ModelReadWriteUtil.saveConfluenceContentModelAtPath(new ConfluenceContentModel(), path );
         });
     }
 
     @Test
     void save_to_non_existing_dir() {
         String dir2 = UUID.randomUUID().toString();
-        ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(new ConfluenceContentModel(), Paths.get(outputTmpDir.toString(), dir2));
+        ModelReadWriteUtil.saveConfluenceContentModelAtPath(new ConfluenceContentModel(), Paths.get(outputTmpDir.toString(), dir2));
         Assertions.assertThat(Path.of(outputTmpDir.toString(), dir2, ConfluenceContentModel.DEFAULT_FILE_NAME)).exists();
         Assertions.assertThat(Path.of(outputTmpDir.toString(), dir2, ConfluenceContentModel.DEFAULT_FILE_NAME)).isNotEmptyFile();
     }

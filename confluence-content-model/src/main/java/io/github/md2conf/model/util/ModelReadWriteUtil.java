@@ -28,7 +28,12 @@ public class ModelReadWriteUtil {
         }
     }
 
-    public static void saveConfluenceContentModelToFilesystem(ConfluenceContentModel confluenceContentModel, Path outputPath) {
+    /**
+     * @param confluenceContentModel - confluenceContentModel to save
+     * @param outputPath - path to save confluenceContentModel
+     * @return Path to saved file
+     */
+    public static File saveConfluenceContentModelAtPath(ConfluenceContentModel confluenceContentModel, Path outputPath) {
         if (outputPath.toFile().exists() && !outputPath.toFile().isDirectory()) {
             throw new IllegalArgumentException("Output path is not a directory");
         }
@@ -42,6 +47,7 @@ public class ModelReadWriteUtil {
         } catch (IOException e) {
             throw new RuntimeException("Cannot save json to file " + jsonFile.getAbsoluteFile().getName(), e);
         }
+        return jsonFile;
     }
 
     private static void createDirectories(Path directoryPath) {
