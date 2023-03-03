@@ -96,7 +96,7 @@ class ConvertCommandTest {
         int exitCode = cmd.execute("convert", "--converter=NO", "--input-dir="+ outputPath + "/non_exists", "-v",  "-o=" + outputPath);
         String errOut = swErr.toString();
         assertThat(exitCode).isNotZero();
-        assertThat(errOut).contains("Could not index directory");
+        assertThat(errOut).contains("NoSuchFileException");
     }
 
     @Test
