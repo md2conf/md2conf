@@ -52,4 +52,9 @@ public class NoopConverter implements Converter {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "NoopConverter";
+    }
 }

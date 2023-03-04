@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static io.github.md2conf.model.util.ModelReadWriteUtil.saveConfluenceContentModelAtPath;
 import static io.github.md2conf.toolset.ConvertCommand.ConverterType.MD2WIKI;
 
 
@@ -49,7 +50,8 @@ public class ConvertCommand implements Runnable {
         PagesStructure pagesStructure = indexInputDirectory(convertOptions);
         Converter converterService = createConverter(convertOptions);
         ConfluenceContentModel model = convert(pagesStructure, converterService);
-        ModelReadWriteUtil.saveConfluenceContentModelToFilesystem(model, convertOptions.outputDirectory);
+        File contentModelFile = saveConfluenceContentModelAtPath(model, convertOptions.outputDirectory);
+        logger.info("Confluence content model saved at file {}", contentModelFile);
     }
 
 
@@ -61,6 +63,7 @@ public class ConvertCommand implements Runnable {
     }
 
     protected static PagesStructure indexInputDirectory(ConvertOptions convertOptions) {
+        logger.info("Indexing path {}", convertOptions.inputDirectory);
         FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
         fileIndexerConfigurationProperties.setFileExtension(convertOptions.fileExtension);
         fileIndexerConfigurationProperties.setExcludePattern(convertOptions.excludePattern);
@@ -98,6 +101,7 @@ public class ConvertCommand implements Runnable {
     }
 
     protected static ConfluenceContentModel convert(PagesStructure pagesStructure, Converter converterService) {
+        logger.info("Convert using {}" ,converterService);
         try {
             return converterService.convert(pagesStructure);
         } catch (IOException e) {

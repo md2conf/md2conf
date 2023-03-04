@@ -58,6 +58,10 @@ class Md2WikiConverterTest {
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
+        assertModelOfPageTree(model);
+    }
+
+    private void assertModelOfPageTree(ConfluenceContentModel model) {
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
         assertThat(model.getPages().get(0).getType()).isEqualTo(ConfluenceContentModel.Type.WIKI);
@@ -66,6 +70,19 @@ class Md2WikiConverterTest {
         assertThat(outputPath.resolve("index")).isDirectoryContaining("glob:**/child-1.wiki");
         assertThat(outputPath.resolve("index")).isDirectoryContaining("glob:**/child-2.wiki");
         assertThat(outputPath.resolve("index").resolve("child-1")).isDirectoryContaining("glob:**/sub-child-1.wiki");
+    }
+
+    @Test
+    void convert_markdown_page_tree_invoke_twice() throws IOException {
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false);
+        var prop = new FileIndexerConfigurationProperties();
+        prop.setFileExtension("md");
+        FileIndexer fileIndexer = new DefaultFileIndexer(prop);
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_page_tree"));
+        assertThat(pagesStructure.pages()).hasSize(1);
+        ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
+        model = md2WikiConverter.convert(pagesStructure);
+        assertModelOfPageTree(model);
     }
 
     @Test

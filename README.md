@@ -41,7 +41,7 @@ See results at http://localhost:8090/display/ds/Sample
 
 ### Publish to remote Confluence instance
 
-Change `url`, `space-key`, `parent-page-title`, `username`, `password` and run new command.
+Change `url`, `space-key`, `parent-page-title`, `username`, `password` in the command above and run.
 
 ## Main processing steps
 

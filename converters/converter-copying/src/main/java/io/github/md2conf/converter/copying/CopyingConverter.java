@@ -8,12 +8,14 @@ import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
 import io.github.md2conf.title.processor.WikiTitleRemover;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.file.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +48,7 @@ public class CopyingConverter implements Converter {
 
     private ConfluencePage copyAndCreateConfluencePage(Page page, Path relativePart, Map<Path, String> titleMap) throws IOException {
         //copy
-        Path targetPath = PathUtils.copyFileToDirectory(page.path(), outputPath.resolve(relativePart));
+        Path targetPath = PathUtils.copyFileToDirectory(page.path(), outputPath.resolve(relativePart), StandardCopyOption.REPLACE_EXISTING);
         List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments());
         // create ConfluencePage
         ConfluencePage result = new ConfluencePage();
@@ -58,9 +60,7 @@ public class CopyingConverter implements Converter {
                     relativePart.toString(),
                     FilenameUtils.removeExtension(targetPath.getFileName().toString()));
             Path childrenDir = outputPath.resolve(childrenDirAsStr);
-            if (!childrenDir.toFile().mkdirs()) {
-                throw new IOException("Cannot create dirs in " + childrenDir);
-            }
+            FileUtils.forceMkdir(childrenDir.toFile());
             for (Page childPage : page.children()) {
                 result.getChildren().add(copyAndCreateConfluencePage(childPage, outputPath.relativize(childrenDir), titleMap));
             }
@@ -71,4 +71,8 @@ public class CopyingConverter implements Converter {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "CopyingConverter";
+    }
 }
