@@ -23,7 +23,7 @@
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark</artifactId>
-            <version>${flexmart.version}</version>
+            <version>${flexmark.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
