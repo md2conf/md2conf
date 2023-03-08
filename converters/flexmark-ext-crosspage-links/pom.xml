@@ -23,24 +23,24 @@
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark</artifactId>
-            <version>${flexmart.version}</version>
+            <version>${flexmark.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-jira-converter</artifactId>
-            <version>${flexmart.version}</version>
+            <version>${flexmark.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-test-util</artifactId>
-            <version>${flexmart.version}</version>
+            <version>${flexmark.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-core-test</artifactId>
-            <version>${flexmart.version}</version>
+            <version>${flexmark.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
