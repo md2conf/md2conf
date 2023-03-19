@@ -12,6 +12,7 @@ import io.github.md2conf.converter.AttachmentUtil;
 import io.github.md2conf.converter.Converter;
 import io.github.md2conf.converter.md2wiki.attachment.ImageFilePathUtil;
 import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
+import io.github.md2conf.flexmart.ext.confluence.macros.ConfluenceMacroExtension;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension;
 import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLinkExtension;
 import io.github.md2conf.indexer.Page;
@@ -39,6 +40,7 @@ public class Md2WikiConverter implements Converter {
                     StrikethroughExtension.create(),
                     LocalAttachmentLinkExtension.create(),
                     CrosspageLinkExtension.create(),
+                    ConfluenceMacroExtension.create(),
                     JiraConverterExtension.create()
             ));
 
