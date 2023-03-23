@@ -66,3 +66,18 @@ Document[0, 28]
     Link[0, 28] textOpen:[0, 1, "["] text:[1, 10, "link_text"] textClose:[10, 11, "]"] linkOpen:[11, 12, "("] url:[12, 27, "/tmp/sample.txt"] pageRef:[12, 27, "/tmp/sample.txt"] linkClose:[27, 28, ")"]
       Text[1, 10] chars:[1, 10, "link_text"]
 ````````````````````````````````
+
+
+Link to existing page with space in name in subdirectory with space in name
+
+```````````````````````````````` example CrosspageLink transformer: 5
+[sample a](src/test/resources/dir%20a/sample%20space%20a.md)
+.
+[sample a|Sample page A]
+
+.
+Document[0, 60]
+  Paragraph[0, 60]
+    CrosspageLink[0, 60] textOpen:[0, 1, "["] text:[1, 9, "sample a"] textClose:[9, 10, "]"] linkOpen:[10, 11, "("] url:[11, 59, "src/test/resources/dir%20a/sample%20space%20a.md"] title:[0, 13, "Sample page A"] linkClose:[59, 60, ")"]
+      Text[1, 9] chars:[1, 9, "sample a"]
+````````````````````````````````
