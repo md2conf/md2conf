@@ -1,6 +1,5 @@
 package io.github.md2conf.indexer;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -8,6 +7,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import static io.github.md2conf.indexer.IndexerConfigurationPropertiesFactory.aDefaultIndexerConfigurationProperties;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 class DefaultFileIndexerTest {
@@ -15,13 +15,13 @@ class DefaultFileIndexerTest {
     @TempDir
     private Path tmpDir;
 
-    private DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+    private final DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
 
     @Test
     void index_empty_dir() {
         PagesStructure structure = defaultIndexer.indexPath(tmpDir);
-        Assertions.assertThat(structure).isNotNull();
-        Assertions.assertThat(structure.pages()).isEmpty();
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isEmpty();
     }
 
     @Test
@@ -29,8 +29,8 @@ class DefaultFileIndexerTest {
         String path = "src/test/resources/dir_with_hidden_files";
         File f = new File(path);
         PagesStructure structure = defaultIndexer.indexPath(f.toPath());
-        Assertions.assertThat(structure).isNotNull();
-        Assertions.assertThat(structure.pages()).isEmpty();
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isEmpty();
     }
 
     @Test
@@ -38,13 +38,13 @@ class DefaultFileIndexerTest {
         String path = "src/test/resources/dir_with_attachments";
         File f = new File(path);
         PagesStructure structure = defaultIndexer.indexPath(f.toPath());
-        Assertions.assertThat(structure).isNotNull();
-        Assertions.assertThat(structure.pages()).isNotEmpty();
-        Assertions.assertThat(structure.pages()).hasSize(1);
-        Assertions.assertThat(structure.pages().get(0)).isNotNull();
-        Assertions.assertThat(structure.pages().get(0).children()).isNotEmpty();
-        Assertions.assertThat(structure.pages().get(0).attachments()).isNotEmpty();
-        Assertions.assertThat(structure.pages().get(0).attachments()).hasSize(2);
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isNotEmpty();
+        assertThat(structure.pages()).hasSize(1);
+        assertThat(structure.pages().get(0)).isNotNull();
+        assertThat(structure.pages().get(0).children()).isNotEmpty();
+        assertThat(structure.pages().get(0).attachments()).isNotEmpty();
+        assertThat(structure.pages().get(0).attachments()).hasSize(2);
     }
 
     @Test
@@ -55,16 +55,16 @@ class DefaultFileIndexerTest {
                 .build());
         String path = "src/test/resources/dir_with_xml_files";
         Path rootDir = (new File(path)).toPath();
-        Assertions.assertThat(rootDir).isDirectory();
-        Assertions.assertThat(rootDir).isDirectoryContaining("glob:**.xml");
+        assertThat(rootDir).isDirectory();
+        assertThat(rootDir).isDirectoryContaining("glob:**.xml");
 
-        PagesStructure structure  = defaultIndexer.indexPath(rootDir);
-        Assertions.assertThat(structure).isNotNull();
-        Assertions.assertThat(structure.pages()).isNotEmpty();
-        Assertions.assertThat(structure.pages()).hasSize(1);
-        Assertions.assertThat(structure.pages().get(0).children()).hasSize(1);
-        Assertions.assertThat(structure.pages().get(0).children().get(0).children()).hasSize(1);
-        Assertions.assertThat(structure.pages().get(0).children().get(0).children().get(0).children()).isEmpty();
+        PagesStructure structure = defaultIndexer.indexPath(rootDir);
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isNotEmpty();
+        assertThat(structure.pages()).hasSize(1);
+        assertThat(structure.pages().get(0).children()).hasSize(1);
+        assertThat(structure.pages().get(0).children().get(0).children()).hasSize(1);
+        assertThat(structure.pages().get(0).children().get(0).children().get(0).children()).isEmpty();
     }
 
     @Test
@@ -75,14 +75,51 @@ class DefaultFileIndexerTest {
                 .build());
         String path = "src/test/resources/dir_with_name_collision";
         Path rootDir = (new File(path)).toPath();
-        Assertions.assertThat(rootDir).isDirectory();
-        Assertions.assertThat(rootDir).isDirectoryContaining("glob:**.wiki");
+        assertThat(rootDir).isDirectory();
+        assertThat(rootDir).isDirectoryContaining("glob:**.wiki");
 
         PagesStructure model = defaultIndexer.indexPath(rootDir);
-        Assertions.assertThat(model).isNotNull();
-        Assertions.assertThat(model.pages()).isNotEmpty();
-        Assertions.assertThat(model.pages()).hasSize(1);
-        Assertions.assertThat(model.pages().get(0).children()).hasSize(1);
-        Assertions.assertThat(model.pages().get(0).children().get(0).children()).isEmpty();
+        assertThat(model).isNotNull();
+        assertThat(model.pages()).isNotEmpty();
+        assertThat(model.pages()).hasSize(1);
+        assertThat(model.pages().get(0).children()).hasSize(1);
+        assertThat(model.pages().get(0).children().get(0).children()).isEmpty();
+    }
+
+    @Test
+    void index_dir_with_dir_with_several_pages_and_no_root_path() {
+        FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
+        markdownProps.setFileExtension("md");
+        markdownProps.setRootPage(null);
+        DefaultFileIndexer markdownIndexer = new DefaultFileIndexer(markdownProps);
+        String path = "src/test/resources/dir_with_several_pages";
+        File f = new File(path);
+        PagesStructure structure = markdownIndexer.indexPath(f.toPath());
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isNotEmpty();
+        assertThat(structure.pages()).hasSize(3);
+        assertThat(structure.pages()).filteredOn(page -> page.path().endsWith("page_a.md")).singleElement().matches(v -> v.children().size() == 2);
+        assertThat(structure.pages()).filteredOn(page -> page.path().endsWith("page_b.md")).singleElement().matches(v -> v.children().isEmpty());
+        assertThat(structure.pages()).filteredOn(page -> page.path().endsWith("index.md")).hasSize(1);
+    }
+
+    @Test
+    void index_dir_with_dir_with_several_pages_and_root_path_specified() {
+        FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
+        markdownProps.setFileExtension("md");
+        markdownProps.setRootPage("index.md");
+        DefaultFileIndexer markdownIndexer = new DefaultFileIndexer(markdownProps);
+        String path = "src/test/resources/dir_with_several_pages";
+        File f = new File(path);
+        PagesStructure structure = markdownIndexer.indexPath(f.toPath());
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isNotEmpty();
+        assertThat(structure.pages()).hasSize(1);
+        assertThat(structure.pages()).filteredOn(page -> page.path().endsWith("page_a.md")).isEmpty();
+        assertThat(structure.pages()).filteredOn(page -> page.path().endsWith("page_b.md")).isEmpty();
+        assertThat(structure.pages()).filteredOn(page -> page.path().endsWith("index.md")).hasSize(1);
+        assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("page_a.md")).singleElement().matches(v -> v.children().size() == 2);
+        assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("page_b.md")).singleElement().matches(v -> v.children().isEmpty());
+
     }
 }

@@ -9,7 +9,6 @@ import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
-import io.github.md2conf.model.util.ModelReadWriteUtil;
 import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
@@ -67,6 +66,7 @@ public class ConvertCommand implements Runnable {
         FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
         fileIndexerConfigurationProperties.setFileExtension(convertOptions.fileExtension);
         fileIndexerConfigurationProperties.setExcludePattern(convertOptions.excludePattern);
+        fileIndexerConfigurationProperties.setRootPage(convertOptions.indexerRootPage);
         FileIndexer fileIndexer = new DefaultFileIndexer(fileIndexerConfigurationProperties);
         PagesStructure pagesStructure = fileIndexer.indexPath(convertOptions.inputDirectory);
         if (pagesStructure.pages().isEmpty()) {
@@ -123,6 +123,8 @@ public class ConvertCommand implements Runnable {
         protected String fileExtension = "md"; //todo change fileExtension based on converter
         @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
         protected String excludePattern = "glob:**/.*";
+        @CommandLine.Option(names = {"--indexer-root-page"}, description = "Use specified page as parent page for all another top-level pages in an input directory")
+        protected String indexerRootPage = null;
 
         @CommandLine.Option(names = {"-te", "--title-extract"}, description = "Strategy to extract title from file",
                 defaultValue = "FROM_FIRST_HEADER",
