@@ -7,6 +7,7 @@ import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.ast.NodeTracker;
 import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.misc.Utils;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLink;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension;
@@ -39,7 +40,7 @@ public class CrosspageLinkPostProcessor extends NodePostProcessor {
             if (currentFilePath==null){
                 return;
             }
-            Path relative = currentFilePath.resolve(url);
+            Path relative = currentFilePath.resolve(Utils.urlDecode(url, "UTF-8"));
             Path absolute = Path.of(url);
             final Path resolvedPath;
             if (isRegularFileExists(relative)) {

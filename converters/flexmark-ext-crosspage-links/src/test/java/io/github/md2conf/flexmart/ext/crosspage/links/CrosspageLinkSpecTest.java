@@ -23,7 +23,8 @@ public class CrosspageLinkSpecTest extends RendererSpecTest {
     final public static @NotNull ResourceLocation RESOURCE_LOCATION = ResourceLocation.of(SPEC_RESOURCE);
 
     final private static Map<Path,String> titleMap =
-            Map.of(Path.of("src/test/resources/sample_page.md").toAbsolutePath(), "sample_page");
+            Map.of(Path.of("src/test/resources/sample_page.md").toAbsolutePath(), "sample_page",
+                  Path.of("src/test/resources/dir a/sample space a.md").toAbsolutePath(), "Sample page A" );
 
     final private static DataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(
