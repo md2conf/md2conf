@@ -9,6 +9,8 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import static io.github.md2conf.indexer.PathNameUtils.attachmentsDirectoryByPagePath;
 import static java.util.Collections.unmodifiableList;
@@ -35,21 +37,43 @@ public class DefaultFileIndexer implements FileIndexer {
             List<DefaultPage> allPages = linkPagesToParent(pageIndex);
             allPages.forEach(this::findAttachments);
             List<DefaultPage> topLevelPages = findTopLevelPages(allPages, rootPath);
-            return new DefaultPagesStructure(topLevelPages);
+            Optional<DefaultPage> rootPage = findRootPage(topLevelPages);
+            if (rootPage.isPresent() && topLevelPages.size()>1){
+                relinkTopLevelPagesToRoot(rootPage.get(), topLevelPages);
+                return new DefaultPagesStructure(List.of(rootPage.get()));
+            } else {
+                return new DefaultPagesStructure(topLevelPages);
+            }
         } catch (IOException e) {
             logger.error("Could not index directory {} using properties {}", rootPath, properties); ;
             throw new RuntimeException(e);
         }
     }
 
-
-    private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
-        return Files.walk(rootPath)
-                    .filter((path) -> isIncluded(path) && isNotExcluded(path))
-                    .collect(toMap(PathNameUtils::removeExtension,
-                            DefaultPage::new));
+    private static void relinkTopLevelPagesToRoot(DefaultPage rootPage, List<DefaultPage> topLevelPages) {
+        topLevelPages.stream()
+                .filter(v->!v.equals(rootPage))
+                .forEach(v->rootPage.addChild(v));
     }
 
+    private Optional<DefaultPage> findRootPage(List<DefaultPage> topLevelPages) {
+        String rootPage = properties.getRootPage();
+        if (properties.getRootPage()==null){
+            return Optional.empty();
+        }
+        return topLevelPages.stream()
+                .filter(p->p.path.getFileName().toString().equals(rootPage))
+                .findFirst();
+    }
+
+
+    private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
+        try (Stream<Path> stream = Files.walk(rootPath)){
+            return stream.filter((path) -> isIncluded(path) && isNotExcluded(path))
+                    .collect(toMap(PathNameUtils::removeExtension,
+                            DefaultPage::new));
+        }
+    }
 
 
     private void findAttachments(DefaultPage page) {
@@ -58,9 +82,8 @@ public class DefaultFileIndexer implements FileIndexer {
             return;
         }
         List<Path> list;
-        try {
-            list = Files.walk(attachmentsDirectoryByPagePath(page.path()), 1)
-                        .filter((path) ->  path.toFile().isFile() && isNotExcluded(path))
+        try (Stream<Path> stream = Files.walk(attachmentsDirectoryByPagePath(page.path()), 1)){
+            list = stream.filter((path) ->  path.toFile().isFile() && isNotExcluded(path))
                         .collect(toList());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);

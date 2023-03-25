@@ -10,6 +10,7 @@ public class FileIndexerConfigurationProperties {
 //    private String attachmentDirectoryBaseName;
 //    private String childrenDirectorySuffix;
 //    private String childrenDirectoryBaseName;
+    private String rootPage = null;
 
     public String getExcludePattern() {
         return excludePattern;
@@ -27,11 +28,20 @@ public class FileIndexerConfigurationProperties {
         this.fileExtension = fileExtension;
     }
 
+    public String getRootPage() {
+        return rootPage;
+    }
+
+    public void setRootPage(String rootPage) {
+        this.rootPage = rootPage;
+    }
+
     @Override
     public String toString() {
         return "FileIndexerConfigurationProperties{" +
                 "fileExtension='" + fileExtension + '\'' +
                 ", excludePattern='" + excludePattern + '\'' +
+                ", rootPage='" + rootPage + '\'' +
                 '}';
     }
 }
