@@ -25,6 +25,10 @@
     <version>0.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <name>md2conf</name>
+    <description>Set of tools to convert and publish directories with markdown files to Confluence</description>
+    <url>https://github.com/md2conf/md2conf</url>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -58,17 +62,22 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M5</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.5.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -172,9 +181,6 @@
                             <includes>
                                 <include>**/*IntegrationTest.java</include>
                             </includes>
-                            <systemPropertyVariables>
-                                <confluence-publisher.version>${project.version}</confluence-publisher.version>
-                            </systemPropertyVariables>
                         </configuration>
                         <executions>
                             <execution>
@@ -220,5 +226,27 @@
             </build>
         </profile>
     </profiles>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>qwazer</name>
+            <email>md2conf@google.com</email>
+            <organization>md2conf</organization>
+            <organizationUrl>https://github.com/md2conf</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/md2conf/md2conf.git</connection>
+        <developerConnection>scm:git:ssh://github.com:md2conf/md2conf.git</developerConnection>
+        <url>https://github.com/md2conf/md2conf.git</url>
+    </scm>
 
 </project>
