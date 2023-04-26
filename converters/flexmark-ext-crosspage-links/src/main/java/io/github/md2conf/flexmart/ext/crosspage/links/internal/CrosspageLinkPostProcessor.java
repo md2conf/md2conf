@@ -44,9 +44,9 @@ public class CrosspageLinkPostProcessor extends NodePostProcessor {
             Path absolute = Path.of(url);
             final Path resolvedPath;
             if (isRegularFileExists(relative)) {
-                resolvedPath = relative;
+                resolvedPath = relative.normalize();
             } else if (isRegularFileExists(absolute)) {
-                resolvedPath = absolute;
+                resolvedPath = absolute.normalize();
             } else {
                 return;
             }
