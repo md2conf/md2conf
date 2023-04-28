@@ -44,7 +44,7 @@ public class DefaultPageStructureTitleProcessor implements PageStructureTitlePro
         if (titleSuffix != null && !titleSuffix.isBlank() && !(isRoot && titleChildPrefixed)) {
             sb.append(" - ").append(titleSuffix);
         }
-        hashMap.put(page.path().toAbsolutePath(), sb.toString());
+        hashMap.put(page.path().normalize().toAbsolutePath(), sb.toString());
         for (Page child : page.children()) {
             String childPrefix = isRoot && titleChildPrefixed ? extracted : titlePrefix;
             String childSuffix = isRoot && titleChildPrefixed ? null : titleSuffix;
