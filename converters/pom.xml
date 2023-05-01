@@ -7,12 +7,12 @@
     <parent>
         <groupId>io.github.md2conf</groupId>
         <artifactId>md2conf-parent</artifactId>
-        <version>0.0.5</version>
+        <version>0.0.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>converters</artifactId>
     <packaging>pom</packaging>
-    <version>0.0.5</version>
+    <version>0.0.6-SNAPSHOT</version>
 
 
     <modules>
