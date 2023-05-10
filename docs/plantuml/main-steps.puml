@@ -1,0 +1,19 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+'left to right direction
+
+|#lightblue|f| filesystem
+|#palegreen|md2conf| md2conf
+|#gold|c| confluence
+|f|
+start
+:input directory]
+|md2conf|
+:index directory;
+:convert;
+:publish;
+|c|
+:published pages]
+stop
+
+@enduml

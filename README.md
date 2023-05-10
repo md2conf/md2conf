@@ -1,4 +1,5 @@
-[![status](https://img.shields.io/badge/STATUS-DEVELOPING-important)](https://img.shields.io/badge/STATUS-DEVELOPING-important)
+[![status](https://img.shields.io/badge/STATUS-MVP_RELEASED-lightyellow)](https://img.shields.io/badge/STATUS-MVP_RELEASED-lightyellow)
+[![maven-central](https://img.shields.io/maven-central/v/io.github.md2conf/md2conf-cli.svg)](https://search.maven.org/artifact/io.github.md2conf/md2conf-cli)
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
 # md2conf toolset
@@ -17,7 +18,7 @@ as a docs source and Confluence as a publishing platform.
 
 ## Installation
 
-Download latest release from maven central
+Download the latest release from maven central
 
 ### Play locally
 
@@ -50,6 +51,8 @@ Change `url`, `space-key`, `parent-page-title`, `username`, `password` in the co
 2. Convert page structure to Confluence Content Model with set of Confluence Pages. Each Confluence Page receive
    confluence-specific attributes like "title", "labels" and "type" ("storage" or "wiki").
 3. Publish Confluence Content Model to a Confluence Instance via Confluence REST API.
+
+![main-steps.png](docs%2Fplantuml%2Fmain-steps.png)
 
 ### Index by file-indexer
 
@@ -105,6 +108,12 @@ Commands:
 'confluence-content-model' is a representation of Confluence page trees and
 attachments on a local filesystem. See 'md2conf help model' for details.
 ```
+
+
+### Maven plugin
+
+
+
 
 ### History and Motivation
 

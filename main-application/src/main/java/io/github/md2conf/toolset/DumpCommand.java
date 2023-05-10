@@ -16,10 +16,8 @@ public class DumpCommand  implements Runnable {
     LoggingMixin loggingMixin;
 
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
-    PublishCommand.MandatoryPublishOptions mandatoryPublishOptions; //todo split & rename ??
+    PublishCommand.PublishOptions publishOptions; //todo split & rename ??
 
-    @CommandLine.ArgGroup(exclusive = false, heading = "Additional publish options\n")
-    PublishCommand.AdditionalPublishOptions additionalPublishOptions;
 
     @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
     protected Path outputDirectory;
@@ -27,13 +25,13 @@ public class DumpCommand  implements Runnable {
 
     @Override
     public void run() {
-        PublishConfluenceClient confluenceClient = prepareConfluenceClient(mandatoryPublishOptions, additionalPublishOptions);
+        PublishConfluenceClient confluenceClient = prepareConfluenceClient(publishOptions);
      //todo   confluenceClient.publish();
     }
 
     @NotNull
-    protected static PublishConfluenceClient prepareConfluenceClient(PublishCommand.MandatoryPublishOptions mandatory, PublishCommand.AdditionalPublishOptions additional) { //todo try to generify
-        var clientProps = buildConfluenceClientConfigurationProperties(mandatory, additional);
+    protected static PublishConfluenceClient prepareConfluenceClient(PublishCommand.PublishOptions mandatory) { //todo try to generify
+        var clientProps = buildConfluenceClientConfigurationProperties(mandatory);
         return ConfluenceClientFactory.publishConfluenceClient(clientProps, new ConfluenceContentModel(), null);
 
     }

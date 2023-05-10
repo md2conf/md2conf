@@ -53,6 +53,7 @@
         <module>confluence-client</module>
         <module>main-application</module>
         <module>md2conf-cli</module>
+        <module>md2conf-maven-plugin</module>
     </modules>
 
 
@@ -198,6 +199,9 @@
                             <includes>
                                 <include>**/*IntegrationTest.java</include>
                             </includes>
+                            <systemProperties>
+                                <md2conf.version>${project.version}</md2conf.version>
+                            </systemProperties>
                         </configuration>
                         <executions>
                             <execution>

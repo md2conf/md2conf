@@ -1,0 +1,12 @@
+{
+  "pages": [
+    {
+      "title": "Example Single Page converted",
+      "contentFilePath": "src/it/resources/single-page-converted/example.wiki",
+      "type": "WIKI",
+      "children": [],
+      "attachments": {},
+      "labels": []
+    }
+  ]
+}
