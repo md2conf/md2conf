@@ -4,7 +4,6 @@ import io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperti
 import io.github.md2conf.confluence.client.ConfluenceClientFactory;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.model.ConfluenceContentModel;
-import org.apache.commons.io.file.PathUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,84 +20,84 @@ public class PublishCommand implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(PublishCommand.class);
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
-    protected MandatoryPublishOptions mandatory;
-    @CommandLine.ArgGroup(exclusive = false, heading = "Additional publish options\n")
-    protected AdditionalPublishOptions additional;
+    protected PublishOptions publishOptions;
+
+    @CommandLine.Option(names = {"-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file. Default value is current working directory.", defaultValue = ".", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    public Path confluenceContentModelPath;
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
     @Override
     public void run() {
-        var model = loadConfluenceContentModel(mandatory, PathUtils.current());
-        var clientProps = buildConfluenceClientConfigurationProperties(mandatory, additional);
-        var publishConfluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null); //todo listener
+        publish(publishOptions,  confluenceContentModelPath);
+    }
+
+    public static void publish(PublishOptions mandatory, Path confluenceContentModelPath) {
+        var model = loadConfluenceContentModel(confluenceContentModelPath);
+        var clientProps = buildConfluenceClientConfigurationProperties(mandatory);
+        var publishConfluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null); //todo add listener?
         publishConfluenceClient.publish(model, mandatory.spaceKey, mandatory.parentPageTitle);
     }
 
 
-
-    protected static ConfluenceClientConfigurationProperties buildConfluenceClientConfigurationProperties(MandatoryPublishOptions options, AdditionalPublishOptions additional){
-        var propertiesBuilder = aConfluenceClientConfigurationProperties()
+    protected static ConfluenceClientConfigurationProperties buildConfluenceClientConfigurationProperties(PublishOptions options) {
+        return aConfluenceClientConfigurationProperties()
                 .withConfluenceUrl(options.confluenceUrl)
                 .withParentPageTitle(options.parentPageTitle)
                 .withPasswordOrPersonalAccessToken(options.password)
                 .withSpaceKey(options.spaceKey)
-                .withUsername(options.username);
-        if (additional != null) {
-            propertiesBuilder.withMaxRequestsPerSecond(additional.maxRequestsPerSecond)
-                             .withVersionMessage(additional.versionMessage)
-                             .withSkipSslVerification(additional.skipSslVerification)
-                             .withNotifyWatchers(additional.notifyWatchers)
-                             .withOrphanRemovalStrategy(additional.orphanRemovalStrategy);
-        }
-        return propertiesBuilder.build();
+                .withUsername(options.username)
+                .withMaxRequestsPerSecond(options.maxRequestsPerSecond)
+                .withVersionMessage(options.versionMessage)
+                .withSkipSslVerification(options.skipSslVerification)
+                .withNotifyWatchers(options.notifyWatchers)
+                .withOrphanRemovalStrategy(options.orphanRemovalStrategy)
+                .build();
     }
 
-    protected static ConfluenceContentModel loadConfluenceContentModel(MandatoryPublishOptions options, Path searchDir) {
-        Path path = findFilePathWithModel(options, searchDir);
-        if (!path.toFile().exists()) {
-            throw new IllegalArgumentException("File doesn't exists at path " + path);
+    protected static ConfluenceContentModel loadConfluenceContentModel(Path confluenceContentModelPath) {
+        Path modelFilePath;
+        if (confluenceContentModelPath.toFile().isDirectory()){
+            modelFilePath = findFilePathWithModel(confluenceContentModelPath);
+        }else{
+            modelFilePath = confluenceContentModelPath;
         }
-        return readFromYamlOrJson(path.toFile());
+        if (!modelFilePath.toFile().exists()) {
+            throw new IllegalArgumentException("File doesn't exists at path " + modelFilePath);
+        }
+        return readFromYamlOrJson(modelFilePath.toFile());
     }
 
     @NotNull
-    private static Path findFilePathWithModel(MandatoryPublishOptions options, Path searchDir) {
-        Path result = options.confluenceContentModelPath;
-        if (result==null){
-            result = searchDir.resolve(ConfluenceContentModel.DEFAULT_FILE_NAME);
-            logger.info("Load confluence content model from "  + result);
-        }
-        return  result;
+    private static Path findFilePathWithModel(Path searchDir) {
+        var result = searchDir.resolve(ConfluenceContentModel.DEFAULT_FILE_NAME);
+        logger.info("Load confluence content model from " + result);
+        return result;
     }
 
-    public static class MandatoryPublishOptions {
+    public static class PublishOptions {
         @CommandLine.Option(names = {"-url", "--confluence-url"}, required = true, description = "The root URL of the Confluence instance", order = 1)
-        protected String confluenceUrl;
+        public String confluenceUrl;
         @CommandLine.Option(names = {/*"-user",*/ "--username"}, description = "Username of the Confluence user", order = 2)
-        protected String username;
+        public String username;
         @CommandLine.Option(names = {/*"-p",*/ "--password"}, description = "The password or personal access token of the user", order = 3)
-        protected String password;
+        public String password;
         @CommandLine.Option(names = {"-s", "--space-key"}, required = true, description = "The key of the Confluence space", order = 4)
-        protected String spaceKey;
+        public String spaceKey;
         @CommandLine.Option(names = {"-pt", "--parent-page-title"}, required = true, description = "The parent page to publish `confluence-content-model`", order = 5)
-        protected String parentPageTitle;
-        @CommandLine.Option(names = {"-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file.")
-        protected Path confluenceContentModelPath; //todo move to additional? review from compub point of view
-    }
-
-    public static class AdditionalPublishOptions {
-        @CommandLine.Option(names = {"--version-message"}, description = "Version message", defaultValue = "Published by md2conf", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected String versionMessage = "Published by md2conf";
+        public String parentPageTitle;
+        @CommandLine.Option(names = {"--skip-ssl-verification"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 6)
+        public boolean skipSslVerification = false;
         @CommandLine.Option(names = {"--orphan-removal-strategy"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "KEEP_ORPHANS",
-                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected OrphanRemovalStrategy orphanRemovalStrategy;
-        @CommandLine.Option(names = {"--notify-watchers"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected boolean notifyWatchers = false;
-        @CommandLine.Option(names = {"--skip-ssl-verification"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected boolean skipSslVerification = false;
-        @CommandLine.Option(names = {"--max-requests-per-second"})
-        protected Double maxRequestsPerSecond;
+                showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 7)
+        public OrphanRemovalStrategy orphanRemovalStrategy;
+        @CommandLine.Option(names = {"--notify-watchers"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 8)
+        public boolean notifyWatchers = false;
+        @CommandLine.Option(names = {"--max-requests-per-second"}, order = 9)
+        public Double maxRequestsPerSecond;
+        @CommandLine.Option(names = {"--version-message"}, description = "Version message", defaultValue = "Published by md2conf", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 10)
+        public String versionMessage = "Published by md2conf";
     }
+
 }

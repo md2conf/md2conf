@@ -44,13 +44,14 @@ public class ConvertCommand implements Runnable {
         convert(this.convertOptions);
     }
 
-    protected static void convert(ConvertOptions convertOptions) {
+    public static File convert(ConvertOptions convertOptions) {
         initOptionsIfRequired(convertOptions);
         PagesStructure pagesStructure = indexInputDirectory(convertOptions);
         Converter converterService = createConverter(convertOptions);
         ConfluenceContentModel model = convert(pagesStructure, converterService);
         File contentModelFile = saveConfluenceContentModelAtPath(model, convertOptions.outputDirectory);
         logger.info("Confluence content model saved at file {}", contentModelFile);
+        return contentModelFile;
     }
 
 
@@ -114,31 +115,31 @@ public class ConvertCommand implements Runnable {
         @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "MD2WIKI",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected ConverterType converter = MD2WIKI;
+        public ConverterType converter = MD2WIKI;
         @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "input directory")
-        protected Path inputDirectory;
+        public Path inputDirectory;
         @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
-        protected Path outputDirectory;
+        public Path outputDirectory;
         @CommandLine.Option(names = {"--file-extension"}, description = "file extension to index as confluence content pages")
-        protected String fileExtension = "md"; //todo change fileExtension based on converter
+        public String fileExtension = "md"; //todo change fileExtension based on converter
         @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
-        protected String excludePattern = "glob:**/.*";
+        public String excludePattern = "glob:**/.*";
         @CommandLine.Option(names = {"--indexer-root-page"}, description = "Use specified page as parent page for all another top-level pages in an input directory")
-        protected String indexerRootPage = null;
+        public String indexerRootPage = null;
 
         @CommandLine.Option(names = {"-te", "--title-extract"}, description = "Strategy to extract title from file",
                 defaultValue = "FROM_FIRST_HEADER",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        protected TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
+        public TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
 
         @CommandLine.Option(names = {"-tp", "--title-prefix"}, description = "Title prefix common for all pages")
-        private String titlePrefix;
+        public String titlePrefix;
         @CommandLine.Option(names = {"-ts","--title-suffix"}, description = "Title suffix common for all pages")
-        private String titleSuffix;
+        public String titleSuffix;
         @CommandLine.Option(names = {"-tc", "--title-child-prefixed"}, description = "Add title prefix of root page if page is a child")
-        private boolean titleChildPrefixed;
+        public boolean titleChildPrefixed;
         @CommandLine.Option(names = {"-tr", "--title-remove-from-content"}, description = "Remove title from converted content, to avoid duplicate titles rendering in an Confluence")
-        private Boolean titleRemoveFromContent;
+        public Boolean titleRemoveFromContent;
 
     }
 
