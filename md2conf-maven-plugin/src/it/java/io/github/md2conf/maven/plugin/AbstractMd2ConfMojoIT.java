@@ -15,7 +15,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.joining;
 import static org.apache.maven.shared.verifier.util.ResourceExtractor.extractResourcePath;
 
-public class AbstractMd2ConfMojoIntegrationTest {
+public class AbstractMd2ConfMojoIT {
 
 
     @TempDir

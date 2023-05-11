@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ConvertMojoIntegrationTest extends AbstractMd2ConfMojoIntegrationTest {
+class ConvertMojoIT extends AbstractMd2ConfMojoIT {
 
     @Test
     void simple_convert() {

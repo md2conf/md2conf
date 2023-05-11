@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ConPubMojoIntegrationTest extends  AbstractMd2ConfMojoIntegrationTest{
+public class ConPubMojoIT extends AbstractMd2ConfMojoIT {
 
     @Test
     void skip() {
