@@ -64,7 +64,7 @@ public class PublishConfluenceClient {
         this.publishingStrategy = publishingStrategy;
         this.orphanRemovalStrategy = orphanRemovalStrategy;
         this.apiInternalClient = apiInternalClient;
-        this.publishConfluenceClientListener = publishConfluenceClientListener != null ? publishConfluenceClientListener : new NoOpPublishConfluenceClientListener();
+        this.publishConfluenceClientListener = publishConfluenceClientListener != null ? publishConfluenceClientListener : new DefaultPublishConfluenceClientListener();
         this.versionMessage = versionMessage;
         this.notifyWatchers = notifyWatchers;
     }
@@ -289,39 +289,6 @@ public class PublishConfluenceClient {
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Could not find attachment ", e);
         }
-    }
-
-
-    private static class NoOpPublishConfluenceClientListener implements PublishConfluenceClientListener {
-
-        @Override
-        public void pageAdded(ConfluenceApiPage addedPage) {
-        }
-
-        @Override
-        public void pageUpdated(ConfluenceApiPage existingPage, ConfluenceApiPage updatedPage) {
-        }
-
-        @Override
-        public void pageDeleted(ConfluenceApiPage deletedPage) {
-        }
-
-        @Override
-        public void attachmentAdded(String attachmentFileName, String contentId) {
-        }
-
-        @Override
-        public void attachmentUpdated(String attachmentFileName, String contentId) {
-        }
-
-        @Override
-        public void attachmentDeleted(String attachmentFileName, String contentId) {
-        }
-
-        @Override
-        public void publishCompleted() {
-        }
-
     }
 
 
