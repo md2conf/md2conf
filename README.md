@@ -52,7 +52,7 @@ Change `url`, `space-key`, `parent-page-title`, `username`, `password` in the co
    confluence-specific attributes like "title", "labels" and "type" ("storage" or "wiki").
 3. Publish Confluence Content Model to a Confluence Instance via Confluence REST API.
 
-![main-steps.png](docs%2Fplantuml%2Fmain-steps.png)
+![main-steps.png](docs/plantuml/main-steps.png)
 
 ### Index by file-indexer
 
