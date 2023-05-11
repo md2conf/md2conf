@@ -35,7 +35,7 @@ public class PublishCommand implements Runnable {
     public static void publish(PublishOptions mandatory, Path confluenceContentModelPath) {
         var model = loadConfluenceContentModel(confluenceContentModelPath);
         var clientProps = buildConfluenceClientConfigurationProperties(mandatory);
-        var publishConfluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null); //todo add listener?
+        var publishConfluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null);
         publishConfluenceClient.publish(model, mandatory.spaceKey, mandatory.parentPageTitle);
     }
 
