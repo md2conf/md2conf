@@ -43,7 +43,7 @@
         <logback.version>1.4.5</logback.version>
         <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
         <mockito.version>5.1.1</mockito.version>
-        <testcontainers.version>1.17.6</testcontainers.version>
+        <testcontainers.version>1.18.1</testcontainers.version>
     </properties>
 
     <modules>
