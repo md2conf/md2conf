@@ -41,7 +41,7 @@ jobs:
 
       - name: Start sidecar container for integration tests
         run: |
-          docker run -d -p8090:8090 -p8091:8091 --name=atlassian-sdk-confluence qwazer/atlassian-sdk-confluence:latest 
+          docker run -d -p18090:8090 -p18091:8091 --name=atlassian-sdk-confluence qwazer/atlassian-sdk-confluence:latest 
           ./waitForConfluenceStartup.sh atlassian-sdk-confluence 300
 
       - id: publish-to-central
