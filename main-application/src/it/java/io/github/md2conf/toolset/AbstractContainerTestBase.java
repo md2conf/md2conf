@@ -1,35 +1,17 @@
 package io.github.md2conf.toolset;
 
 import io.restassured.specification.RequestSpecification;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
-import java.time.Duration;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
-@Testcontainers
 public class AbstractContainerTestBase {
 
-    @Container
-    public static GenericContainer confluence = new GenericContainer(DockerImageName.parse("qwazer/atlassian-sdk-confluence:latest"))
-            .withExposedPorts(8090)
-            .waitingFor(Wait.forHttp("/")
-                            .forStatusCode(200)
-                            .forStatusCode(302)
-                            .withStartupTimeout(Duration.ofMinutes(10)));
 
     String confluenceBaseUrl(){
-        return String.format("http://localhost:%s", confluence.getFirstMappedPort());
+        return "http://localhost:18090";
     }
-
-//     String confluenceBaseUrl(){
-//        return String.format("http://localhost:%s", 8090);
-//    }
 
     static String PARENT_PAGE_TITLE = "Welcome to Confluence";
 

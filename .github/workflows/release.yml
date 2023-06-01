@@ -39,6 +39,11 @@ jobs:
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
 
+      - name: Start sidecar container for integration tests
+        run: |
+          docker run -d -p8090:8090 -p8091:8091 --name=atlassian-sdk-confluence qwazer/atlassian-sdk-confluence:latest 
+          ./waitForConfluenceStartup.sh atlassian-sdk-confluence 300
+
       - id: publish-to-central
         name: Publish to Central Repository
         env:
