@@ -47,10 +47,4 @@ class ConvertMojoIT extends AbstractMd2ConfMojoIT {
         assertThat(outputPath).isDirectoryNotContaining("glob:**/*.wiki");
     }
 
-
-    private static Map<String, String> mandatoryProperties() {
-        Map<String, String> properties = new HashMap<>();
-        return properties;
-    }
-
 }

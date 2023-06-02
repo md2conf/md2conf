@@ -1,5 +1,6 @@
 package io.github.md2conf.maven.plugin;
 
+import io.restassured.specification.RequestSpecification;
 import org.apache.maven.shared.verifier.VerificationException;
 import org.apache.maven.shared.verifier.Verifier;
 import org.junit.jupiter.api.io.TempDir;
@@ -8,8 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 
+import static io.restassured.RestAssured.given;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
 import static java.util.stream.Collectors.joining;
@@ -20,6 +23,17 @@ public class AbstractMd2ConfMojoIT {
 
     @TempDir
     private File tmpDir;
+
+    protected static Map<String, String> mandatoryProperties() {
+        Map<String, String> properties = new HashMap<>();
+        properties.put("confluenceUrl", "http://localhost:18090");
+        properties.put("username", "admin");
+        properties.put("password", "admin");
+        properties.put("spaceKey", "ds");
+        properties.put("parentPageTitle", "Welcome to Confluence");
+        return properties;
+    }
+
 
 
     protected File invokeGoalAndVerify(String goal, String pathToContent, Map<String, String> pomProperties) {
@@ -38,9 +52,6 @@ public class AbstractMd2ConfMojoIT {
             throw new IllegalStateException("goal failed", e);
         }
     }
-
-
-
 
     private static void invokeGoalAndVerify(String goal, File projectDir, Map<String, String> mavenProperties, Map<String, String> serverProperties, String encryptedMasterPassword, boolean useCommandLineArguments) throws IOException, VerificationException, VerificationException, VerificationException {
         Map<String, String> pomProperties = useCommandLineArguments ? emptyMap() : mavenProperties;
@@ -150,5 +161,27 @@ public class AbstractMd2ConfMojoIT {
                 "</settingsSecurity>";
     }
 
+
+    protected static RequestSpecification givenAuthenticatedAsPublisher() {
+        return given().auth().preemptive().basic("admin", "admin");
+    }
+
+    private static String rootPage() {
+        return page("65551");
+    }
+
+    protected static String page(String pageId) {
+        return "http://localhost:18090/rest/api/content/" + pageId + "?expand=body.view,history.lastUpdated";
+    }
+
+    protected static String childPages() {
+        return "http://localhost:18090/rest/api/content/65551/child/page";
+    }
+
+    protected static String pageIdBy(String title) {
+        return givenAuthenticatedAsPublisher()
+                .when().get(childPages())
+                .then().extract().jsonPath().getString("results.find({it.title == '" + title + "'}).id");
+    }
 
 }

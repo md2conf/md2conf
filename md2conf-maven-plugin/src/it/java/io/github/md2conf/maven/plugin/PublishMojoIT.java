@@ -1,12 +1,13 @@
 package io.github.md2conf.maven.plugin;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 
 public class PublishMojoIT extends AbstractMd2ConfMojoIT {
 
@@ -21,9 +22,20 @@ public class PublishMojoIT extends AbstractMd2ConfMojoIT {
         assertThat(outputPath).doesNotExist();
     }
 
-    private static Map<String, String> mandatoryProperties() {
-        Map<String, String> properties = new HashMap<>();
-        return properties;
+    @Test
+    void publish() {
+        // arrange
+        Map<String, String> properties = mandatoryProperties();
+        properties.put("confluenceContentModelPath", "./confluence-content-model.json");
+        // act
+        var res = invokeGoalAndVerify("publish", "publish", properties);
+        Path outputPath = res.toPath().resolve("target/md2conf");
+        assertThat(outputPath).doesNotExist();
+        // assert
+        givenAuthenticatedAsPublisher()
+                .when().get(childPages())
+                .then().body("results.title", hasItem("Example publish from maven"));
     }
+
 
 }

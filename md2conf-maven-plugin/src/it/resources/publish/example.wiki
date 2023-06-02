@@ -1,0 +1,4 @@
+
+h1. Example publish from maven
+
+some text
