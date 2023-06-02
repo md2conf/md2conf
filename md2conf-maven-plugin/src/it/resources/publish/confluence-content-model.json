@@ -1,0 +1,12 @@
+{
+  "pages": [
+    {
+      "title": "Example publish from maven",
+      "contentFilePath": "./example.wiki",
+      "type": "WIKI",
+      "children": [],
+      "attachments": {},
+      "labels": []
+    }
+  ]
+}
