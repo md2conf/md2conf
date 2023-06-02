@@ -1,6 +1,5 @@
 package io.github.md2conf.maven.plugin;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -9,7 +8,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class PublishMojoIT extends AbstractMd2ConfMojoIT {
+public class PublishMojoIntegrationTest extends AbstractMd2ConfMojoIT {
 
     @Test
     void skip() {

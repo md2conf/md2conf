@@ -3,12 +3,11 @@ package io.github.md2conf.maven.plugin;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ConvertMojoIT extends AbstractMd2ConfMojoIT {
+class ConvertMojoIntegrationTest extends AbstractMd2ConfMojoIT {
 
     @Test
     void simple_convert() {
