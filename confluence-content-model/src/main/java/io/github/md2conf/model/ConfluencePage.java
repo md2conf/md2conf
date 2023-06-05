@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static java.util.Collections.emptyList;
 
@@ -45,11 +46,7 @@ public class ConfluencePage {
     }
 
     public List<ConfluencePage> getChildren() {
-        if (this.children == null) {
-            return emptyList();
-        } else {
-            return this.children;
-        }
+        return Objects.requireNonNullElse(this.children, emptyList());
     }
 
     public void setChildren(List<ConfluencePage> children) {
