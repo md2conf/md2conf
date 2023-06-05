@@ -8,39 +8,81 @@ public class DefaultPublishConfluenceClientListener implements PublishConfluence
 
     private final static Logger logger = LoggerFactory.getLogger(DefaultPublishConfluenceClientListener.class);
 
+    private int pageAddedCnt;
+    private int pageUpdatedCnt;
+    private int pageNotModifiedCnt;
+    private int pageDeletedCnt;
+    private int attachmentAddedCnt;
+    private int attachmentUpdatedCnt;
+    private int attachmentNotModifiedCnt;
+    private int attachmentDeletedCnt;
+
 
     @Override
-    public void pageAdded(ConfluenceApiPage addedPage) {
+    public synchronized void pageAdded(ConfluenceApiPage addedPage) {
+        pageAddedCnt++;
         logger.info("Added page '" + addedPage.getTitle() + "' (id " + addedPage.getContentId() + ")");
     }
 
     @Override
-    public void pageUpdated(ConfluenceApiPage existingPage, ConfluenceApiPage updatedPage) {
+    public synchronized void pageUpdated(ConfluenceApiPage existingPage, ConfluenceApiPage updatedPage) {
+        pageUpdatedCnt++;
         logger.info("Updated page '" + updatedPage.getTitle() + "' (id " + updatedPage.getContentId() + ", version " + existingPage.getVersion() + " -> " + updatedPage.getVersion() + ")");
     }
 
     @Override
-    public void pageDeleted(ConfluenceApiPage deletedPage) {
+    public synchronized void pageNotModified(ConfluenceApiPage existingPage) {
+        pageNotModifiedCnt++;
+        logger.info("Not modified page '" + existingPage.getTitle() + "' (id " + existingPage.getContentId() + ")");
+    }
+
+    @Override
+    public synchronized void pageDeleted(ConfluenceApiPage deletedPage) {
+        pageDeletedCnt++;
         logger.info("Deleted page '" + deletedPage.getTitle() + "' (id " + deletedPage.getContentId() + ")");
     }
 
     @Override
-    public void attachmentAdded(String attachmentFileName, String contentId) {
+    public synchronized void attachmentAdded(String attachmentFileName, String contentId) {
+        attachmentAddedCnt++;
         logger.info("Added attachment '" + attachmentFileName + "' (page id " + contentId + ")");
     }
 
     @Override
-    public void attachmentUpdated(String attachmentFileName, String contentId) {
+    public synchronized void attachmentUpdated(String attachmentFileName, String contentId) {
+        attachmentUpdatedCnt++;
         logger.info("Updated attachment '" + attachmentFileName + "' (page id " + contentId + ")");
     }
 
     @Override
-    public void attachmentDeleted(String attachmentFileName, String contentId) {
+    public synchronized void attachmentNotModified(String attachmentFileName, String contentId) {
+        attachmentNotModifiedCnt++;
+        logger.info("Not modified attachment '" + attachmentFileName + "' (page id " + contentId + ")");
+    }
+
+    @Override
+    public synchronized void attachmentDeleted(String attachmentFileName, String contentId) {
+        attachmentDeletedCnt++;
         logger.info("Deleted attachment '" + attachmentFileName + "' (page id " + contentId + ")");
     }
 
     @Override
     public void publishCompleted() {
+        logger.info("Publishing completed. Summary");
+        logger.info(getPagesStats());
+        logger.info(getAttachmentStats());
+    }
+
+    private String getPagesStats() {
+        int pageCnt = pageAddedCnt + pageDeletedCnt + pageUpdatedCnt + pageNotModifiedCnt;
+        return String.format("Total pages count is %d (%d added , %d updated , %d deleted, %d not modified).",
+                pageCnt, pageAddedCnt, pageUpdatedCnt, pageDeletedCnt, pageNotModifiedCnt);
+    }
+
+    private String getAttachmentStats() {
+        int attachmentCnt = attachmentAddedCnt + attachmentDeletedCnt + attachmentUpdatedCnt + attachmentNotModifiedCnt;
+        return String.format("Total attachments count is %d (%d added , %d updated , %d deleted, %d not modified).",
+                attachmentCnt, attachmentAddedCnt, attachmentUpdatedCnt, attachmentDeletedCnt, attachmentNotModifiedCnt);
     }
 
 }

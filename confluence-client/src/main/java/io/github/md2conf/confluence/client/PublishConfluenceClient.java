@@ -205,6 +205,8 @@ public class PublishConfluenceClient {
             this.apiInternalClient.updatePage(contentId, ancestorId, page.getTitle(), content, page.getType(), newPageVersion, this.versionMessage, this.notifyWatchers);
             this.apiInternalClient.setPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY, newContentHash);
             this.publishConfluenceClientListener.pageUpdated(existingPage, new ConfluenceApiPage(contentId, page.getTitle(), newPageVersion));
+        } else {
+            this.publishConfluenceClientListener.pageNotModified(existingPage);
         }
     }
 
@@ -228,6 +230,9 @@ public class PublishConfluenceClient {
                 this.apiInternalClient.updateAttachmentContent(contentId, attachmentId, fileInputStream(absoluteAttachmentPath), this.notifyWatchers);
                 this.apiInternalClient.setPropertyByKey(contentId, getAttachmentHashKey(attachmentFileName), newAttachmentHash);
                 this.publishConfluenceClientListener.attachmentUpdated(attachmentFileName, contentId);
+            }
+            else {
+                this.publishConfluenceClientListener.attachmentNotModified(attachmentFileName, contentId);
             }
 
         } catch (NotFoundException e) {
