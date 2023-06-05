@@ -109,5 +109,35 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>plugin-it</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <testSourceDirectory>src/it/java</testSourceDirectory>
+                            <includes>
+                                <include>**/*PluginIT.java</include>
+                            </includes>
+                            <systemProperties>
+                                <md2conf.version>${project.version}</md2conf.version>
+                            </systemProperties>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
