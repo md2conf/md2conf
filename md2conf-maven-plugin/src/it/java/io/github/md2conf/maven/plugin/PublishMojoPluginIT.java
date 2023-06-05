@@ -8,7 +8,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 
-public class PublishMojoIntegrationTest extends AbstractMd2ConfMojoIT {
+public class PublishMojoPluginIT extends AbstractMd2ConfMojoIT {
 
     @Test
     void skip() {

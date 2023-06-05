@@ -22,12 +22,14 @@ jobs:
         java-version: 11
         distribution: zulu
         cache: maven
-    - name: Build with Maven
-      run: mvn --no-transfer-progress -B install --file pom.xml
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-    - name: Integration tests
+    - name: Start sidecar container
       run: |
         docker run -d -p18090:8090 -p18091:8091 --name=atlassian-sdk-confluence qwazer/atlassian-sdk-confluence:latest 
         ./waitForConfluenceStartup.sh atlassian-sdk-confluence 300
-        mvn -Pintegration-tests failsafe:integration-test failsafe:verify -nsu
+    - name: Build with Maven
+      run: mvn --no-transfer-progress -B install -Pintegration-tests --file pom.xml
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      ## extracted as separate step because required installed maven plugin
+    - name: Maven plugin integration tests
+      run: mvn -pl md2conf-maven-plugin -P plugin-it failsafe:integration-test failsafe:verify -nsu
