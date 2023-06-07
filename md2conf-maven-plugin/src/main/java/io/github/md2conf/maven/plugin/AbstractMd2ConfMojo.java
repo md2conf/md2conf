@@ -44,6 +44,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected boolean titleChildPrefixed;
     @Parameter(property = PREFIX + "titleRemoveFromContent")
     protected Boolean titleRemoveFromContent;
+    @Parameter(property = PREFIX + "plantumlCodeAsMacro")
+    protected Boolean plantumlCodeAsMacro=false;
     
     /// --- PUBLISH options
 
@@ -85,6 +87,7 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         convertOptions.titleSuffix = this.titleSuffix;
         convertOptions.titleChildPrefixed = this.titleChildPrefixed;
         convertOptions.titleRemoveFromContent = this.titleRemoveFromContent;
+        convertOptions.plantumlCodeAsMacro = this.plantumlCodeAsMacro;
         return convertOptions;
     }
 

@@ -89,7 +89,7 @@ public class ConvertCommand implements Runnable {
         Converter converterService = null;
         switch (convertOptions.converter) {
             case MD2WIKI:
-                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle);
+                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle, convertOptions.plantumlCodeAsMacro);
                 break;
             case NO:
                 converterService = new NoopConverter(pageStructureTitleProcessor, needToRemoveTitle);
@@ -140,6 +140,8 @@ public class ConvertCommand implements Runnable {
         public boolean titleChildPrefixed;
         @CommandLine.Option(names = {"-tr", "--title-remove-from-content"}, description = "Remove title from converted content, to avoid duplicate titles rendering in an Confluence")
         public Boolean titleRemoveFromContent;
+        @CommandLine.Option(names = { "--plantuml-code-as-macro"}, description = "Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering)")
+        public Boolean plantumlCodeAsMacro=false;
 
     }
 
