@@ -60,6 +60,27 @@ Change `url`, `space-key`, `parent-page-title`, `username`, `password` in the co
 
 ### Publish using confluence-client
 
+Controlled by properties:
+
+| Property key               | CLI name                           | Description                                                                                       | Default value                    |
+|:---------------------------|:-----------------------------------|:--------------------------------------------------------------------------------------------------|:---------------------------------|
+| confluenceUrl              | "-url", "--confluence-url"         | The root URL of the Confluence instance                                                           |                                  |
+| username                   | "--username"                       | Username of the Confluence user                                                                   |                                  |
+| password                   | "--password"                       | The password or personal access token of the user. In case of using token don't specify username. |                                  |
+| spaceKey                   | "-s", "--space-key"                | The password or personal access token of the user                                                 |                                  |
+| parentPageTitle            | "-pt", "--parent-page-title"       | The parent page to publish `confluence-content-model`                                             |                                  |
+| skipSslVerification        | --skip-ssl-verification            |                                                                                                   | false                            |
+| orphanRemovalStrategy      | --orphan-removal-strategy          | REMOVE_ORPHANS or KEEP_ORPHANS                                                                    | KEEP_ORPHANS                     |
+| notifyWatchers             | --notify-watchers                  |                                                                                                   | false                            |
+| maxRequestsPerSecond       | --max-requests-per-second          |                                                                                                   | false                            |
+| versionMessage             | --version-message                  |                                                                                                   | Published by md2conf             |
+| confluenceContentModelPath | "-m", "--confluence-content-model" | Path to file with `confluence-content-model` JSON file.                                           | '.confluence-content-model.json' |
+
+
+### `confluence-content-model.json`
+
+`confluence-content-model.json` is representation of the next domain object
+
 ### Confluence Content model
 
 Confluence Content is a collection of Confluence Pages.

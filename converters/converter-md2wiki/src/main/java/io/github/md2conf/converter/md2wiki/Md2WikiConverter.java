@@ -8,6 +8,7 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.util.misc.Extension;
 import io.github.md2conf.converter.AttachmentUtil;
 import io.github.md2conf.converter.Converter;
 import io.github.md2conf.converter.md2wiki.attachment.ImageFilePathUtil;
@@ -15,6 +16,7 @@ import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
 import io.github.md2conf.flexmart.ext.confluence.macros.ConfluenceMacroExtension;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension;
 import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLinkExtension;
+import io.github.md2conf.flexmart.ext.plantuml.code.macro.PlantUmlCodeMacroExtension;
 import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
@@ -28,30 +30,41 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static io.github.md2conf.converter.md2wiki.attachment.LocalAttachmentUtil.collectLocalAttachmentPaths;
 
 public class Md2WikiConverter implements Converter {
 
-    public static final DataHolder OPTIONS = new MutableDataSet()
-            .set(Parser.EXTENSIONS, Arrays.asList(
-                    TablesExtension.create(),
-                    StrikethroughExtension.create(),
-                    LocalAttachmentLinkExtension.create(),
-                    CrosspageLinkExtension.create(),
-                    ConfluenceMacroExtension.create(),
-                    JiraConverterExtension.create()
-            ));
-
     private final PageStructureTitleProcessor pagesStructureTitleProcessor;
     private final Path outputPath;
     private final boolean needToRemoveTitle;
+    private final boolean plantumlMacro;
 
-    public Md2WikiConverter(PageStructureTitleProcessor pagesStructureTitleProcessor, Path outputPath, boolean needToRemoveTitle) {
+
+    public Md2WikiConverter(PageStructureTitleProcessor pagesStructureTitleProcessor,
+                            Path outputPath, boolean needToRemoveTitle, boolean plantumlMacro) {
         this.pagesStructureTitleProcessor = pagesStructureTitleProcessor;
         this.outputPath = outputPath;
         this.needToRemoveTitle = needToRemoveTitle;
+        this.plantumlMacro = plantumlMacro;
+    }
+
+    public MutableDataSet getFlexmarkExtensions() {
+        List<Extension> extensions = new ArrayList<>();
+        extensions.add(TablesExtension.create());
+        extensions.add(StrikethroughExtension.create());
+        extensions.add(LocalAttachmentLinkExtension.create());
+        extensions.add(CrosspageLinkExtension.create());
+        extensions.add(ConfluenceMacroExtension.create());
+        extensions.add(JiraConverterExtension.create());
+        if (plantumlMacro) {
+            extensions.add(PlantUmlCodeMacroExtension.create());
+        }
+        return new MutableDataSet().set(Parser.EXTENSIONS, extensions);
     }
 
     @Override
@@ -78,7 +91,7 @@ public class Md2WikiConverter implements Converter {
         String markdown = FileUtils.readFileToString(page.path().toFile(), Charset.defaultCharset()); //todo extract charset as parameter
 
         //Convert to wiki using FlexMark parser and renderer
-        DataHolder flexmarkOptions = OPTIONS.toMutable()
+        DataHolder flexmarkOptions = getFlexmarkExtensions()
                 .set(LocalAttachmentLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
                 .set(CrosspageLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
                 .set(CrosspageLinkExtension.TITLE_MAP, titleMap)

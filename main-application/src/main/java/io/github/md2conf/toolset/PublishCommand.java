@@ -22,7 +22,7 @@ public class PublishCommand implements Runnable {
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
     protected PublishOptions publishOptions;
 
-    @CommandLine.Option(names = {"-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file. Default value is current working directory.", defaultValue = ".", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    @CommandLine.Option(names = { "-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file. Default value is current working directory.", defaultValue = ".", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     public Path confluenceContentModelPath;
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
