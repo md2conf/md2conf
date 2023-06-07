@@ -112,33 +112,33 @@ public class ConvertCommand implements Runnable {
     }
 
     public static class ConvertOptions { //todo split on mandatory and additional
-        @CommandLine.Option(names = {"-c", "--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
+        @CommandLine.Option(names = {"--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "MD2WIKI",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
         public ConverterType converter = MD2WIKI;
-        @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "input directory")
+        @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "Input directory")
         public Path inputDirectory;
-        @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
+        @CommandLine.Option(names = {"-o", "--output-dir"}, description = "Output directory")
         public Path outputDirectory;
-        @CommandLine.Option(names = {"--file-extension"}, description = "file extension to index as confluence content pages")
+        @CommandLine.Option(names = {"--file-extension"}, description = "File extension to index as confluence content pages")
         public String fileExtension = "md"; //todo change fileExtension based on converter
         @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
         public String excludePattern = "glob:**/.*";
         @CommandLine.Option(names = {"--indexer-root-page"}, description = "Use specified page as parent page for all another top-level pages in an input directory")
         public String indexerRootPage = null;
 
-        @CommandLine.Option(names = {"-te", "--title-extract"}, description = "Strategy to extract title from file",
+        @CommandLine.Option(names = {"--title-extract"}, description = "Strategy to extract title from file", //todo rename to TitleExtractFrom
                 defaultValue = "FROM_FIRST_HEADER",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
         public TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
 
-        @CommandLine.Option(names = {"-tp", "--title-prefix"}, description = "Title prefix common for all pages")
+        @CommandLine.Option(names = { "--title-prefix"}, description = "Title prefix common for all pages")
         public String titlePrefix;
-        @CommandLine.Option(names = {"-ts","--title-suffix"}, description = "Title suffix common for all pages")
+        @CommandLine.Option(names = {"--title-suffix"}, description = "Title suffix common for all pages")
         public String titleSuffix;
-        @CommandLine.Option(names = {"-tc", "--title-child-prefixed"}, description = "Add title prefix of root page if page is a child")
+        @CommandLine.Option(names = { "--title-child-prefixed"}, description = "Add title prefix of root page if page is a child")
         public boolean titleChildPrefixed;
-        @CommandLine.Option(names = {"-tr", "--title-remove-from-content"}, description = "Remove title from converted content, to avoid duplicate titles rendering in an Confluence")
+        @CommandLine.Option(names = { "--title-remove-from-content"}, description = "Remove title from converted content, to avoid duplicate titles rendering in an Confluence")
         public Boolean titleRemoveFromContent;
         @CommandLine.Option(names = { "--plantuml-code-as-macro"}, description = "Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering)")
         public Boolean plantumlCodeAsMacro=false;

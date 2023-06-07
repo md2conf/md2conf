@@ -8,10 +8,12 @@ Set of command-line tools to publish markdown files to a Confluence.
 
 Notable features:
 
-- Automatically index input directory to build confluence content model based on file name conventions.
-- Avoid limitation of Confluence REST API, that create a new version of a page on every update.
-- Highly configurable and extensible by design
-- Support markdown features: cross-page links, inline images, etc.
+- Automatically index input directory to build confluence content model
+  based on file name conventions.
+- Idempotence confluence client. Avoid limitation of Confluence REST
+  API, that create a new version of a page on every update.
+- Support cross-page links between markdown pages, inline images, etc.
+- Extensible by design
 
 This toolset designed to support "docs-as-code" approach to use markdown
 as a docs source and Confluence as a publishing platform.
@@ -22,7 +24,8 @@ Download the latest release from maven central
 
 ### Play locally
 
-Need to have:  `java` and `docker` in your PATH, an input directory with markdown files.
+Need to have: `java` and `docker` in your PATH, an input directory with
+markdown files.
 
 Start Confluence locally:
 
@@ -30,7 +33,8 @@ Start Confluence locally:
 docker run -p 18090:8090 -p 18091:8091 qwazer/atlassian-sdk-confluence
 ```
 
-After Confluence starts it will be accessible at http://localhost:18090 with admin:admin credentials.
+After Confluence starts it will be accessible at http://localhost:18090
+with admin:admin credentials.
 
 Run next command
 
@@ -42,21 +46,106 @@ See results at http://localhost:8090/display/ds/Sample
 
 ### Publish to remote Confluence instance
 
-Change `url`, `space-key`, `parent-page-title`, `username`, `password` in the command above and run.
+Change `url`, `space-key`, `parent-page-title`, `username`, `password`
+in the command above and run.
 
-## Main processing steps
 
-1. Index input directory and build page structure based on file name conventions. Each page is a prototype for future
-   Confluence Page. Page represented by file path, attachments and children pages.
-2. Convert page structure to Confluence Content Model with set of Confluence Pages. Each Confluence Page receive
-   confluence-specific attributes like "title", "labels" and "type" ("storage" or "wiki").
-3. Publish Confluence Content Model to a Confluence Instance via Confluence REST API.
+## Usage
+
+### Command-line
+
+```
+Usage: md2conf [-v] [COMMAND]
+Set of tools to work with 'confluence-content-model': publish, dump, convert.
+  -v, --verbose   Increase verbosity.
+Commands:
+  convert                      Convert files to `confluence-content-model` or
+                                 from `confluence-content-model`
+  publish                      Publish content to a Confluence instance
+  conpub, convert-and-publish  Convert and publish docs to a Confluence instance
+  dump                         Dump content from Confluence instance
+  help                         Displays help information about the specified
+                                 command
+'confluence-content-model' is a representation of Confluence page trees and
+attachments on a local filesystem. See 'md2conf help model' for details.
+```
+
+
+### Maven plugin
+
+```xml
+<plugin>
+    <groupId>io.github.md2conf</groupId>
+    <artifactId>md2conf-maven-plugin</artifactId>
+    <!--            <version>SPECIFY version here</version>-->
+    <executions>
+        <execution>
+            <goals>
+                <goal>conpub</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <inputDirectory>docs/markdown</inputDirectory>
+        <indexerRootPage>index.md</indexerRootPage>
+        <titleChildPrefixed>true</titleChildPrefixed>
+        <confluenceUrl>https://some-confluence-url</confluenceUrl>
+        <username>admin</username>
+        <password>admin</password>
+        <spaceKey>DS</spaceKey>
+        <parentPageTitle>Welcome to Confluence</parentPageTitle>
+        <skipSslVerification>true</skipSslVerification>
+    </configuration>
+</plugin>
+```
+
+
+## How it works inside?
+
+
+Main processing steps are
+
+1. Index input directory and build page structure based on file name
+   conventions. Each page is a prototype for future Confluence Page.
+   Page represented by file path, attachments and children pages.
+2. Convert page structure to Confluence Content Model with set of
+   Confluence Pages. Each Confluence Page receive confluence-specific
+   attributes like "title", "labels" and "type" ("storage" or "wiki").
+3. Publish Confluence Content Model to a Confluence Instance via
+   Confluence REST API.
 
 ![main-steps.png](docs/plantuml/main-steps.png)
 
 ### Index by file-indexer
 
+Controlled by properties:
+
+| Property key    | CLI name            | Description                                                                                                                 | Default value |
+|:----------------|:--------------------|:----------------------------------------------------------------------------------------------------------------------------|:--------------|
+| inputDirectory  | "-i", "--input-dir" | Input directory                                                                                                             |               |
+| fileExtension   | --file-extension    | File extension to index as confluence content pages                                                                         | md            |
+| excludePattern  | --exclude-pattern   | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method | "glob:**/.*"  |
+| indexerRootPage | --indexer-root-page | Use specified page as parent page for all another top-level pages in an input directory                                     |               |
+
+
 ### Convert by converters
+
+Controlled by properties:
+
+| Property key           | CLI name                    | Description                                                                                     | Default value     |
+|:-----------------------|:----------------------------|:------------------------------------------------------------------------------------------------|:------------------|
+| converter              | --converter                 | Converter. Valid values are MD2WIKI, COPYING, NO                                                | MD2WIKI           |
+| outputDirectory        | "-o", "--output-dir"        | Output directory                                                                                |                   |
+| titleExtract           | --title-extract             | Strategy to extract title from file, FROM_FIRST_HEADER or FROM_FILENAME                         | FROM_FIRST_HEADER |
+| titlePrefix            | --title-prefix              | Title prefix common for all pages                                                               |                   |
+| titleSuffix            | --title-suffix              | Title suffix common for all pages                                                               |                   |
+| titleChildPrefixed     | --title-child-prefixed      | Add title prefix of root page if page is a child                                                | false             |
+| titleRemoveFromContent | --title-remove-from-content | Remove title from converted content, to avoid duplicate titles rendering in an Confluence       | false             |
+| plantumlCodeAsMacro    | --plantuml-code-as-macro    | Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering) | false             |
+
+
+The result of conversion saved in output directory file `confluence-content-model.json`'.
+
 
 ### Publish using confluence-client
 
@@ -106,43 +195,22 @@ Confluence support 2 types of markup "storage" or "wiki" to publish
 pages using Confluence API. See Atlassian documentation for details:
 
 * [Confluence Storage Format](https://confluence.atlassian.com/doc/confluence-storage-format-790796544.html)
-  \- refered as "storage"
+  \- referred as "storage"
 * [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
-  \- refered as "wiki"
+  \- referred as "wiki"
 
-## Usage
+### History and motivation
 
-### Command-line
+See [decisions](docs/decisions).
 
-```
-Usage: md2conf [-v] [COMMAND]
-Set of tools to work with 'confluence-content-model': publish, dump, convert.
-  -v, --verbose   Increase verbosity.
-Commands:
-  convert                      Convert files to `confluence-content-model` or
-                                 from `confluence-content-model`
-  publish                      Publish content to a Confluence instance
-  conpub, convert-and-publish  Convert and publish docs to a Confluence instance
-  dump                         Dump content from Confluence instance
-  help                         Displays help information about the specified
-                                 command
-'confluence-content-model' is a representation of Confluence page trees and
-attachments on a local filesystem. See 'md2conf help model' for details.
-```
+In short, existing projects doesn't fit my needs.
 
+### Regards
 
-### Maven plugin
-
-
-
-
-### History and Motivation
-
-Originally written by Christian Stettler and others as part of
+Idempotence confluence client originally written by Christian Stettler and others as part of
 [confluence-publisher](https://github.com/confluence-publisher/confluence-publisher)
 tool to publish ascii docs to confluence.
 
-Forked to separate project to use as standalone tool in md2conf toolset.
 
 ### License
 

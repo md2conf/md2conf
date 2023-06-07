@@ -80,7 +80,7 @@ public class PublishCommand implements Runnable {
         public String confluenceUrl;
         @CommandLine.Option(names = {/*"-user",*/ "--username"}, description = "Username of the Confluence user", order = 2)
         public String username;
-        @CommandLine.Option(names = {/*"-p",*/ "--password"}, description = "The password or personal access token of the user", order = 3)
+        @CommandLine.Option(names = {/*"-p",*/ "--password"}, description = "The password or personal access token of the user. In case of using token don't specify username.", order = 3)
         public String password;
         @CommandLine.Option(names = {"-s", "--space-key"}, required = true, description = "The key of the Confluence space", order = 4)
         public String spaceKey;
