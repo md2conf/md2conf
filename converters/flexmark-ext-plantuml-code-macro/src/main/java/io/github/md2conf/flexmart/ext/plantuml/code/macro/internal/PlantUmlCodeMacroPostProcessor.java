@@ -15,13 +15,18 @@ public class PlantUmlCodeMacroPostProcessor extends NodePostProcessor {
     @Override
     public void process(@NotNull NodeTracker state, @NotNull Node node) {
         if (node instanceof FencedCodeBlock) {
+            Node previous = node.getPrevious();
+
             String info = ((FencedCodeBlock) node).getInfo().toString();
             if (info.equals("plantuml") || info.equals("puml") || info.equals("c4plantuml")) {
                 Node parent = node.getParent();
                 BasedSequence text = ((FencedCodeBlock) node).getContentChars();
                 PlantUmlCodeMacro plantUmlCodeMacro = new PlantUmlCodeMacro(text);
                 node.unlink();
-                if (parent != null) {
+                if (previous!=null){
+                    previous.insertAfter(plantUmlCodeMacro);
+                }
+                else if (parent != null) {
                     parent.appendChild(plantUmlCodeMacro);
                 }
                 state.nodeRemoved(node);

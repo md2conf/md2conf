@@ -188,4 +188,25 @@ class Md2WikiConverterTest {
         assertThat(outputPath.resolve("a.wiki")).isRegularFile().content().contains("{code}").doesNotContain("{plantuml}");
     }
 
+
+    @Test
+    void convert_codeblock() throws IOException {
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true);
+        var prop = new FileIndexerConfigurationProperties();
+        prop.setFileExtension("md");
+        FileIndexer fileIndexer = new DefaultFileIndexer(prop);
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_codeblocks"));
+        assertThat(pagesStructure.pages()).hasSize(1);
+        ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
+        assertThat(model).isNotNull();
+        assertThat(model.getPages()).hasSize(1);
+        assertThat(outputPath).isNotEmptyDirectory();
+        assertThat(outputPath).isDirectoryContaining("glob:**/codeblock.wiki");
+        assertThat(outputPath.resolve("codeblock.wiki")).isRegularFile().content()
+                .contains("{plantuml}")
+                .contains("{code}")
+                .contains("{code:language=java}");
+
+    }
+
 }

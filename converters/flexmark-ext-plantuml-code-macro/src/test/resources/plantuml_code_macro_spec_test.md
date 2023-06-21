@@ -54,3 +54,35 @@ a->b
 Document[0, 23]
   PlantUmlCodeMacro[15, 20] lines[0]
 ````````````````````````````````
+
+Mix of plantuml code and other macros
+
+```````````````````````````````` example Plantuml code macro transformer: 4
+
+# Sample code blocks
+
+```puml
+a->b
+```
+
+```json
+{"a":1}
+```
+.
+h1. Sample code blocks
+
+{plantuml}
+a->b
+{plantuml}
+{code:lang=json}
+{"a":1}
+{code}
+
+.
+Document[0, 60]
+  Heading[1, 21] textOpen:[1, 2, "#"] text:[3, 21, "Sample code blocks"]
+    Text[3, 21] chars:[3, 21, "Sampl … locks"]
+  PlantUmlCodeMacro[31, 36] lines[0]
+  FencedCodeBlock[41, 60] open:[41, 44, "```"] info:[44, 48, "json"] content:[49, 57] lines[1] close:[57, 60, "```"]
+    Text[49, 57] chars:[49, 57, "{\"a\":1}\n"]
+````````````````````````````````
