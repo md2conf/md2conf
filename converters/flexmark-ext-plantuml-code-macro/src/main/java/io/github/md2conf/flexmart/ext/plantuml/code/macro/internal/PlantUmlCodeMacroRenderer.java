@@ -24,7 +24,7 @@ public class PlantUmlCodeMacroRenderer implements NodeRenderer {
     private void render(PlantUmlCodeMacro node, NodeRendererContext context, HtmlWriter html) {
             html.raw("{plantuml}\n");
             html.raw(node.getChars());
-            html.raw("{plantuml}");
+            html.raw("{plantuml}\n");
     }
 
     public static class Factory implements NodeRendererFactory {

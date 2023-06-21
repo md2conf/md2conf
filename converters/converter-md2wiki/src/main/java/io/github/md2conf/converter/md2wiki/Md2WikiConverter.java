@@ -15,6 +15,7 @@ import io.github.md2conf.converter.md2wiki.attachment.ImageFilePathUtil;
 import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
 import io.github.md2conf.flexmart.ext.confluence.macros.ConfluenceMacroExtension;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension;
+import io.github.md2conf.flexmart.ext.fenced.code.block.CustomFencedCodeBlockExtension;
 import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLinkExtension;
 import io.github.md2conf.flexmart.ext.plantuml.code.macro.PlantUmlCodeMacroExtension;
 import io.github.md2conf.indexer.Page;
@@ -64,6 +65,7 @@ public class Md2WikiConverter implements Converter {
         if (plantumlMacro) {
             extensions.add(PlantUmlCodeMacroExtension.create());
         }
+        extensions.add(CustomFencedCodeBlockExtension.create());
         return new MutableDataSet().set(Parser.EXTENSIONS, extensions);
     }
 

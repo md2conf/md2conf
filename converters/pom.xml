@@ -20,6 +20,7 @@
         <module>flexmark-ext-crosspage-links</module>
         <module>flexmark-ext-confluence-macros</module>
         <module>flexmark-ext-plantuml-code-macro</module>
+        <module>flexmark-ext-fenced-code-block</module>
         <module>title-processor</module>
         <module>converter-common</module>
         <module>converter-noop</module>
