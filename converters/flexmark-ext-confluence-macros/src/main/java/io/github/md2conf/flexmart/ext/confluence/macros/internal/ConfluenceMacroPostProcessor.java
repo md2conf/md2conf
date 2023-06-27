@@ -15,15 +15,18 @@ public class ConfluenceMacroPostProcessor extends NodePostProcessor {
     @Override
     public void process(@NotNull NodeTracker state, @NotNull Node node) {
         if (node instanceof HtmlCommentBlock) {
-            String text = node.getBaseSequence().toString();
+            Node previous = node.getPrevious();
+            String text = node.getChars().toString();
             int startPos = text.indexOf('{');
             int endPos = text.lastIndexOf('}');
             if (startPos > 1 && endPos > 1) {
                 Node parent = node.getParent();
-                String macroText = node.getBaseSequence().toString().substring(startPos, endPos + 1);
+                String macroText = text.substring(startPos, endPos+1);
                 ConfluenceMacro confluenceMacro = new ConfluenceMacro(BasedSequence.of(macroText));
                 node.unlink();
-                if (parent != null) {
+                if (previous != null) {
+                    previous.insertAfter(confluenceMacro);
+                } else if (parent != null) {
                     parent.appendChild(confluenceMacro);
                 }
                 state.nodeRemoved(node);
