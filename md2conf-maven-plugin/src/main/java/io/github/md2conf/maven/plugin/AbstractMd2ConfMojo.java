@@ -1,6 +1,7 @@
 package io.github.md2conf.maven.plugin;
 
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
+import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.ConvertCommand;
 import io.github.md2conf.toolset.PublishCommand;
@@ -65,6 +66,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected String versionMessage = "Published by md2conf";
     @Parameter(property = PREFIX + "orphanRemovalStrategy")
     protected OrphanRemovalStrategy orphanRemovalStrategy = OrphanRemovalStrategy.KEEP_ORPHANS;
+    @Parameter(property = PREFIX + "parentPagePublishingStrategy")
+    protected PublishingStrategy parentPagePublishingStrategy = PublishingStrategy.APPEND_TO_ANCESTOR;
     @Parameter(property = PREFIX + "notifyWatchers")
     protected boolean notifyWatchers = false;
     @Parameter(property = PREFIX + "skipSslVerification")
@@ -101,6 +104,7 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         publishOptions.parentPageTitle = this.parentPageTitle;
         publishOptions.versionMessage = this.versionMessage;
         publishOptions.orphanRemovalStrategy = this.orphanRemovalStrategy;
+        publishOptions.parentPagePublishingStrategy = this.parentPagePublishingStrategy;
         publishOptions.notifyWatchers  = this.notifyWatchers;
         publishOptions.skipSslVerification = this.skipSslVerification;
         publishOptions.maxRequestsPerSecond = this.maxRequestsPerSecond;

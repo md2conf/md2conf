@@ -3,6 +3,7 @@ package io.github.md2conf.toolset;
 import io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperties;
 import io.github.md2conf.confluence.client.ConfluenceClientFactory;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
+import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.model.ConfluenceContentModel;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -52,6 +53,7 @@ public class PublishCommand implements Runnable {
                 .withSkipSslVerification(options.skipSslVerification)
                 .withNotifyWatchers(options.notifyWatchers)
                 .withOrphanRemovalStrategy(options.orphanRemovalStrategy)
+                .withPublishingStrategy(options.parentPagePublishingStrategy)
                 .build();
     }
 
@@ -92,6 +94,10 @@ public class PublishCommand implements Runnable {
                 defaultValue = "KEEP_ORPHANS",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 7)
         public OrphanRemovalStrategy orphanRemovalStrategy;
+        @CommandLine.Option(names = {"--parent-page-publishing-strategy"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
+                defaultValue = "APPEND_TO_ANCESTOR",
+                showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 8)
+        public PublishingStrategy parentPagePublishingStrategy = PublishingStrategy.APPEND_TO_ANCESTOR;
         @CommandLine.Option(names = {"--notify-watchers"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 8)
         public boolean notifyWatchers = false;
         @CommandLine.Option(names = {"--max-requests-per-second"}, order = 9)
