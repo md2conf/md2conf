@@ -195,7 +195,7 @@ public class PublishConfluenceClient {
 
     private void updatePage(String contentId, String ancestorId, ConfluencePage page) {
         String content = fileContent(page.getContentFilePath(), UTF_8);
-        ConfluenceApiPage existingPage = this.apiInternalClient.getPageWithViewContentAndVersionById(contentId);
+        ConfluenceApiPage existingPage = this.apiInternalClient.getPageWithViewContent(contentId);
         String existingContentHash = this.apiInternalClient.getPropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
         String newContentHash = hash(content);
 

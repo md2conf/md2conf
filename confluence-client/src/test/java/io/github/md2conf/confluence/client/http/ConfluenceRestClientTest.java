@@ -252,7 +252,7 @@ public class ConfluenceRestClientTest {
         RestApiInternalClient confluenceRestClient = new RestApiInternalClient(CONFLUENCE_ROOT_URL, httpClientMock, null, null, null);
 
         // act
-        ConfluenceApiPage confluenceApiPage = confluenceRestClient.getPageWithViewContentAndVersionById("1234");
+        ConfluenceApiPage confluenceApiPage = confluenceRestClient.getPageWithViewContent("1234");
 
         // assert
         assertThat(confluenceApiPage.getContentId(), is("1234"));

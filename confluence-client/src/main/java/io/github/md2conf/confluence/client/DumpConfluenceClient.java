@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,25 +28,36 @@ public class DumpConfluenceClient {
 
     public ConfluenceContentModel dump(String spaceKey, String title) throws IOException {
         String contentId = apiInternalClient.getPageByTitle(spaceKey, title);
-        ConfluenceApiPage apiPage = apiInternalClient.getPageWithViewContentAndVersionById(contentId);
+        ConfluenceApiPage apiPage = apiInternalClient.getPageWithViewContent(contentId);
+        //process top-level page
+        ConfluencePage topLevelPage = processAndSave(apiPage, outputDir);
 
+        List<ConfluenceApiPage> childrenPages = apiInternalClient.getChildPagesWithViewContent(contentId);
+        List<ConfluencePage> confluencePages = new ArrayList<>();
+        for (ConfluenceApiPage child: childrenPages){
+            ConfluencePage childConfluencePage = processAndSave(child, outputDir.resolve(contentId));
+            confluencePages.add(childConfluencePage);
+        }
+        topLevelPage.setChildren(confluencePages);
         ConfluenceContentModel res = new ConfluenceContentModel();
-
-        var confluencePage = new ConfluencePage();
-        confluencePage.setTitle(title);
-        confluencePage.setType(ConfluenceContentModel.Type.VIEW);
-        confluencePage.setContentFilePath(saveContent(apiPage));
-        res.setPages(List.of(confluencePage));
-
-        List<ConfluenceAttachment> list = apiInternalClient.getAttachments(contentId);
-        Map<String, String> attachments = saveAttachments(list, outputDir);
-        confluencePage.setAttachments(attachments);
-     //todo   recursion
+        res.setPages(List.of(topLevelPage));
         return res;
 
     }
 
-    private Map<String, String> saveAttachments(List<ConfluenceAttachment> list, Path outputDir) {
+    private ConfluencePage processAndSave(ConfluenceApiPage apiPage,  Path outputDir) throws IOException {
+        var confluencePage = new ConfluencePage();
+        confluencePage.setTitle(apiPage.getTitle());
+        confluencePage.setType(ConfluenceContentModel.Type.VIEW);
+        confluencePage.setContentFilePath(saveContent(apiPage, outputDir));
+
+        List<ConfluenceAttachment> list = apiInternalClient.getAttachments(apiPage.getContentId());
+        Map<String, String> attachments = saveAttachments(list, outputDir);
+        confluencePage.setAttachments(attachments);
+        return confluencePage;
+    }
+
+    private  Map<String, String> saveAttachments(List<ConfluenceAttachment> list, Path outputDir) {
         Map<String,String> res = new HashMap<>();
         for (ConfluenceAttachment attachment: list){
             Path outputPath =  saveAttachment(attachment, outputDir);
@@ -63,11 +75,11 @@ public class DumpConfluenceClient {
     private Path saveAttachment(ConfluenceAttachment attachment, Path outputDir) {
         Path outputFilePath = outputDir.resolve(attachment.getTitle());
         //todo if file exists - warn
-        apiInternalClient.saveUrlToFile(  attachment.getRelativeDownloadLink(), outputFilePath.toFile());
+        apiInternalClient.saveUrlToFile(attachment.getRelativeDownloadLink(), outputFilePath.toFile());
         return outputFilePath;
     }
 
-    private String saveContent(ConfluenceApiPage apiPage) throws IOException {
+    private static String saveContent(ConfluenceApiPage apiPage, Path outputDir) throws IOException {
         File file = outputDir.resolve(apiPage.getContentId() + ".xhtml").toFile();
         FileUtils.writeStringToFile(file, apiPage.getContent(), StandardCharsets.UTF_8);
         return file.toPath().toString();
