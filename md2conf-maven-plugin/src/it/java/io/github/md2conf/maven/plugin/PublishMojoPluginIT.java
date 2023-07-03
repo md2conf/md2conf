@@ -25,6 +25,7 @@ public class PublishMojoPluginIT extends AbstractMd2ConfMojoIT {
     void publish() {
         // arrange
         Map<String, String> properties = mandatoryProperties();
+        properties.put("parentPageTitle", "What is Confluence? (step 1 of 9)");
         properties.put("confluenceContentModelPath", "./confluence-content-model.json");
         // act
         var res = invokeGoalAndVerify("publish", "publish", properties);
@@ -32,7 +33,7 @@ public class PublishMojoPluginIT extends AbstractMd2ConfMojoIT {
         assertThat(outputPath).doesNotExist();
         // assert
         givenAuthenticatedAsPublisher()
-                .when().get(childPages())
+                .when().get(childPages("65552"))
                 .then().body("results.title", hasItem("Example publish from maven"));
     }
 

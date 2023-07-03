@@ -178,6 +178,10 @@ public class AbstractMd2ConfMojoIT {
         return "http://localhost:18090/rest/api/content/65551/child/page";
     }
 
+    protected static String childPages(String pageId) {
+        return "http://localhost:18090/rest/api/content/"+pageId+"/child/page";
+    }
+
     protected static String pageIdBy(String title) {
         return givenAuthenticatedAsPublisher()
                 .when().get(childPages())

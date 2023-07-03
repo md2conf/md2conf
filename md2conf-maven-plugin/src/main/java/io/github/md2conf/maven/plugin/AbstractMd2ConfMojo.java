@@ -96,19 +96,25 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
     @NotNull
     protected PublishCommand.PublishOptions getPublishOptions() {
-        PublishCommand.PublishOptions publishOptions = new PublishCommand.PublishOptions();
-        publishOptions.confluenceUrl = this.confluenceUrl;
-        publishOptions.username = this.username;
-        publishOptions.password = this.password;
-        publishOptions.spaceKey = this.spaceKey;
-        publishOptions.parentPageTitle = this.parentPageTitle;
-        publishOptions.versionMessage = this.versionMessage;
-        publishOptions.orphanRemovalStrategy = this.orphanRemovalStrategy;
-        publishOptions.parentPagePublishingStrategy = this.parentPagePublishingStrategy;
-        publishOptions.notifyWatchers  = this.notifyWatchers;
-        publishOptions.skipSslVerification = this.skipSslVerification;
-        publishOptions.maxRequestsPerSecond = this.maxRequestsPerSecond;
-        return publishOptions;
+        PublishCommand.PublishOptions options = new PublishCommand.PublishOptions();
+        options.versionMessage = this.versionMessage;
+        options.orphanRemovalStrategy = this.orphanRemovalStrategy;
+        options.parentPagePublishingStrategy = this.parentPagePublishingStrategy;
+        options.notifyWatchers  = this.notifyWatchers;
+        return options;
+    }
+
+    protected PublishCommand.ConfluenceOptions getConfluenceOptions(){
+        PublishCommand.ConfluenceOptions options = new PublishCommand.ConfluenceOptions();
+        options.confluenceUrl = this.confluenceUrl;
+        options.username = this.username;
+        options.password = this.password;
+        options.spaceKey = this.spaceKey;
+        options.parentPageTitle = this.parentPageTitle;
+        options.skipSslVerification = this.skipSslVerification;
+        options.maxRequestsPerSecond = this.maxRequestsPerSecond;
+        return options;
+
     }
 
 

@@ -14,16 +14,20 @@ public class ConpubCommand implements Runnable {
     @CommandLine.ArgGroup(exclusive = false)
     ConvertCommand.ConvertOptions convertOptions;
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+    PublishCommand.ConfluenceOptions confluenceOptions;
+    @CommandLine.ArgGroup(exclusive = false)
     PublishCommand.PublishOptions publishOptions;
 
     @Override
     public void run() {
-        conpub(convertOptions, publishOptions);
+        var convertOptionsLocal = convertOptions==null? new ConvertCommand.ConvertOptions(): convertOptions;
+        var publishOptionsLocal = publishOptions==null? new PublishCommand.PublishOptions(): publishOptions;
+        conpub(convertOptionsLocal, confluenceOptions, publishOptionsLocal);
     }
 
-    public static void conpub(ConvertCommand.ConvertOptions convertOptions, PublishCommand.PublishOptions publishOptions) {
+    public static void conpub(ConvertCommand.ConvertOptions convertOptions, PublishCommand.ConfluenceOptions confluenceOptions, PublishCommand.PublishOptions publishOptions) {
         var modelFile = ConvertCommand.convert(convertOptions);
-        PublishCommand.publish(publishOptions, modelFile.toPath());
+        PublishCommand.publish(confluenceOptions, publishOptions, modelFile.toPath());
     }
 
 }
