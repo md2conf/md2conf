@@ -5,7 +5,7 @@ import io.github.md2conf.model.ConfluenceContentModel;
 
 import java.io.IOException;
 
-public interface Converter {
+public interface PageStructureConverter {
 
     ConfluenceContentModel convert(PagesStructure pagesStructure) throws IOException;
 

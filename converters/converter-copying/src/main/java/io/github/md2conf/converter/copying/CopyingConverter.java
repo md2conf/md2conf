@@ -1,7 +1,7 @@
 package io.github.md2conf.converter.copying;
 
 import io.github.md2conf.converter.AttachmentUtil;
-import io.github.md2conf.converter.Converter;
+import io.github.md2conf.converter.PageStructureConverter;
 import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class CopyingConverter implements Converter {
+public class CopyingConverter implements PageStructureConverter {
 
     private final PageStructureTitleProcessor pagesStructureTitleProcessor;
     private final Path outputPath;

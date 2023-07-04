@@ -1,6 +1,6 @@
 package io.github.md2conf.toolset;
 
-import io.github.md2conf.converter.Converter;
+import io.github.md2conf.converter.PageStructureConverter;
 import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
@@ -47,7 +47,7 @@ public class ConvertCommand implements Runnable {
     public static File convert(ConvertOptions convertOptions) {
         initOptionsIfRequired(convertOptions);
         PagesStructure pagesStructure = indexInputDirectory(convertOptions);
-        Converter converterService = createConverter(convertOptions);
+        PageStructureConverter converterService = createConverter(convertOptions);
         ConfluenceContentModel model = convert(pagesStructure, converterService);
         File contentModelFile = saveConfluenceContentModelAtPath(model, convertOptions.outputDirectory);
         logger.info("Confluence content model saved at file {}", contentModelFile);
@@ -77,7 +77,7 @@ public class ConvertCommand implements Runnable {
         return pagesStructure;
     }
 
-    protected static Converter createConverter(ConvertOptions convertOptions) {
+    protected static PageStructureConverter createConverter(ConvertOptions convertOptions) {
         PageStructureTitleProcessor pageStructureTitleProcessor =
                 new DefaultPageStructureTitleProcessor(convertOptions.titleExtract,
                 convertOptions.titlePrefix,
@@ -86,7 +86,7 @@ public class ConvertCommand implements Runnable {
         boolean needToRemoveTitle = convertOptions.titleRemoveFromContent!=null ?
                 convertOptions.titleRemoveFromContent :
                 convertOptions.titleExtract.equals(TitleExtractStrategy.FROM_FIRST_HEADER);
-        Converter converterService = null;
+        PageStructureConverter converterService = null;
         switch (convertOptions.converter) {
             case MD2WIKI:
                 converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle, convertOptions.plantumlCodeAsMacro);
@@ -101,7 +101,7 @@ public class ConvertCommand implements Runnable {
         return converterService;
     }
 
-    protected static ConfluenceContentModel convert(PagesStructure pagesStructure, Converter converterService) {
+    protected static ConfluenceContentModel convert(PagesStructure pagesStructure, PageStructureConverter converterService) {
         logger.info("Convert using {}" ,converterService);
         try {
             return converterService.convert(pagesStructure);

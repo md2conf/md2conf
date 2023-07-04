@@ -1,7 +1,7 @@
 package io.github.md2conf.converter.noop;
 
 import io.github.md2conf.converter.AttachmentUtil;
-import io.github.md2conf.converter.Converter;
+import io.github.md2conf.converter.PageStructureConverter;
 import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class NoopConverter implements Converter {
+public class NoopConverter implements PageStructureConverter {
 
     private final PageStructureTitleProcessor pageStructureTitleProcessor;
     private final boolean needToRemoveTitle;
