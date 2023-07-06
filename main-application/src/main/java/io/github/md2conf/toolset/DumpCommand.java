@@ -16,8 +16,8 @@ import java.nio.file.Path;
 import static io.github.md2conf.model.util.ModelReadWriteUtil.saveConfluenceContentModelAtPath;
 import static io.github.md2conf.toolset.PublishCommand.buildConfluenceClientConfigurationProperties;
 
-@CommandLine.Command(name = "dump",description = "Dump content from Confluence instance")
-public class DumpCommand  implements Runnable {
+@CommandLine.Command(name = "dump", description = "Dump content from Confluence instance")
+public class DumpCommand implements Runnable {
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
@@ -26,12 +26,15 @@ public class DumpCommand  implements Runnable {
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
     PublishCommand.ConfluenceOptions confluenceOptions;
 
-
     @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
     protected Path outputDirectory;
 
     @Override
     public void run() {
+        dump(confluenceOptions, outputDirectory);
+    }
+
+    public static void dump(PublishCommand.ConfluenceOptions confluenceOptions, Path outputDirectory) {
         DumpConfluenceClient confluenceClient = prepareConfluenceClient(confluenceOptions, outputDirectory);
         ConfluenceContentModel model = null;
         try {

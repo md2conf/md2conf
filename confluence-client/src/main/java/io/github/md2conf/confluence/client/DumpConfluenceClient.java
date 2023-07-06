@@ -30,15 +30,8 @@ public class DumpConfluenceClient {
         String contentId = apiInternalClient.getPageByTitle(spaceKey, title);
         ConfluenceApiPage apiPage = apiInternalClient.getPageWithViewContent(contentId);
         //process top-level page
+        //todo add option to process only children of top-level page
         ConfluencePage topLevelPage = processAndSave(apiPage, outputDir);
-
-        List<ConfluenceApiPage> childrenPages = apiInternalClient.getChildPagesWithViewContent(contentId);
-        List<ConfluencePage> confluencePages = new ArrayList<>();
-        for (ConfluenceApiPage child: childrenPages){
-            ConfluencePage childConfluencePage = processAndSave(child, outputDir.resolve(contentId));
-            confluencePages.add(childConfluencePage);
-        }
-        topLevelPage.setChildren(confluencePages);
         ConfluenceContentModel res = new ConfluenceContentModel();
         res.setPages(List.of(topLevelPage));
         return res;
@@ -50,10 +43,16 @@ public class DumpConfluenceClient {
         confluencePage.setTitle(apiPage.getTitle());
         confluencePage.setType(ConfluenceContentModel.Type.VIEW);
         confluencePage.setContentFilePath(saveContent(apiPage, outputDir));
-
         List<ConfluenceAttachment> list = apiInternalClient.getAttachments(apiPage.getContentId());
         Map<String, String> attachments = saveAttachments(list, outputDir);
         confluencePage.setAttachments(attachments);
+        List<ConfluenceApiPage> childrenPages = apiInternalClient.getChildPagesWithViewContent(apiPage.getContentId());
+        List<ConfluencePage> confluencePages = new ArrayList<>();
+        for (ConfluenceApiPage child: childrenPages){
+            ConfluencePage childConfluencePage = processAndSave(child, outputDir.resolve(apiPage.getContentId()));
+            confluencePages.add(childConfluencePage);
+        }
+        confluencePage.setChildren(confluencePages);
         return confluencePage;
     }
 

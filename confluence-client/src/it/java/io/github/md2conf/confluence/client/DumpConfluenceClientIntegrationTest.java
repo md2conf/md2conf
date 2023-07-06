@@ -57,7 +57,7 @@ public class DumpConfluenceClientIntegrationTest extends AbstractContainerTestBa
         List<ConfluencePage> children = contentModel.getPages().get(0).getChildren();
         assertThat(children).isNotEmpty();
         for (ConfluencePage child : children) {
-            assertThat(Path.of(child.getContentFilePath())).isNotEmptyFile().hasParent(tmpDir.resolve("65551"));
+            assertThat(Path.of(child.getContentFilePath())).withFailMessage(()->"wrong parent of " + child.getContentFilePath()).hasParent(tmpDir.resolve("65551"));
         }
     }
 

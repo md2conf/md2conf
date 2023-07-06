@@ -1,0 +1,30 @@
+{
+  "pages" : [ {
+    "title" : "Welcome to Confluence",
+    "contentFilePath" : "src/test/resources/view_multiple_page/65551.xhtml",
+    "type" : "VIEW",
+    "attachments" : {
+      "welcome.png" : "src/test/resources/view_multiple_page/welcome.png"
+    },
+    "children" : [ {
+      "title" : "What is Confluence? (step 1 of 9)",
+      "contentFilePath" : "src/test/resources/view_multiple_page/65551/65552.xhtml",
+      "type" : "VIEW",
+      "children" : [ {
+        "title" : "A quick look at the editor (step 2 of 9)",
+        "contentFilePath" : "src/test/resources/view_multiple_page/65551/65554.xhtml",
+        "type" : "VIEW",
+        "children" : [ ],
+        "attachments" : {
+          "step-2-image-1.png" : "src/test/resources/view_multiple_page/65551/step-2-image-1.png",
+          "step-2-image-5.png" : "src/test/resources/view_multiple_page/65551/step-2-image-5.png",
+          "step-2-image-3.png" : "src/test/resources/view_multiple_page/65551/step-2-image-3.png"
+        },
+        "labels" : [ ]
+      }],
+      "attachments" : { },
+      "labels" : [ ]
+    }],
+    "labels" : [ ]
+  } ]
+}

@@ -20,7 +20,7 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     @Parameter(property = PREFIX + "skip", defaultValue = "false")
     protected boolean skip;
 
-    @Parameter(defaultValue = "${project.build.directory}/md2conf", readonly = true)
+    @Parameter(property = PREFIX + "outputDirectory", defaultValue = "${project.build.directory}/md2conf", readonly = true)
     protected File outputDirectory;
 
     /// --- CONVERT options
@@ -80,11 +80,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected ConvertCommand.ConvertOptions getConvertOptions() {
         ConvertCommand.ConvertOptions convertOptions = new ConvertCommand.ConvertOptions();
         convertOptions.converter = this.converter;
-        convertOptions.outputDirectory = this.outputDirectory.toPath();
         convertOptions.inputDirectory = this.inputDirectory.toPath();
-        convertOptions.fileExtension = this.fileExtension;
-        convertOptions.excludePattern = this.excludePattern;
-        convertOptions.indexerRootPage = this.indexerRootPage;
+        convertOptions.outputDirectory = this.outputDirectory.toPath();
         convertOptions.titleExtract = this.titleExtract;
         convertOptions.titlePrefix = this.titlePrefix;
         convertOptions.titleSuffix = this.titleSuffix;
@@ -92,6 +89,15 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         convertOptions.titleRemoveFromContent = this.titleRemoveFromContent;
         convertOptions.plantumlCodeAsMacro = this.plantumlCodeAsMacro;
         return convertOptions;
+    }
+
+    protected ConvertCommand.IndexerOptions getIndexerOptions(){
+        ConvertCommand.IndexerOptions indexerOptions = new ConvertCommand.IndexerOptions();
+        indexerOptions.fileExtension = this.fileExtension;
+        indexerOptions.excludePattern = this.excludePattern;
+        indexerOptions.indexerRootPage = this.indexerRootPage;
+        return indexerOptions;
+
     }
 
     @NotNull
@@ -115,6 +121,10 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         options.maxRequestsPerSecond = this.maxRequestsPerSecond;
         return options;
 
+    }
+
+    public File getConfluenceContentModelPath() {
+        return confluenceContentModelPath;
     }
 
 

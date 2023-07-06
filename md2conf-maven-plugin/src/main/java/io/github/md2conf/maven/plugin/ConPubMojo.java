@@ -11,7 +11,7 @@ public class ConPubMojo extends AbstractMd2ConfMojo{
             getLog().info("md2conf plugin conpub skipped ('skip' is enabled)");
             return;
         }
-        ConpubCommand.conpub(getConvertOptions(), getConfluenceOptions(), getPublishOptions());
+        ConpubCommand.conpub(getConvertOptions(), getIndexerOptions(), getConfluenceOptions(), getPublishOptions());
     }
 
 }

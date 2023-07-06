@@ -1,0 +1,11 @@
+{
+  "pages" : [ {
+    "title" : "Welcome to Confluence",
+    "contentFilePath" : "src/test/resources/view_single_page/65551.xhtml",
+    "type" : "VIEW",
+    "attachments" : {
+      "welcome.png" : "src/test/resources/view_single_page/welcome.png"
+    },
+    "labels" : [ ]
+  } ]
+}
