@@ -14,7 +14,6 @@
     <packaging>pom</packaging>
     <version>0.0.10-SNAPSHOT</version>
 
-
     <modules>
         <module>flexmark-ext-local-attachments</module>
         <module>flexmark-ext-crosspage-links</module>
@@ -26,5 +25,6 @@
         <module>converter-noop</module>
         <module>converter-copying</module>
         <module>converter-md2wiki</module>
+        <module>converter-view2md</module>
     </modules>
 </project>

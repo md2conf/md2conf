@@ -162,4 +162,21 @@ class ConvertCommandTest {
         assertThat(outputPath).isDirectoryContaining(path -> path.getFileName().toString().equals("confluence-content-model.json"));
         assertThat(outputPath.resolve("index.wiki")).isRegularFile().content().contains("Header");
     }
+
+
+    @Test
+    void invoke_view2md_converter() {
+        MainApp mainApp = new MainApp();
+        CommandLine cmd = new CommandLine(mainApp);
+        StringWriter swOut = new StringWriter();
+        StringWriter swErr = new StringWriter();
+        cmd.setOut(new PrintWriter(swOut));
+        cmd.setErr(new PrintWriter(swErr));
+        String inputDir = "src/test/resources/view_single_page";
+        assertThat(outputPath).isEmptyDirectory();
+        int exitCode = cmd.execute("convert", "--converter=VIEW2MD", "--input-dir="+ inputDir, "-o=" + outputPath);
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(outputPath.resolve("65551.md")).isRegularFile().content().contains("Share your page with a team member");
+        assertThat(outputPath.resolve("65551_attachments/welcome.png")).isRegularFile().content();
+    }
 }

@@ -3,6 +3,7 @@ package io.github.md2conf.toolset;
 import io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperties;
 import io.github.md2conf.confluence.client.ConfluenceClientFactory;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
+import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.model.ConfluenceContentModel;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -19,7 +20,11 @@ import static io.github.md2conf.model.util.ModelReadWriteUtil.readFromYamlOrJson
 public class PublishCommand implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(PublishCommand.class);
+
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+    protected ConfluenceOptions confluenceOptions;
+
+    @CommandLine.ArgGroup(exclusive = false)
     protected PublishOptions publishOptions;
 
     @CommandLine.Option(names = { "-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file. Default value is current working directory.", defaultValue = ".", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
@@ -29,29 +34,31 @@ public class PublishCommand implements Runnable {
 
     @Override
     public void run() {
-        publish(publishOptions,  confluenceContentModelPath);
+        PublishOptions publishOptionsLocal = publishOptions==null ? new PublishOptions(): publishOptions;
+        publish(confluenceOptions, publishOptionsLocal, confluenceContentModelPath);
     }
 
-    public static void publish(PublishOptions mandatory, Path confluenceContentModelPath) {
+    public static void publish(ConfluenceOptions confluenceOptions, PublishOptions publishOptions, Path confluenceContentModelPath) {
         var model = loadConfluenceContentModel(confluenceContentModelPath);
-        var clientProps = buildConfluenceClientConfigurationProperties(mandatory);
+        var clientProps = buildConfluenceClientConfigurationProperties(confluenceOptions, publishOptions);
         var publishConfluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null);
-        publishConfluenceClient.publish(model, mandatory.spaceKey, mandatory.parentPageTitle);
+        publishConfluenceClient.publish(model, confluenceOptions.spaceKey, confluenceOptions.parentPageTitle);
     }
 
 
-    protected static ConfluenceClientConfigurationProperties buildConfluenceClientConfigurationProperties(PublishOptions options) {
+    protected static ConfluenceClientConfigurationProperties buildConfluenceClientConfigurationProperties(ConfluenceOptions confluenceOptions, PublishOptions publishOptions) {
         return aConfluenceClientConfigurationProperties()
-                .withConfluenceUrl(options.confluenceUrl)
-                .withParentPageTitle(options.parentPageTitle)
-                .withPasswordOrPersonalAccessToken(options.password)
-                .withSpaceKey(options.spaceKey)
-                .withUsername(options.username)
-                .withMaxRequestsPerSecond(options.maxRequestsPerSecond)
-                .withVersionMessage(options.versionMessage)
-                .withSkipSslVerification(options.skipSslVerification)
-                .withNotifyWatchers(options.notifyWatchers)
-                .withOrphanRemovalStrategy(options.orphanRemovalStrategy)
+                .withConfluenceUrl(confluenceOptions.confluenceUrl)
+                .withParentPageTitle(confluenceOptions.parentPageTitle)
+                .withPasswordOrPersonalAccessToken(confluenceOptions.password)
+                .withSpaceKey(confluenceOptions.spaceKey)
+                .withUsername(confluenceOptions.username)
+                .withMaxRequestsPerSecond(confluenceOptions.maxRequestsPerSecond)
+                .withVersionMessage(publishOptions.versionMessage)
+                .withSkipSslVerification(confluenceOptions.skipSslVerification)
+                .withNotifyWatchers(publishOptions.notifyWatchers)
+                .withOrphanRemovalStrategy(publishOptions.orphanRemovalStrategy)
+                .withPublishingStrategy(publishOptions.parentPagePublishingStrategy)
                 .build();
     }
 
@@ -75,7 +82,7 @@ public class PublishCommand implements Runnable {
         return result;
     }
 
-    public static class PublishOptions {
+    public static class ConfluenceOptions{
         @CommandLine.Option(names = {"-url", "--confluence-url"}, required = true, description = "The root URL of the Confluence instance", order = 1)
         public String confluenceUrl;
         @CommandLine.Option(names = {/*"-user",*/ "--username"}, description = "Username of the Confluence user", order = 2)
@@ -88,14 +95,21 @@ public class PublishCommand implements Runnable {
         public String parentPageTitle;
         @CommandLine.Option(names = {"--skip-ssl-verification"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 6)
         public boolean skipSslVerification = false;
+        @CommandLine.Option(names = {"--max-requests-per-second"}, order = 9)
+        public Double maxRequestsPerSecond;
+    }
+
+    public static class PublishOptions {
         @CommandLine.Option(names = {"--orphan-removal-strategy"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "KEEP_ORPHANS",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 7)
         public OrphanRemovalStrategy orphanRemovalStrategy;
+        @CommandLine.Option(names = {"--parent-page-publishing-strategy"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
+                defaultValue = "APPEND_TO_ANCESTOR",
+                showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 8)
+        public PublishingStrategy parentPagePublishingStrategy = PublishingStrategy.APPEND_TO_ANCESTOR;
         @CommandLine.Option(names = {"--notify-watchers"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 8)
         public boolean notifyWatchers = false;
-        @CommandLine.Option(names = {"--max-requests-per-second"}, order = 9)
-        public Double maxRequestsPerSecond;
         @CommandLine.Option(names = {"--version-message"}, description = "Version message", defaultValue = "Published by md2conf", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 10)
         public String versionMessage = "Published by md2conf";
     }

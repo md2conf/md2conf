@@ -202,14 +202,29 @@ public class RestApiInternalClient implements ApiInternalClient {
     }
 
     @Override
-    public ConfluenceApiPage getPageWithViewContentAndVersionById(String contentId) {
+    public ConfluenceApiPage getPageWithViewContent(String contentId) {
         HttpGet pageByIdRequest = this.httpRequestFactory.getPageByIdRequest(contentId, "body.view,version");
+        return sendRequestAndFailIfNot20x(pageByIdRequest, (response) ->
+                extractConfluencePageWithContent(parseJsonResponse(response)));
+    }
 
-        return sendRequestAndFailIfNot20x(pageByIdRequest, (response) -> {
-            ConfluenceApiPage confluenceApiPage = extractConfluencePageWithContent(parseJsonResponse(response));
 
-            return confluenceApiPage;
-        });
+    @Override
+    public List<ConfluenceApiPage> getChildPagesWithViewContent(String contentId) {
+        int start = 0;
+        int limit = 128;
+
+        ArrayList<ConfluenceApiPage> childPages = new ArrayList<>();
+        boolean fetchMore = true;
+        while (fetchMore) {
+            List<ConfluenceApiPage> nextChildPages = getNextChildPages(contentId, limit, start, true);
+            childPages.addAll(nextChildPages);
+
+            start+=limit;
+            fetchMore = nextChildPages.size() == limit;
+        }
+
+        return childPages;
     }
 
     private JsonNode parseJsonResponse(HttpResponse response) {
@@ -257,7 +272,7 @@ public class RestApiInternalClient implements ApiInternalClient {
         ArrayList<ConfluenceApiPage> childPages = new ArrayList<>();
         boolean fetchMore = true;
         while (fetchMore) {
-            List<ConfluenceApiPage> nextChildPages = getNextChildPages(contentId, limit, start);
+            List<ConfluenceApiPage> nextChildPages = getNextChildPages(contentId, limit, start, false);
             childPages.addAll(nextChildPages);
 
             start+=limit;
@@ -285,13 +300,26 @@ public class RestApiInternalClient implements ApiInternalClient {
         return attachments;
     }
 
-    private List<ConfluenceApiPage> getNextChildPages(String contentId, int limit, int start) {
+    private List<ConfluenceApiPage> getNextChildPages(String contentId, int limit, int start, boolean withContent) {
         List<ConfluenceApiPage> pages = new ArrayList<>(limit);
-        HttpGet getChildPagesByIdRequest = this.httpRequestFactory.getChildPagesByIdRequest(contentId, limit, start, "version");
+        final String expandOptions;
+        if (withContent){
+            expandOptions = "body.view,version";
+        } else {
+            expandOptions = "version";
+        }
+        HttpGet getChildPagesByIdRequest = this.httpRequestFactory.getChildPagesByIdRequest(contentId, limit, start, expandOptions);
 
         return sendRequestAndFailIfNot20x(getChildPagesByIdRequest, (response) -> {
             JsonNode jsonNode = parseJsonResponse(response);
-            jsonNode.withArray("results").forEach((page) -> pages.add(extractConfluencePageWithoutContent(page)));
+            Function<JsonNode,ConfluenceApiPage> extractor = jsonNode1 -> {
+                if (withContent) {
+                    return extractConfluencePageWithContent(jsonNode1);
+                } else {
+                    return extractConfluencePageWithoutContent(jsonNode1);
+                }
+            };
+            jsonNode.withArray("results").forEach((page) -> pages.add(extractor.apply(page)));
 
             return pages;
         });

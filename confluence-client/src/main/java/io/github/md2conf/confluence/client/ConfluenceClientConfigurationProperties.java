@@ -7,6 +7,7 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
     private String passwordOrPersonalAccessToken;
     private String spaceKey;
     private String parentPageTitle;
+    private PublishingStrategy publishingStrategy;
     private String versionMessage = "Published by md2conf";
     private OrphanRemovalStrategy orphanRemovalStrategy;
     private boolean notifyWatchers = false;
@@ -51,6 +52,14 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
 
     public void setParentPageTitle(String parentPageTitle) {
         this.parentPageTitle = parentPageTitle;
+    }
+
+    public PublishingStrategy getPublishingStrategy() {
+        return publishingStrategy;
+    }
+
+    public void setPublishingStrategy(PublishingStrategy publishingStrategy) {
+        this.publishingStrategy = publishingStrategy;
     }
 
     public String getVersionMessage() {
@@ -101,6 +110,7 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
         private String spaceKey;
         private String parentPageTitle;
         private String versionMessage = "Published by md2conf";
+        private PublishingStrategy publishingStrategy;
         private OrphanRemovalStrategy orphanRemovalStrategy;
         private boolean notifyWatchers = false;
         private boolean skipSslVerification = false;
@@ -138,6 +148,11 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
             return this;
         }
 
+        public ConfluenceClientConfigurationPropertiesBuilder withPublishingStrategy(PublishingStrategy publishingStrategy) {
+            this.publishingStrategy = publishingStrategy;
+            return this;
+        }
+
         public ConfluenceClientConfigurationPropertiesBuilder withVersionMessage(String versionMessage) {
             this.versionMessage = versionMessage;
             return this;
@@ -171,6 +186,7 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
             confluenceClientConfigurationProperties.setSpaceKey(spaceKey);
             confluenceClientConfigurationProperties.setParentPageTitle(parentPageTitle);
             confluenceClientConfigurationProperties.setVersionMessage(versionMessage);
+            confluenceClientConfigurationProperties.setPublishingStrategy(publishingStrategy);
             confluenceClientConfigurationProperties.setOrphanRemovalStrategy(orphanRemovalStrategy);
             confluenceClientConfigurationProperties.setNotifyWatchers(notifyWatchers);
             confluenceClientConfigurationProperties.setSkipSslVerification(skipSslVerification);

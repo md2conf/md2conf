@@ -13,17 +13,24 @@ public class ConpubCommand implements Runnable {
     LoggingMixin loggingMixin;
     @CommandLine.ArgGroup(exclusive = false)
     ConvertCommand.ConvertOptions convertOptions;
+    @CommandLine.ArgGroup(exclusive = false)
+    ConvertCommand.IndexerOptions indexerOptions;
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+    PublishCommand.ConfluenceOptions confluenceOptions;
+    @CommandLine.ArgGroup(exclusive = false)
     PublishCommand.PublishOptions publishOptions;
 
     @Override
     public void run() {
-        conpub(convertOptions, publishOptions);
+        var convertOptionsLocal = convertOptions==null? new ConvertCommand.ConvertOptions(): convertOptions;
+        var indexerOptionsLocal = indexerOptions==null? new ConvertCommand.IndexerOptions(): indexerOptions;
+        var publishOptionsLocal = publishOptions==null? new PublishCommand.PublishOptions(): publishOptions;
+        conpub(convertOptionsLocal, indexerOptionsLocal, confluenceOptions, publishOptionsLocal);
     }
 
-    public static void conpub(ConvertCommand.ConvertOptions convertOptions, PublishCommand.PublishOptions publishOptions) {
-        var modelFile = ConvertCommand.convert(convertOptions);
-        PublishCommand.publish(publishOptions, modelFile.toPath());
+    public static void conpub(ConvertCommand.ConvertOptions convertOptions, ConvertCommand.IndexerOptions indexerOptions, PublishCommand.ConfluenceOptions confluenceOptions, PublishCommand.PublishOptions publishOptions) {
+        var modelFile = ConvertCommand.convert(convertOptions, indexerOptions, null);
+        PublishCommand.publish(confluenceOptions, publishOptions, modelFile.toPath());
     }
 
 }

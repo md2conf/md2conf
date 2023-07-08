@@ -45,7 +45,8 @@ public interface ApiInternalClient {
 
     ConfluenceAttachment getAttachmentByFileName(String contentId, String attachmentFileName) throws NotFoundException, MultipleResultsException;
 
-    ConfluenceApiPage getPageWithViewContentAndVersionById(String contentId);
+    ConfluenceApiPage getPageWithViewContent(String contentId);
+    List<ConfluenceApiPage>  getChildPagesWithViewContent(String contentId);
 
     List<ConfluenceApiPage> getChildPages(String contentId);
 

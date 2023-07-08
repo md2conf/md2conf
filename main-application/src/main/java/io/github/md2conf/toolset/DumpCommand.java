@@ -1,39 +1,56 @@
 package io.github.md2conf.toolset;
 
 import io.github.md2conf.confluence.client.ConfluenceClientFactory;
-import io.github.md2conf.confluence.client.PublishConfluenceClient;
+import io.github.md2conf.confluence.client.DumpConfluenceClient;
+import io.github.md2conf.confluence.client.http.ApiInternalClient;
 import io.github.md2conf.model.ConfluenceContentModel;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 
+import static io.github.md2conf.model.util.ModelReadWriteUtil.saveConfluenceContentModelAtPath;
 import static io.github.md2conf.toolset.PublishCommand.buildConfluenceClientConfigurationProperties;
 
-@CommandLine.Command(name = "dump",description = "Dump content from Confluence instance")
-public class DumpCommand  implements Runnable {
+@CommandLine.Command(name = "dump", description = "Dump content from Confluence instance")
+public class DumpCommand implements Runnable {
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
-    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
-    PublishCommand.PublishOptions publishOptions; //todo split & rename ??
+    private final static Logger logger = LoggerFactory.getLogger(DumpCommand.class);
 
+    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+    PublishCommand.ConfluenceOptions confluenceOptions;
 
     @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
     protected Path outputDirectory;
 
-
     @Override
     public void run() {
-        PublishConfluenceClient confluenceClient = prepareConfluenceClient(publishOptions);
-     //todo   confluenceClient.publish();
+        dump(confluenceOptions, outputDirectory);
+    }
+
+    public static void dump(PublishCommand.ConfluenceOptions confluenceOptions, Path outputDirectory) {
+        DumpConfluenceClient confluenceClient = prepareConfluenceClient(confluenceOptions, outputDirectory);
+        ConfluenceContentModel model = null;
+        try {
+            model = confluenceClient.dump(confluenceOptions.spaceKey, confluenceOptions.parentPageTitle);
+        } catch (IOException e) {
+            throw new RuntimeException(e); //improve the code?
+        }
+        File contentModelFile = saveConfluenceContentModelAtPath(model, outputDirectory);
+        logger.info("Confluence content model saved at file {}", contentModelFile);
     }
 
     @NotNull
-    protected static PublishConfluenceClient prepareConfluenceClient(PublishCommand.PublishOptions mandatory) { //todo try to generify
-        var clientProps = buildConfluenceClientConfigurationProperties(mandatory);
-        return ConfluenceClientFactory.publishConfluenceClient(clientProps, new ConfluenceContentModel(), null);
-
+    protected static DumpConfluenceClient prepareConfluenceClient(PublishCommand.ConfluenceOptions confluenceOptions, Path outputDir) {
+        var clientProps = buildConfluenceClientConfigurationProperties(confluenceOptions, new PublishCommand.PublishOptions()); //todo drop  PublishOptions
+        ApiInternalClient apiInternalClient = ConfluenceClientFactory.createApiInternalClient(clientProps);
+        return new DumpConfluenceClient(apiInternalClient, outputDir);
     }
 
 }

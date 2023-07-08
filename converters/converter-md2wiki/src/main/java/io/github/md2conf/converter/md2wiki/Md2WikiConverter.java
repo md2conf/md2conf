@@ -10,7 +10,7 @@ import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.vladsch.flexmark.util.misc.Extension;
 import io.github.md2conf.converter.AttachmentUtil;
-import io.github.md2conf.converter.Converter;
+import io.github.md2conf.converter.PageStructureConverter;
 import io.github.md2conf.converter.md2wiki.attachment.ImageFilePathUtil;
 import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
 import io.github.md2conf.flexmart.ext.confluence.macros.ConfluenceMacroExtension;
@@ -38,7 +38,7 @@ import java.util.Set;
 
 import static io.github.md2conf.converter.md2wiki.attachment.LocalAttachmentUtil.collectLocalAttachmentPaths;
 
-public class Md2WikiConverter implements Converter {
+public class Md2WikiConverter implements PageStructureConverter {
 
     private final PageStructureTitleProcessor pagesStructureTitleProcessor;
     private final Path outputPath;

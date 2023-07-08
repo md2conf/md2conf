@@ -107,7 +107,7 @@ public class AbstractMd2ConfMojoIT {
     }
 
     private static String generatePom(Map<String, String> properties) {
-        String pluginVersion = System.getProperty("md2conf.version", "0.0.6-SNAPSHOT");
+        String pluginVersion = System.getProperty("md2conf.version", "0.0.10-SNAPSHOT");
 
         return "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"" +
                 "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
@@ -176,6 +176,10 @@ public class AbstractMd2ConfMojoIT {
 
     protected static String childPages() {
         return "http://localhost:18090/rest/api/content/65551/child/page";
+    }
+
+    protected static String childPages(String pageId) {
+        return "http://localhost:18090/rest/api/content/"+pageId+"/child/page";
     }
 
     protected static String pageIdBy(String title) {

@@ -1,6 +1,7 @@
 package io.github.md2conf.maven.plugin;
 
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
+import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.ConvertCommand;
 import io.github.md2conf.toolset.PublishCommand;
@@ -19,7 +20,7 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     @Parameter(property = PREFIX + "skip", defaultValue = "false")
     protected boolean skip;
 
-    @Parameter(defaultValue = "${project.build.directory}/md2conf", readonly = true)
+    @Parameter(property = PREFIX + "outputDirectory", defaultValue = "${project.build.directory}/md2conf", readonly = true)
     protected File outputDirectory;
 
     /// --- CONVERT options
@@ -65,6 +66,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected String versionMessage = "Published by md2conf";
     @Parameter(property = PREFIX + "orphanRemovalStrategy")
     protected OrphanRemovalStrategy orphanRemovalStrategy = OrphanRemovalStrategy.KEEP_ORPHANS;
+    @Parameter(property = PREFIX + "parentPagePublishingStrategy")
+    protected PublishingStrategy parentPagePublishingStrategy = PublishingStrategy.APPEND_TO_ANCESTOR;
     @Parameter(property = PREFIX + "notifyWatchers")
     protected boolean notifyWatchers = false;
     @Parameter(property = PREFIX + "skipSslVerification")
@@ -77,11 +80,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected ConvertCommand.ConvertOptions getConvertOptions() {
         ConvertCommand.ConvertOptions convertOptions = new ConvertCommand.ConvertOptions();
         convertOptions.converter = this.converter;
-        convertOptions.outputDirectory = this.outputDirectory.toPath();
         convertOptions.inputDirectory = this.inputDirectory.toPath();
-        convertOptions.fileExtension = this.fileExtension;
-        convertOptions.excludePattern = this.excludePattern;
-        convertOptions.indexerRootPage = this.indexerRootPage;
+        convertOptions.outputDirectory = this.outputDirectory.toPath();
         convertOptions.titleExtract = this.titleExtract;
         convertOptions.titlePrefix = this.titlePrefix;
         convertOptions.titleSuffix = this.titleSuffix;
@@ -91,20 +91,40 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         return convertOptions;
     }
 
+    protected ConvertCommand.IndexerOptions getIndexerOptions(){
+        ConvertCommand.IndexerOptions indexerOptions = new ConvertCommand.IndexerOptions();
+        indexerOptions.fileExtension = this.fileExtension;
+        indexerOptions.excludePattern = this.excludePattern;
+        indexerOptions.indexerRootPage = this.indexerRootPage;
+        return indexerOptions;
+
+    }
+
     @NotNull
     protected PublishCommand.PublishOptions getPublishOptions() {
-        PublishCommand.PublishOptions publishOptions = new PublishCommand.PublishOptions();
-        publishOptions.confluenceUrl = this.confluenceUrl;
-        publishOptions.username = this.username;
-        publishOptions.password = this.password;
-        publishOptions.spaceKey = this.spaceKey;
-        publishOptions.parentPageTitle = this.parentPageTitle;
-        publishOptions.versionMessage = this.versionMessage;
-        publishOptions.orphanRemovalStrategy = this.orphanRemovalStrategy;
-        publishOptions.notifyWatchers  = this.notifyWatchers;
-        publishOptions.skipSslVerification = this.skipSslVerification;
-        publishOptions.maxRequestsPerSecond = this.maxRequestsPerSecond;
-        return publishOptions;
+        PublishCommand.PublishOptions options = new PublishCommand.PublishOptions();
+        options.versionMessage = this.versionMessage;
+        options.orphanRemovalStrategy = this.orphanRemovalStrategy;
+        options.parentPagePublishingStrategy = this.parentPagePublishingStrategy;
+        options.notifyWatchers  = this.notifyWatchers;
+        return options;
+    }
+
+    protected PublishCommand.ConfluenceOptions getConfluenceOptions(){
+        PublishCommand.ConfluenceOptions options = new PublishCommand.ConfluenceOptions();
+        options.confluenceUrl = this.confluenceUrl;
+        options.username = this.username;
+        options.password = this.password;
+        options.spaceKey = this.spaceKey;
+        options.parentPageTitle = this.parentPageTitle;
+        options.skipSslVerification = this.skipSslVerification;
+        options.maxRequestsPerSecond = this.maxRequestsPerSecond;
+        return options;
+
+    }
+
+    public File getConfluenceContentModelPath() {
+        return confluenceContentModelPath;
     }
 
 
