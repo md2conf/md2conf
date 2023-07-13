@@ -118,7 +118,7 @@ public class ConvertCommand implements Runnable {
         PageStructureConverter converterService = null;
         switch (convertOptions.converter) {
             case MD2WIKI:
-                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle, convertOptions.plantumlCodeAsMacro);
+                converterService = new Md2WikiConverter(pageStructureTitleProcessor, convertOptions.outputDirectory, needToRemoveTitle, convertOptions.plantumlCodeMacroEnable, convertOptions.plantumlCodeMacroName);
                 break;
             case NO:
                 converterService = new NoopConverter(pageStructureTitleProcessor, needToRemoveTitle);
@@ -171,8 +171,10 @@ public class ConvertCommand implements Runnable {
         public boolean titleChildPrefixed;
         @CommandLine.Option(names = { "--title-remove-from-content"}, description = "Remove title from converted content, to avoid duplicate titles rendering in an Confluence")
         public Boolean titleRemoveFromContent;
-        @CommandLine.Option(names = { "--plantuml-code-as-macro"}, description = "Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering)")
-        public Boolean plantumlCodeAsMacro=false;
+        @CommandLine.Option(names = { "--plantuml-code-macro-enable"}, description = "Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering)")
+        public Boolean plantumlCodeMacroEnable =false;
+        @CommandLine.Option(names = { "--plantuml-code-macro-name"}, description = "Name of confluence macro to render plantuml. Need to Confluence plugin. Possible known options are: 'plantuml' or 'plantumlrender' or 'plantumlcloud'. By default, 'plantuml' is used.")
+        public String plantumlCodeMacroName = "plantuml";
 
     }
 

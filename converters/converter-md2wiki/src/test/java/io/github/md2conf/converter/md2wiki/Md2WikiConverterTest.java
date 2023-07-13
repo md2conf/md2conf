@@ -32,7 +32,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_single_page() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -51,7 +51,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_page_tree() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -74,7 +74,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_page_tree_invoke_twice() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -87,7 +87,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_page_tree_heading_removed() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, true,false);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, true,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -104,7 +104,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_page_tree_with_inline_local_image() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -122,7 +122,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_page_tree_with_local_attachment_link() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -140,7 +140,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_crosslinks() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, false);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, false,"plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -158,7 +158,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_markdown_plantuml_enabled() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true,"plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -173,8 +173,24 @@ class Md2WikiConverterTest {
     }
 
     @Test
+    void convert_markdown_plantumlrender_enabled() throws IOException {
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true,"plantumlrender");
+        var prop = new FileIndexerConfigurationProperties();
+        prop.setFileExtension("md");
+        FileIndexer fileIndexer = new DefaultFileIndexer(prop);
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_plantuml"));
+        assertThat(pagesStructure.pages()).hasSize(1);
+        ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
+        assertThat(model).isNotNull();
+        assertThat(model.getPages()).hasSize(1);
+        assertThat(outputPath).isNotEmptyDirectory();
+        assertThat(outputPath).isDirectoryContaining("glob:**/a.wiki");
+        assertThat(outputPath.resolve("a.wiki")).isRegularFile().content().doesNotContain("{code}").contains("{plantumlrender}");
+    }
+
+    @Test
     void convert_markdown_plantuml_disabled() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, false);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, false,"plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);
@@ -191,7 +207,7 @@ class Md2WikiConverterTest {
 
     @Test
     void convert_codeblock() throws IOException {
-        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true);
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true,"plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
         FileIndexer fileIndexer = new DefaultFileIndexer(prop);

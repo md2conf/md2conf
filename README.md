@@ -118,6 +118,18 @@ Main processing steps are
 
 ### Index by file-indexer
 
+File-indexer is a tool that build Confluence Content Model based on file name conventions.
+
+There are 2 types of relation between confluence objects 'child relation' and 'attachment relation'
+
+#### Filename conventions
+
+| Relation              | Description | Filename convention                                                                                                                                                    | Example                                               |
+|:----------------------|:------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------|
+| 'child relation'      |             | Child page of parent page `parent.md` must be located in directory with basename of parent page (`./parent`)                                                           | 2 files: `parent.md` and `parent/child.md`            |
+| 'attachment relation' |             | Attachment file of page `page.md` must be located in directory which name is concatenation of basename of parent page and "_attachments" suffix (`./page_attachments`) | 2 files: `page.md` and `./page_attachments/image.png` |
+
+
 Controlled by properties:
 
 | Property key    | CLI name            | Description                                                                                                                 | Default value |
@@ -132,19 +144,21 @@ Controlled by properties:
 
 Controlled by properties:
 
-| Property key           | CLI name                    | Description                                                                                     | Default value     |
-|:-----------------------|:----------------------------|:------------------------------------------------------------------------------------------------|:------------------|
-| converter              | --converter                 | Converter. Valid values are MD2WIKI, COPYING, NO                                                | MD2WIKI           |
-| outputDirectory        | "-o", "--output-dir"        | Output directory                                                                                |                   |
-| titleExtract           | --title-extract             | Strategy to extract title from file, FROM_FIRST_HEADER or FROM_FILENAME                         | FROM_FIRST_HEADER |
-| titlePrefix            | --title-prefix              | Title prefix common for all pages                                                               |                   |
-| titleSuffix            | --title-suffix              | Title suffix common for all pages                                                               |                   |
-| titleChildPrefixed     | --title-child-prefixed      | Add title prefix of root page if page is a child                                                | false             |
-| titleRemoveFromContent | --title-remove-from-content | Remove title from converted content, to avoid duplicate titles rendering in an Confluence       | false             |
-| plantumlCodeAsMacro    | --plantuml-code-as-macro    | Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering) | false             |
+| Property key           | CLI name                     | Description                                                                                                                                                                            | Default value     |
+|:-----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
+| converter              | --converter                  | Converter. Valid values are MD2WIKI, COPYING, NO                                                                                                                                       | MD2WIKI           |
+| outputDirectory        | "-o", "--output-dir"         | Output directory                                                                                                                                                                       |                   |
+| titleExtract           | --title-extract              | Strategy to extract title from file, FROM_FIRST_HEADER or FROM_FILENAME                                                                                                                | FROM_FIRST_HEADER |
+| titlePrefix            | --title-prefix               | Title prefix common for all pages                                                                                                                                                      |                   |
+| titleSuffix            | --title-suffix               | Title suffix common for all pages                                                                                                                                                      |                   |
+| titleChildPrefixed     | --title-child-prefixed       | Add title prefix of root page if page is a child                                                                                                                                       | false             |
+| titleRemoveFromContent | --title-remove-from-content  | Remove title from converted content, to avoid duplicate titles rendering in an Confluence                                                                                              | false             |
+| plantumlCodeAsMacro    | --plantuml-code-macro-enable | Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering)                                                                                        | false             |
+| plantumlCodeMacroName  | --plantuml-code-macro-name   | Name of confluence macro to render plantuml. Need to Confluence plugin. Possible known options are: 'plantuml' or 'plantumlrender' or 'plantumlcloud'. By default, 'plantuml' is used. | plantuml          |
 
 
-The result of conversion saved in output directory file `confluence-content-model.json`'.
+The result of conversion saved in output directory file
+`confluence-content-model.json`'.
 
 
 ### Publish using confluence-client
@@ -168,7 +182,8 @@ Controlled by properties:
 
 ### `confluence-content-model.json`
 
-`confluence-content-model.json` is representation of the next domain object
+`confluence-content-model.json` is representation of the next domain
+object
 
 ### Confluence Content model
 
@@ -207,7 +222,8 @@ In short, existing projects doesn't fit my needs.
 
 ### Regards
 
-Idempotence confluence client originally written by Christian Stettler and others as part of
+Idempotence confluence client originally written by Christian Stettler
+and others as part of
 [confluence-publisher](https://github.com/confluence-publisher/confluence-publisher)
 tool to publish ascii docs to confluence.
 
