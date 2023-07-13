@@ -23,7 +23,7 @@ class PublishCommandTest {
         String errOut = swErr.toString();
         assertThat(swOut.toString()).isEmpty();
         assertThat(errOut).isNotEmpty();
-        assertThat(errOut).doesNotContain("convert").doesNotContain("Exception");
+        assertThat(errOut).doesNotContain("convert").doesNotContain("Exception").contains("Missing required argument");
     }
 
 

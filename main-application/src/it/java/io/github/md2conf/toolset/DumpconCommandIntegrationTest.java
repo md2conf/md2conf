@@ -9,25 +9,26 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class DumpCommandIntegrationTest extends AbstractContainerTestBase {
+public class DumpconCommandIntegrationTest extends AbstractContainerTestBase {
 
     @TempDir
     private Path outputPath;
 
     @Test
-    void dump_demo_space() {
+    void dumpcon_demo_space() {
         MainApp mainApp = new MainApp();
         CommandLine cmd = new CommandLine(mainApp);
         String[] args = ArrayUtils.addAll(commonConfluenceArgs(), "-o", outputPath.toString() );
         int exitCode = cmd.execute(args);
         assertThat(exitCode).isEqualTo(0);
-        assertThat(outputPath).isDirectoryContaining("glob:**.xhtml");
-        assertThat(outputPath).isDirectoryContaining("glob:**.png");
-        assertThat(outputPath.resolve("confluence-content-model.json")).isNotEmptyFile();
+        assertThat(outputPath).isDirectoryNotContaining("glob:**.xhtml");
+        assertThat(outputPath.resolve("65551.md")).isRegularFile();
+        assertThat(outputPath.resolve("65551_attachments")).isDirectoryContaining("glob:**.png");
+        assertThat(outputPath.resolve("65551")).isDirectoryContaining("glob:**.md");
     }
 
     private String[] commonConfluenceArgs() {
-        String[] args = new String[]{"dump"};
+        String[] args = new String[]{"dumpcon"};
         args = ArrayUtils.addAll(args, CLI_OPTIONS);
         args = ArrayUtils.addAll(args, "-url", confluenceBaseUrl());
         return args;

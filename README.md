@@ -4,7 +4,8 @@
 
 # md2conf toolset
 
-Set of command-line tools to publish markdown files to a Confluence.
+Set of command-line tools to publish markdown files to a Confluence or
+dump Confluence content as markdown files with attachments.
 
 Notable features:
 
@@ -13,6 +14,8 @@ Notable features:
 - Idempotence confluence client. Avoid limitation of Confluence REST
   API, that create a new version of a page on every update.
 - Support cross-page links between markdown pages, inline images, etc.
+- Dump Confluence pages and convert to local markdown files
+  (experimental feature with initial support)
 - Extensible by design
 
 This toolset designed to support "docs-as-code" approach to use markdown
@@ -63,9 +66,14 @@ Commands:
                                  from `confluence-content-model`
   publish                      Publish content to a Confluence instance
   conpub, convert-and-publish  Convert and publish docs to a Confluence instance
-  dump                         Dump content from Confluence instance
-  help                         Displays help information about the specified
-                                 command
+  dump                         Dump content from Confluence instance and save
+                                 as 'confluence-content-model' with files in
+                                 Confluence VIEW format
+  dumpcon, dump-and-convert    Dump content from Confluence instance, convert
+                                 using VIEW2MD converter to directory tree with
+                                 markdown files and binary attachments
+  help                         Display help information about the specified
+                                 command.
 'confluence-content-model' is a representation of Confluence page trees and
 attachments on a local filesystem. See 'md2conf help model' for details.
 ```
@@ -102,8 +110,7 @@ attachments on a local filesystem. See 'md2conf help model' for details.
 
 ## How it works inside?
 
-
-Main processing steps are
+Main publish-and-convert steps are
 
 1. Index input directory and build page structure based on file name
    conventions. Each page is a prototype for future Confluence Page.
@@ -114,20 +121,32 @@ Main processing steps are
 3. Publish Confluence Content Model to a Confluence Instance via
    Confluence REST API.
 
-![main-steps.png](docs/plantuml/main-steps.png)
+![main-publish-steps.png](docs/plantuml/main-publish-steps.png)
+
+Main dump-and-convert steps are
+
+1. Dump Confluence Content Model identified by user-provided parent page
+   to temp working directory `.md2conf`
+2. Convert it using MD2VIEW converter. MD2VIEW converter build on top of
+   `flexmark` `html2md` converter.
+
+![dump-convert-steps.png](docs/plantuml/dump-convert-steps.png)
+
 
 ### Index by file-indexer
 
-File-indexer is a tool that build Confluence Content Model based on file name conventions.
+File-indexer is a tool that build Confluence Content Model based on file
+name conventions.
 
-There are 2 types of relation between confluence objects 'child relation' and 'attachment relation'
+There are 2 types of relation between confluence objects 'child
+relation' and 'attachment relation'
 
 #### Filename conventions
 
-| Relation              | Description | Filename convention                                                                                                                                                    | Example                                               |
-|:----------------------|:------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------|
-| 'child relation'      |             | Child page of parent page `parent.md` must be located in directory with basename of parent page (`./parent`)                                                           | 2 files: `parent.md` and `parent/child.md`            |
-| 'attachment relation' |             | Attachment file of page `page.md` must be located in directory which name is concatenation of basename of parent page and "_attachments" suffix (`./page_attachments`) | 2 files: `page.md` and `./page_attachments/image.png` |
+| Relation              | Filename convention                                                                                                                                                    | Example                                               |
+|:----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------|
+| 'child relation'      | Child page of parent page `parent.md` must be located in directory with basename of parent page (`./parent`)                                                           | 2 files: `parent.md` and `parent/child.md`            |
+| 'attachment relation' | Attachment file of page `page.md` must be located in directory which name is concatenation of basename of parent page and "_attachments" suffix (`./page_attachments`) | 2 files: `page.md` and `./page_attachments/image.png` |
 
 
 Controlled by properties:
@@ -146,7 +165,7 @@ Controlled by properties:
 
 | Property key           | CLI name                     | Description                                                                                                                                                                            | Default value     |
 |:-----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
-| converter              | --converter                  | Converter. Valid values are MD2WIKI, COPYING, NO                                                                                                                                       | MD2WIKI           |
+| converter              | --converter                  | Converter. Valid values are MD2WIKI, COPYING, NO, VIEW2MD                                                                                                                              | MD2WIKI           |
 | outputDirectory        | "-o", "--output-dir"         | Output directory                                                                                                                                                                       |                   |
 | titleExtract           | --title-extract              | Strategy to extract title from file, FROM_FIRST_HEADER or FROM_FILENAME                                                                                                                | FROM_FIRST_HEADER |
 | titlePrefix            | --title-prefix               | Title prefix common for all pages                                                                                                                                                      |                   |
@@ -180,14 +199,10 @@ Controlled by properties:
 | confluenceContentModelPath | "-m", "--confluence-content-model" | Path to file with `confluence-content-model` JSON file.                                           | '.confluence-content-model.json' |
 
 
-### `confluence-content-model.json`
-
-`confluence-content-model.json` is representation of the next domain
-object
-
 ### Confluence Content model
 
-Confluence Content is a collection of Confluence Pages.
+Confluence Content is a collection of Confluence Pages. It represented
+in file `confluence-content-model.json` in local filesystem.
 
 ![confluence-content.png](docs/plantuml/confluence-content.png)
 
@@ -213,6 +228,9 @@ pages using Confluence API. See Atlassian documentation for details:
   \- referred as "storage"
 * [Confluence Wiki Markup](https://confluence.atlassian.com/doc/confluence-wiki-markup-251003035.html)
   \- referred as "wiki"
+
+Additional VIEW html-like format used to render pages. It used only in
+dump functionality.
 
 ### History and motivation
 

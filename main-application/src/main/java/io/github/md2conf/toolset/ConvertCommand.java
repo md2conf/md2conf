@@ -61,7 +61,7 @@ public class ConvertCommand implements Runnable {
             ConfluenceContentModel model = loadContentModelFromPathOrDefault(convertOptions, confluenceContentModelPath);
             View2MdConverter view2MdConverter = new View2MdConverter(convertOptions.outputDirectory);
             view2MdConverter.convert(model);
-            logger.info("Conversions result saved to {}", convertOptions.outputDirectory);
+            logger.info("Converting to markdown result saved to {}", convertOptions.outputDirectory);
             return null;
         }else {
             PagesStructure pagesStructure = indexInputDirectory(convertOptions.inputDirectory, indexerOptions);

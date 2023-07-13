@@ -7,7 +7,8 @@ skinparam linetype ortho
 hide empty members
 hide circle
 
-class ConfluenceContent{
+
+class ConfluenceContentModel{
 List<ConfluencePage> pages
 }
 
@@ -20,12 +21,13 @@ class ConfluencePage {
     List<String> labels
 }
 
-ConfluenceContent::pages-{ConfluencePage: consist of
+ConfluenceContentModel::pages-{ConfluencePage: consist of
 
 ConfluencePage::type--Type
 enum Type{
 STORAGE,
-WIKI
+WIKI,
+VIEW
 }
 
 
