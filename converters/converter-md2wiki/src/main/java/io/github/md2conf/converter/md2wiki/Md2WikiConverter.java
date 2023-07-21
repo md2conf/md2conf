@@ -44,18 +44,21 @@ public class Md2WikiConverter implements PageStructureConverter {
     private final Path outputPath;
     private final boolean needToRemoveTitle;
     private final boolean plantumlMacro;
+    private final String plantumlCodeMacroName;
 
 
     public Md2WikiConverter(PageStructureTitleProcessor pagesStructureTitleProcessor,
-                            Path outputPath, boolean needToRemoveTitle, boolean plantumlMacro) {
+                            Path outputPath, boolean needToRemoveTitle, boolean plantumlMacro, String plantumlCodeMacroName) {
         this.pagesStructureTitleProcessor = pagesStructureTitleProcessor;
         this.outputPath = outputPath;
         this.needToRemoveTitle = needToRemoveTitle;
         this.plantumlMacro = plantumlMacro;
+        this.plantumlCodeMacroName = plantumlCodeMacroName;
     }
 
     public MutableDataSet getFlexmarkExtensions() {
         List<Extension> extensions = new ArrayList<>();
+        MutableDataSet res =  new MutableDataSet().set(Parser.EXTENSIONS, extensions);
         extensions.add(TablesExtension.create());
         extensions.add(StrikethroughExtension.create());
         extensions.add(LocalAttachmentLinkExtension.create());
@@ -64,9 +67,10 @@ public class Md2WikiConverter implements PageStructureConverter {
         extensions.add(JiraConverterExtension.create());
         if (plantumlMacro) {
             extensions.add(PlantUmlCodeMacroExtension.create());
+            res.set(PlantUmlCodeMacroExtension.CONFLUENCE_PLANTUML_MACRO, plantumlCodeMacroName);
         }
         extensions.add(CustomFencedCodeBlockExtension.create());
-        return new MutableDataSet().set(Parser.EXTENSIONS, extensions);
+        return res;
     }
 
     @Override

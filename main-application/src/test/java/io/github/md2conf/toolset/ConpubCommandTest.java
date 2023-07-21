@@ -2,17 +2,12 @@ package io.github.md2conf.toolset;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.file.Path;
 
 class ConpubCommandTest {
-
-    @TempDir
-    private Path emptyDir;
 
 
     @Test
@@ -27,7 +22,7 @@ class ConpubCommandTest {
         Assertions.assertThat(exitCode).isNotZero();
         String errOut = swErr.toString();
         Assertions.assertThat(swOut.toString()).isEmpty();
-        Assertions.assertThat(errOut).isNotEmpty();
+        Assertions.assertThat(errOut).isNotEmpty().contains("Missing required argument");
     }
 
 }

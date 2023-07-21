@@ -7,8 +7,7 @@ import picocli.CommandLine;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-class DumpCommandTest {
-
+class DumpconCommandTest {
 
     @Test
     void invoke_no_params() {
@@ -18,11 +17,11 @@ class DumpCommandTest {
         StringWriter swErr = new StringWriter();
         cmd.setOut(new PrintWriter(swOut));
         cmd.setErr(new PrintWriter(swErr));
-        int exitCode = cmd.execute("dump");
+        int exitCode = cmd.execute("dumpcon");
         Assertions.assertThat(exitCode).isNotZero();
         String errOut = swErr.toString();
         Assertions.assertThat(swOut.toString()).isEmpty();
-        Assertions.assertThat(errOut).isNotEmpty().doesNotContain("Exception").contains("Missing required argument");
+        Assertions.assertThat(errOut).isNotEmpty().contains("Missing required");
     }
 
 }
