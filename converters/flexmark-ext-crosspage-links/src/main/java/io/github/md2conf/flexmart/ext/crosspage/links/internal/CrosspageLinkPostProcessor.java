@@ -52,12 +52,23 @@ public class CrosspageLinkPostProcessor extends NodePostProcessor {
             }
             if (titleMap.containsKey(resolvedPath.toAbsolutePath())){
                 Node parent = node.getParent();
+                Node prev = node.getPrevious();
+                Node next = node.getNext();
+
                 CrosspageLink crosspageLink = new CrosspageLink((Link) node);
                 crosspageLink.setTitle(BasedSequence.of(titleMap.get(resolvedPath.toAbsolutePath())));
                 crosspageLink.takeChildren(node);
                 node.unlink();
                 if (parent != null) {
-                    parent.appendChild(crosspageLink);
+                    if (prev!=null){
+                        prev.insertAfter(crosspageLink);
+                    }
+                    else if (next!=null){
+                        next.insertBefore(crosspageLink);
+                    }
+                    else {
+                        parent.appendChild(crosspageLink);
+                    }
                 }
                 state.nodeRemoved(node);
                 state.nodeAddedWithChildren(crosspageLink);

@@ -4,8 +4,6 @@ import com.vladsch.flexmark.ast.InlineLinkNode;
 import com.vladsch.flexmark.ast.Link;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 
-import java.nio.file.Path;
-
 public class CrosspageLink extends InlineLinkNode {
 
     public CrosspageLink(Link other) {

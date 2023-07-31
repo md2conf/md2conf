@@ -12,7 +12,6 @@ license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
 plantuml fenced code blocks treated as Plantuml code macros.
 
 ```````````````````````````````` example Plantuml code macro transformer: 1
-
 ```plantuml
 a->b
 ```
@@ -21,8 +20,8 @@ a->b
 a->b
 {plantuml}
 .
-Document[0, 21]
-  PlantUmlCodeMacro[13, 18] lines[0]
+Document[0, 20]
+  PlantUmlCodeMacro[12, 17] lines[0]
 ````````````````````````````````
 
 
@@ -85,4 +84,24 @@ Document[0, 60]
   PlantUmlCodeMacro[31, 36] lines[0]
   FencedCodeBlock[41, 60] open:[41, 44, "```"] info:[44, 48, "json"] content:[49, 57] lines[1] close:[57, 60, "```"]
     Text[49, 57] chars:[49, 57, "{\"a\":1}\n"]
+````````````````````````````````
+
+plantuml fenced code blocks is first element of node chain
+
+```````````````````````````````` example Plantuml code macro transformer: 5
+```plantuml
+a->b
+```
+text
+.
+{plantuml}
+a->b
+{plantuml}
+text
+
+.
+Document[0, 25]
+  PlantUmlCodeMacro[12, 17] lines[0]
+  Paragraph[21, 25]
+    Text[21, 25] chars:[21, 25, "text"]
 ````````````````````````````````

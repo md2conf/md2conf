@@ -6,7 +6,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        CustomFencedCodeBlockExtension.class
+        CustomFencedCodeBlockSpecTest.class,
 })
 public class CustomFencedCodeBlockTestSuite extends TestCase {
 

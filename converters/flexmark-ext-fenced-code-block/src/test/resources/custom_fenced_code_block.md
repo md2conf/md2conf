@@ -96,3 +96,23 @@ Document[0, 65]
       Text[42, 47] chars:[42, 47, "quote"]
   CustomFencedCodeBlock[56, 60] info:[52, 55, "txt"] lines[0]
 ````````````````````````````````
+
+Custom Fenced code block is the first element of a node chain
+
+```````````````````````````````` example Custom Fenced code transformer: 5
+```json
+basic code block
+```
+text
+.
+{code}
+basic code block
+{code}
+text
+
+.
+Document[0, 33]
+  CustomFencedCodeBlock[8, 25] info:[3, 7, "json"] lines[0]
+  Paragraph[29, 33]
+    Text[29, 33] chars:[29, 33, "text"]
+````````````````````````````````
