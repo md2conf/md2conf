@@ -2,6 +2,27 @@
 [![maven-central](https://img.shields.io/maven-central/v/io.github.md2conf/md2conf-cli.svg)](https://search.maven.org/artifact/io.github.md2conf/md2conf-cli)
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
+
+[TOC]: #
+
+# Table of Contents
+- [Installation](#installation)
+  - [Play locally](#play-locally)
+  - [Publish to remote Confluence instance](#publish-to-remote-confluence-instance)
+- [Usage](#usage)
+  - [Command-line](#command-line)
+  - [Maven plugin](#maven-plugin)
+- [How it works inside?](#how-it-works-inside)
+  - [Index by file-indexer](#index-by-file-indexer)
+  - [Convert by converters](#convert-by-converters)
+  - [Publish using confluence-client](#publish-using-confluence-client)
+  - [Confluence Content model](#confluence-content-model)
+- [History and motivation](#history-and-motivation)
+  - [Regards](#regards)
+  - [License](#license)
+
+
+
 # md2conf toolset
 
 Set of command-line tools to publish markdown files to a Confluence or
@@ -232,7 +253,7 @@ pages using Confluence API. See Atlassian documentation for details:
 Additional VIEW html-like format used to render pages. It used only in
 dump functionality.
 
-### History and motivation
+## History and motivation
 
 See [decisions](docs/decisions).
 
