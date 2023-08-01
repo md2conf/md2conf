@@ -1,4 +1,3 @@
-[![status](https://img.shields.io/badge/STATUS-MVP_RELEASED-lightyellow)](https://img.shields.io/badge/STATUS-MVP_RELEASED-lightyellow)
 [![maven-central](https://img.shields.io/maven-central/v/io.github.md2conf/md2conf-cli.svg)](https://search.maven.org/artifact/io.github.md2conf/md2conf-cli)
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
