@@ -2,10 +2,12 @@
 [![maven-central](https://img.shields.io/maven-central/v/io.github.md2conf/md2conf-cli.svg)](https://search.maven.org/artifact/io.github.md2conf/md2conf-cli)
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
+# md2conf toolset
 
 [TOC]: #
 
 # Table of Contents
+- [About](#about)
 - [Installation](#installation)
   - [Play locally](#play-locally)
   - [Publish to remote Confluence instance](#publish-to-remote-confluence-instance)
@@ -21,9 +23,7 @@
   - [Regards](#regards)
   - [License](#license)
 
-
-
-# md2conf toolset
+## About
 
 Set of command-line tools to publish markdown files to a Confluence or
 dump Confluence content as markdown files with attachments.
