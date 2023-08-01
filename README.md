@@ -2,12 +2,11 @@
 [![maven-central](https://img.shields.io/maven-central/v/io.github.md2conf/md2conf-cli.svg)](https://search.maven.org/artifact/io.github.md2conf/md2conf-cli)
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
+
+[TOC]: # "md2conf toolset"
+
 # md2conf toolset
-
-[TOC]: #
-
-# Table of Contents
-- [About](#about)
+- [Overview](#overview)
 - [Installation](#installation)
   - [Play locally](#play-locally)
   - [Publish to remote Confluence instance](#publish-to-remote-confluence-instance)
@@ -19,11 +18,17 @@
   - [Convert by converters](#convert-by-converters)
   - [Publish using confluence-client](#publish-using-confluence-client)
   - [Confluence Content model](#confluence-content-model)
+- [Markdown extensions](#markdown-extensions)
+  - [Confluence macros](#confluence-macros)
+  - [Cross-page links between markdown pages](#cross-page-links-between-markdown-pages)
+  - [Link to local file](#link-to-local-file)
+  - [Confluence supported languages in fenced code blocks](#confluence-supported-languages-in-fenced-code-blocks)
 - [History and motivation](#history-and-motivation)
   - [Regards](#regards)
   - [License](#license)
 
-## About
+
+## Overview
 
 Set of command-line tools to publish markdown files to a Confluence or
 dump Confluence content as markdown files with attachments.
@@ -252,6 +257,44 @@ pages using Confluence API. See Atlassian documentation for details:
 
 Additional VIEW html-like format used to render pages. It used only in
 dump functionality.
+
+## Markdown extensions
+
+### Confluence macros
+
+Html inline comments with <!-- { } --> treated as Confluence macros.
+For list of Confluence macros see https://support.atlassian.com/confluence-cloud/docs/what-are-macros/ and section "Wiki markup example" on particular macros.
+A couple of useful are [table-of-contents-macro](https://support.atlassian.com/confluence-cloud/docs/insert-the-table-of-contents-macro/) and [children-display-macro](https://support.atlassian.com/confluence-cloud/docs/insert-the-children-display-macro/)
+
+
+Also see [confluence_macro_spec_test](converters/flexmark-ext-confluence-macros/src/test/resources/confluence_macro_spec_test.md)
+
+
+### Cross-page links between markdown pages
+
+In case of markdown file has content that refer to another markdown
+file, that exists in page structure the reference will be converted to
+valid Confluence page reference.
+
+For examples see [crosspage_link_title_spec_test](converters/flexmark-ext-crosspage-links/src/test/resources/crosspage_link_title_spec_test.md)
+
+### Link to local file
+
+A link to local file or image (both relative and absolute) will be converted to a
+Confluence attachment link. The target link file will be uploaded as
+Confluence attachment.
+
+
+### Confluence supported languages in fenced code blocks
+
+Markdown fenced code block converted to Confluence code block macro.
+Confluence code block macro supports only limited number of languages.
+For example, it doesn't support "json" language. To avoid this
+limitation some fenced code block languages remaped to supported by an
+Confluence.
+
+See mappings here: [CustomFencedCodeBlockRenderer.java: Line 22](converters/flexmark-ext-fenced-code-block/src/main/java/io/github/md2conf/flexmart/ext/fenced/code/block/internal/CustomFencedCodeBlockRenderer.java#L22)
+
 
 ## History and motivation
 
