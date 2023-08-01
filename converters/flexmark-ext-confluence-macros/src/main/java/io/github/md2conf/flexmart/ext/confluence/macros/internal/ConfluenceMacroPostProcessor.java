@@ -1,6 +1,7 @@
 package io.github.md2conf.flexmart.ext.confluence.macros.internal;
 
 import com.vladsch.flexmark.ast.HtmlCommentBlock;
+import com.vladsch.flexmark.ast.HtmlInlineComment;
 import com.vladsch.flexmark.parser.block.NodePostProcessor;
 import com.vladsch.flexmark.parser.block.NodePostProcessorFactory;
 import com.vladsch.flexmark.util.ast.Document;
@@ -14,20 +15,27 @@ public class ConfluenceMacroPostProcessor extends NodePostProcessor {
 
     @Override
     public void process(@NotNull NodeTracker state, @NotNull Node node) {
-        if (node instanceof HtmlCommentBlock) {
-            Node previous = node.getPrevious();
+        if ((node instanceof HtmlCommentBlock) || (node instanceof HtmlInlineComment)) {
             String text = node.getChars().toString();
             int startPos = text.indexOf('{');
             int endPos = text.lastIndexOf('}');
             if (startPos > 1 && endPos > 1) {
                 Node parent = node.getParent();
+                Node prev = node.getPrevious();
+                Node next = node.getNext();
                 String macroText = text.substring(startPos, endPos+1);
                 ConfluenceMacro confluenceMacro = new ConfluenceMacro(BasedSequence.of(macroText));
                 node.unlink();
-                if (previous != null) {
-                    previous.insertAfter(confluenceMacro);
-                } else if (parent != null) {
-                    parent.appendChild(confluenceMacro);
+                if (parent != null) {
+                    if (prev!=null){
+                        prev.insertAfter(confluenceMacro);
+                    }
+                    else if (next!=null){
+                        next.insertBefore(confluenceMacro);
+                    }
+                    else {
+                        parent.appendChild(confluenceMacro);
+                    }
                 }
                 state.nodeRemoved(node);
                 state.nodeAddedWithChildren(confluenceMacro);
@@ -38,7 +46,7 @@ public class ConfluenceMacroPostProcessor extends NodePostProcessor {
     public static class Factory extends NodePostProcessorFactory {
         public Factory() {
             super(false);
-            addNodes(HtmlCommentBlock.class);
+            addNodes(HtmlCommentBlock.class,HtmlInlineComment.class);
         }
 
         @Override

@@ -20,14 +20,21 @@ public class PlantUmlCodeMacroPostProcessor extends NodePostProcessor {
             String info = ((FencedCodeBlock) node).getInfo().toString();
             if (info.equals("plantuml") || info.equals("puml") || info.equals("c4plantuml")) {
                 Node parent = node.getParent();
+                Node prev = node.getPrevious();
+                Node next = node.getNext();
                 BasedSequence text = ((FencedCodeBlock) node).getContentChars();
                 PlantUmlCodeMacro plantUmlCodeMacro = new PlantUmlCodeMacro(text);
                 node.unlink();
-                if (previous!=null){
-                    previous.insertAfter(plantUmlCodeMacro);
-                }
-                else if (parent != null) {
-                    parent.appendChild(plantUmlCodeMacro);
+                if (parent != null) {
+                    if (prev!=null){
+                        prev.insertAfter(plantUmlCodeMacro);
+                    }
+                    else if (next!=null){
+                        next.insertBefore(plantUmlCodeMacro);
+                    }
+                    else {
+                        parent.appendChild(plantUmlCodeMacro);
+                    }
                 }
                 state.nodeRemoved(node);
                 state.nodeAddedWithChildren(plantUmlCodeMacro);

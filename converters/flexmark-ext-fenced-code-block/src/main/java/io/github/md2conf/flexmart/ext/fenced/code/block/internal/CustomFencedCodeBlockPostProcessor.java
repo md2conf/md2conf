@@ -14,16 +14,23 @@ public class CustomFencedCodeBlockPostProcessor extends NodePostProcessor {
     @Override
     public void process(@NotNull NodeTracker state, @NotNull Node node) {
         if (node instanceof FencedCodeBlock) {
-            Node previous = node.getPrevious();
             Node parent = node.getParent();
+            Node prev = node.getPrevious();
+            Node next = node.getNext();
             CustomFencedCodeBlock customFencedCodeBlock =
                     new CustomFencedCodeBlock(((FencedCodeBlock) node).getContentChars(),
                             ((FencedCodeBlock) node).getInfo());
             node.unlink();
-            if (previous != null) {
-                previous.insertAfter(customFencedCodeBlock);
-            } else if (parent != null) {
-                parent.appendChild(customFencedCodeBlock);
+            if (parent != null) {
+                if (prev!=null){
+                    prev.insertAfter(customFencedCodeBlock);
+                }
+                else if (next!=null){
+                    next.insertBefore(customFencedCodeBlock);
+                }
+                else {
+                    parent.appendChild(customFencedCodeBlock);
+                }
             }
             state.nodeRemoved(node);
             state.nodeAddedWithChildren(customFencedCodeBlock);

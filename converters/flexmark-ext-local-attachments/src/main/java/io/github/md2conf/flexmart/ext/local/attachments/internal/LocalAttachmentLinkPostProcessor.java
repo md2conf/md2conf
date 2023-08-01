@@ -11,7 +11,6 @@ import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLink;
 import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLinkExtension;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -42,13 +41,24 @@ public class LocalAttachmentLinkPostProcessor extends NodePostProcessor {
             } else {
                 return;
             }
+
             Node parent = node.getParent();
+            Node prev = node.getPrevious();
+            Node next = node.getNext();
             LocalAttachmentLink attachmentLink = new LocalAttachmentLink((Link) node);
             attachmentLink.setPath(resolvedPath);
             attachmentLink.takeChildren(node);
             node.unlink();
             if (parent != null) {
-                parent.appendChild(attachmentLink);
+                if (prev!=null){
+                    prev.insertAfter(attachmentLink);
+                }
+                else if (next!=null){
+                    next.insertBefore(attachmentLink);
+                }
+                else {
+                    parent.appendChild(attachmentLink);
+                }
             }
             state.nodeRemoved(node);
             state.nodeAddedWithChildren(attachmentLink);
