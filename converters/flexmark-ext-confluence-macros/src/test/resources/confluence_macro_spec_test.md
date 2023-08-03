@@ -111,3 +111,23 @@ Document[0, 53]
     BulletListItem[28, 53] open:[28, 29, "*"] isTight
       ConfluenceMacro[0, 12]
 ````````````````````````````````
+
+HtmlCommentBlock with Confluence macro should add new line
+
+```````````````````````````````` example Confluence macro transformer: 6
+<!--  {include:some title}  -->
+
+![a.png](a.png)
+.
+{include:some title}
+!a.png!
+
+.
+Document[0, 48]
+  ConfluenceMacro[0, 20]
+  Paragraph[33, 48]
+    Image[33, 48] textOpen:[33, 35, "!["] text:[35, 40, "a.png"] textClose:[40, 41, "]"] linkOpen:[41, 42, "("] url:[42, 47, "a.png"] pageRef:[42, 47, "a.png"] linkClose:[47, 48, ")"]
+      Text[35, 40] chars:[35, 40, "a.png"]
+````````````````````````````````
+
+

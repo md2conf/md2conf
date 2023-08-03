@@ -6,6 +6,7 @@ import com.vladsch.flexmark.html.renderer.NodeRendererContext;
 import com.vladsch.flexmark.html.renderer.NodeRendererFactory;
 import com.vladsch.flexmark.html.renderer.NodeRenderingHandler;
 import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.sequence.SequenceUtils;
 import io.github.md2conf.flexmart.ext.confluence.macros.ConfluenceMacro;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,9 @@ public class ConfluenceMacroRenderer implements NodeRenderer {
 
     private void render(ConfluenceMacro node, NodeRendererContext context, HtmlWriter html) {
             html.raw(node.getChars());
+            if (node.isWithEOL()) {
+                html.raw(SequenceUtils.EOL);
+            }
     }
 
     public static class Factory implements NodeRendererFactory {

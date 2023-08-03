@@ -24,7 +24,7 @@ public class ConfluenceMacroPostProcessor extends NodePostProcessor {
                 Node prev = node.getPrevious();
                 Node next = node.getNext();
                 String macroText = text.substring(startPos, endPos+1);
-                ConfluenceMacro confluenceMacro = new ConfluenceMacro(BasedSequence.of(macroText));
+                ConfluenceMacro confluenceMacro = new ConfluenceMacro(BasedSequence.of(macroText), node instanceof HtmlCommentBlock);
                 node.unlink();
                 if (parent != null) {
                     if (prev!=null){
