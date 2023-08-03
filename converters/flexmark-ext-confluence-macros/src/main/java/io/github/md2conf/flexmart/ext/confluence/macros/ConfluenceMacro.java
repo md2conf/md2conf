@@ -5,7 +5,15 @@ import com.vladsch.flexmark.util.sequence.BasedSequence;
 
 public class ConfluenceMacro extends HtmlCommentBlock {
 
-    public ConfluenceMacro(BasedSequence basedSequence) {
+    private final boolean withEOL;
+
+    public ConfluenceMacro(BasedSequence basedSequence, boolean block) {
         super(basedSequence);
+        this.withEOL = block;
     }
+
+    public boolean isWithEOL() {
+        return withEOL;
+    }
+
 }
