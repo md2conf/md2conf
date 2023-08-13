@@ -40,7 +40,7 @@
         <httpcomponents.version>4.5.14</httpcomponents.version>
         <jackson.version>2.15.2</jackson.version>
         <junit.version>5.10.0</junit.version>
-        <logback.version>1.4.8</logback.version>
+        <logback.version>1.4.9</logback.version>
         <maven-shade-plugin.version>3.5.0</maven-shade-plugin.version>
         <mockito.version>5.4.0</mockito.version>
     </properties>
