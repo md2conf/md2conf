@@ -11,12 +11,11 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.vladsch.flexmark.util.misc.Extension;
 import io.github.md2conf.converter.AttachmentUtil;
 import io.github.md2conf.converter.PageStructureConverter;
-import io.github.md2conf.converter.md2wiki.attachment.ImageFilePathUtil;
-import io.github.md2conf.converter.md2wiki.attachment.ImageUrlUtil;
 import io.github.md2conf.flexmart.ext.confluence.macros.ConfluenceMacroExtension;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension;
 import io.github.md2conf.flexmart.ext.fenced.code.block.CustomFencedCodeBlockExtension;
 import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLinkExtension;
+import io.github.md2conf.flexmart.ext.local.image.LocalImageExtension;
 import io.github.md2conf.flexmart.ext.plantuml.code.macro.PlantUmlCodeMacroExtension;
 import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
@@ -34,9 +33,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import static io.github.md2conf.converter.md2wiki.attachment.LocalAttachmentUtil.collectLocalAttachmentPaths;
+import static io.github.md2conf.converter.md2wiki.attachment.LocalPathUtil.collectLocalAttachmentPaths;
+import static io.github.md2conf.converter.md2wiki.attachment.LocalPathUtil.collectLocalImagePaths;
 
 public class Md2WikiConverter implements PageStructureConverter {
 
@@ -62,6 +61,7 @@ public class Md2WikiConverter implements PageStructureConverter {
         extensions.add(TablesExtension.create());
         extensions.add(StrikethroughExtension.create());
         extensions.add(LocalAttachmentLinkExtension.create());
+        extensions.add(LocalImageExtension.create());
         extensions.add(CrosspageLinkExtension.create());
         extensions.add(ConfluenceMacroExtension.create());
         extensions.add(JiraConverterExtension.create());
@@ -99,6 +99,7 @@ public class Md2WikiConverter implements PageStructureConverter {
         //Convert to wiki using FlexMark parser and renderer
         DataHolder flexmarkOptions = getFlexmarkExtensions()
                 .set(LocalAttachmentLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
+                .set(LocalImageExtension.CURRENT_FILE_PATH, page.path().getParent())
                 .set(CrosspageLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
                 .set(CrosspageLinkExtension.TITLE_MAP, titleMap)
                 .toImmutable();
@@ -107,8 +108,8 @@ public class Md2WikiConverter implements PageStructureConverter {
         Node document = parser.parse(markdown);
         String wiki = renderer.render(document);
 
-        //extract images Urls and convert to local file paths if exists
-        List<Path> imagePaths = extractLocalImagePaths(page, document);
+        //collect attachments from local images and local file links
+        List<Path> imagePaths = collectLocalImagePaths(document);
         List<Path> localAttachmentPaths = collectLocalAttachmentPaths(document);
 
         //calculate output file names
@@ -141,11 +142,6 @@ public class Md2WikiConverter implements PageStructureConverter {
             WikiTitleRemover.removeTitle(targetPath);
         }
         return result;
-    }
-
-    private static List<Path> extractLocalImagePaths(Page page, Node document) {
-        Set<String> imageUrls = ImageUrlUtil.collectUrlsOfImages(document);
-        return ImageFilePathUtil.filterExistingPaths(imageUrls, page.path().getParent());
     }
 
     @Override

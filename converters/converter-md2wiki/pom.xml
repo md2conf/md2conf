@@ -36,6 +36,11 @@
         </dependency>
         <dependency>
             <groupId>io.github.md2conf</groupId>
+            <artifactId>flexmark-ext-local-image</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.md2conf</groupId>
             <artifactId>flexmark-ext-crosspage-link</artifactId>
             <version>${project.version}</version>
         </dependency>

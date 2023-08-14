@@ -112,7 +112,7 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
-        assertThat(outputPath).isNotEmptyDirectory().isDirectoryContaining("glob:**/index.wiki");
+        assertThat(outputPath).isDirectoryContaining("glob:**/index.wiki");
         String dirWithAttachments = "index"+ATTACHMENTS_SUFFIX;
         assertThat(outputPath.resolve(dirWithAttachments)).isDirectory().exists();
         assertThat(outputPath.resolve(dirWithAttachments)).isDirectoryContaining("glob:**/sample.gif");
