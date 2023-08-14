@@ -10,9 +10,8 @@
         <version>0.1.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>flexmark-ext-local-attachments</artifactId>
+    <artifactId>flexmark-ext-confluence-macro</artifactId>
     <version>0.1.2-SNAPSHOT</version>
-
 
     <dependencies>
         <dependency>
@@ -40,6 +39,5 @@
         </dependency>
     </dependencies>
 
-
-
+    
 </project>

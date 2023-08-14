@@ -31,17 +31,17 @@
         </dependency>
         <dependency>
             <groupId>io.github.md2conf</groupId>
-            <artifactId>flexmark-ext-local-attachments</artifactId>
+            <artifactId>flexmark-ext-local-attachment</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.md2conf</groupId>
-            <artifactId>flexmark-ext-crosspage-links</artifactId>
+            <artifactId>flexmark-ext-crosspage-link</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.github.md2conf</groupId>
-            <artifactId>flexmark-ext-confluence-macros</artifactId>
+            <artifactId>flexmark-ext-confluence-macro</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

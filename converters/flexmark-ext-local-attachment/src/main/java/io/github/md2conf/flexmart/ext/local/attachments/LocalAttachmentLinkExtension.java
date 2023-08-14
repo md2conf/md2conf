@@ -16,7 +16,7 @@ public class LocalAttachmentLinkExtension implements Parser.ParserExtension, Htm
     /**
      * Path against local attachment link will be resolved
      */
-    final public static DataKey<Path> CURRENT_FILE_PATH = new DataKey<>("CURRENT_FILE_PATH", Paths.get(""));
+    public static final DataKey<Path> CURRENT_FILE_PATH = new DataKey<>("CURRENT_FILE_PATH", Paths.get(""));
     public static LocalAttachmentLinkExtension create() {
         return new LocalAttachmentLinkExtension();
     }

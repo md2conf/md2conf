@@ -8,12 +8,9 @@ import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.runners.Parameterized;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class ConfluenceMacroSpecTest  extends RendererSpecTest {
 

@@ -10,7 +10,7 @@
         <version>0.1.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>flexmark-ext-crosspage-links</artifactId>
+    <artifactId>flexmark-ext-crosspage-link</artifactId>
     <version>0.1.2-SNAPSHOT</version>
 
 
