@@ -26,7 +26,7 @@ public class AbstractMd2ConfMojoIT {
 
     protected static Map<String, String> mandatoryProperties() {
         Map<String, String> properties = new HashMap<>();
-        properties.put("confluenceUrl", "http://localhost:18090");
+        properties.put("confluenceUrl", "http://localhost:8090");
         properties.put("username", "admin");
         properties.put("password", "admin");
         properties.put("spaceKey", "ds");
@@ -171,15 +171,15 @@ public class AbstractMd2ConfMojoIT {
     }
 
     protected static String page(String pageId) {
-        return "http://localhost:18090/rest/api/content/" + pageId + "?expand=body.view,history.lastUpdated";
+        return "http://localhost:8090/rest/api/content/" + pageId + "?expand=body.view,history.lastUpdated";
     }
 
     protected static String childPages() {
-        return "http://localhost:18090/rest/api/content/65551/child/page";
+        return "http://localhost:8090/rest/api/content/65551/child/page";
     }
 
     protected static String childPages(String pageId) {
-        return "http://localhost:18090/rest/api/content/"+pageId+"/child/page";
+        return "http://localhost:8090/rest/api/content/"+pageId+"/child/page";
     }
 
     protected static String pageIdBy(String title) {
