@@ -20,6 +20,7 @@
 - [Markdown extensions](#markdown-extensions)
   - [Confluence macros](#confluence-macros)
   - [Cross-page links between markdown pages](#cross-page-links-between-markdown-pages)
+  - [Image attachments](#image-attachments)
   - [Link to local file](#link-to-local-file)
   - [Confluence supported languages in fenced code blocks](#confluence-supported-languages-in-fenced-code-blocks)
 - [History and motivation](#history-and-motivation)
@@ -209,19 +210,21 @@ The result of conversion saved in output directory file
 
 Controlled by properties:
 
-| Property key               | CLI name                           | Description                                                                                       | Default value                    |
-|:---------------------------|:-----------------------------------|:--------------------------------------------------------------------------------------------------|:---------------------------------|
-| confluenceUrl              | "-url", "--confluence-url"         | The root URL of the Confluence instance                                                           |                                  |
-| username                   | "--username"                       | Username of the Confluence user                                                                   |                                  |
-| password                   | "--password"                       | The password or personal access token of the user. In case of using token don't specify username. |                                  |
-| spaceKey                   | "-s", "--space-key"                | The password or personal access token of the user                                                 |                                  |
-| parentPageTitle            | "-pt", "--parent-page-title"       | The parent page to publish `confluence-content-model`                                             |                                  |
-| skipSslVerification        | --skip-ssl-verification            |                                                                                                   | false                            |
-| orphanRemovalStrategy      | --orphan-removal-strategy          | REMOVE_ORPHANS or KEEP_ORPHANS                                                                    | KEEP_ORPHANS                     |
-| notifyWatchers             | --notify-watchers                  |                                                                                                   | false                            |
-| maxRequestsPerSecond       | --max-requests-per-second          |                                                                                                   | false                            |
-| versionMessage             | --version-message                  |                                                                                                   | Published by md2conf             |
-| confluenceContentModelPath | "-m", "--confluence-content-model" | Path to file with `confluence-content-model` JSON file.                                           | '.confluence-content-model.json' |
+| Property key                 | CLI name                           | Description                                                                                                     | Default value                    |
+|:-----------------------------|:-----------------------------------|:----------------------------------------------------------------------------------------------------------------|:---------------------------------|
+| confluenceUrl                | "-url", "--confluence-url"         | The root URL of the Confluence instance                                                                         |                                  |
+| username                     | "--username"                       | Username of the Confluence user                                                                                 |                                  |
+| password                     | "--password"                       | The password or personal access token of the user. In case of using token don't specify username.               |                                  |
+| spaceKey                     | "-s", "--space-key"                | The password or personal access token of the user                                                               |                                  |
+| parentPageTitle              | "-pt", "--parent-page-title"       | The parent page to publish `confluence-content-model`                                                           |                                  |
+| skipSslVerification          | --skip-ssl-verification            |                                                                                                                 | false                            |
+| maxRequestsPerSecond         | --max-requests-per-second          |                                                                                                                 |                                  |
+| connectionTimeToLive         | --connection-time-to-live          | Connection TTL. Useful in case a server is configured to have a very low TTL to keep existing connectings alive |                                  |
+| orphanRemovalStrategy        | --orphan-removal-strategy          | REMOVE_ORPHANS or KEEP_ORPHANS                                                                                  | KEEP_ORPHANS                     |
+| parentPagePublishingStrategy | --parent-page-publishing-strategy  | APPEND_TO_ANCESTOR or REPLACE_ANCESTOR                                                                          | APPEND_TO_ANCESTOR               |
+| notifyWatchers               | --notify-watchers                  |                                                                                                                 | false                            |
+| versionMessage               | --version-message                  |                                                                                                                 | Published by md2conf             |
+| confluenceContentModelPath   | "-m", "--confluence-content-model" | Path to file with `confluence-content-model` JSON file.                                                         | '.confluence-content-model.json' |
 
 
 ### Confluence Content model
@@ -261,12 +264,18 @@ dump functionality.
 
 ### Confluence macros
 
-Html inline comments with <!-- { } --> treated as Confluence macros.
-For list of Confluence macros see https://support.atlassian.com/confluence-cloud/docs/what-are-macros/ and section "Wiki markup example" on particular macros.
-A couple of useful are [table-of-contents-macro](https://support.atlassian.com/confluence-cloud/docs/insert-the-table-of-contents-macro/) and [children-display-macro](https://support.atlassian.com/confluence-cloud/docs/insert-the-children-display-macro/)
+Html inline comments with <!-- { } --> treated as Confluence macros. For
+list of Confluence macros see
+https://support.atlassian.com/confluence-cloud/docs/what-are-macros/ and
+section "Wiki markup example" on particular macros. A couple of useful
+are
+[table-of-contents-macro](https://support.atlassian.com/confluence-cloud/docs/insert-the-table-of-contents-macro/)
+and
+[children-display-macro](https://support.atlassian.com/confluence-cloud/docs/insert-the-children-display-macro/)
 
 
-Also see [confluence_macro_spec_test](converters/flexmark-ext-confluence-macros/src/test/resources/confluence_macro_spec_test.md)
+Also see
+[confluence_macro_spec_test](converters/flexmark-ext-confluence-macro/src/test/resources/confluence_macro_spec_test.md)
 
 
 ### Cross-page links between markdown pages
@@ -275,14 +284,29 @@ In case of markdown file has content that refer to another markdown
 file, that exists in page structure the reference will be converted to
 valid Confluence page reference.
 
-For examples see [crosspage_link_title_spec_test](converters/flexmark-ext-crosspage-links/src/test/resources/crosspage_link_title_spec_test.md)
+For examples see
+[crosspage_link_title_spec_test](converters/flexmark-ext-crosspage-link/src/test/resources/crosspage_link_title_spec_test.md)
+
+
+### Image attachments
+
+Markdown image will be converted to a Confluence Image. If markdown
+image has link to local file, it will be converted to Confluence
+attachment and uploaded to a Confluence server.
+
+For examples see
+[local_image_spec_test](converters/flexmark-ext-local-image/src/test/resources/local_image_spec_test.md)
 
 ### Link to local file
 
-A link to local file or image (both relative and absolute) will be converted to a
+A link to local file (both relative and absolute) will be converted to a
 Confluence attachment link. The target link file will be uploaded as
 Confluence attachment.
 
+Note: Using absolute paths with links is not recommended.
+
+For examples see
+[local_attachment_spec_test](converters/flexmark-ext-local-attachment/src/test/resources/local_attachment_spec_test.md)
 
 ### Confluence supported languages in fenced code blocks
 
@@ -292,7 +316,8 @@ For example, it doesn't support "json" language. To avoid this
 limitation some fenced code block languages remaped to supported by an
 Confluence.
 
-See mappings here: [CustomFencedCodeBlockRenderer.java: Line 22](converters/flexmark-ext-fenced-code-block/src/main/java/io/github/md2conf/flexmart/ext/fenced/code/block/internal/CustomFencedCodeBlockRenderer.java#L22)
+See mappings here:
+[CustomFencedCodeBlockRenderer.java: Line 22](converters/flexmark-ext-fenced-code-block/src/main/java/io/github/md2conf/flexmart/ext/fenced/code/block/internal/CustomFencedCodeBlockRenderer.java#L22)
 
 
 ## History and motivation

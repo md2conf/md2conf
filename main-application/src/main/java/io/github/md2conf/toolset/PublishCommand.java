@@ -54,6 +54,7 @@ public class PublishCommand implements Runnable {
                 .withSpaceKey(confluenceOptions.spaceKey)
                 .withUsername(confluenceOptions.username)
                 .withMaxRequestsPerSecond(confluenceOptions.maxRequestsPerSecond)
+                .withConnectionTTL(confluenceOptions.connectionTimeToLive)
                 .withVersionMessage(publishOptions.versionMessage)
                 .withSkipSslVerification(confluenceOptions.skipSslVerification)
                 .withNotifyWatchers(publishOptions.notifyWatchers)
@@ -78,7 +79,7 @@ public class PublishCommand implements Runnable {
     @NotNull
     private static Path findFilePathWithModel(Path searchDir) {
         var result = searchDir.resolve(ConfluenceContentModel.DEFAULT_FILE_NAME);
-        logger.info("Load confluence content model from " + result);
+        logger.info("Load confluence content model from {}", result);
         return result;
     }
 
@@ -95,22 +96,24 @@ public class PublishCommand implements Runnable {
         public String parentPageTitle;
         @CommandLine.Option(names = {"--skip-ssl-verification"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 6)
         public boolean skipSslVerification = false;
-        @CommandLine.Option(names = {"--max-requests-per-second"}, order = 9)
+        @CommandLine.Option(names = {"--max-requests-per-second"}, order = 7)
         public Double maxRequestsPerSecond;
+        @CommandLine.Option(names = {"--connection-time-to-live"}, description = "Connection TTL in milliseconds", order = 8)
+        public Integer connectionTimeToLive;
     }
 
     public static class PublishOptions {
         @CommandLine.Option(names = {"--orphan-removal-strategy"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "KEEP_ORPHANS",
-                showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 7)
+                showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 11)
         public OrphanRemovalStrategy orphanRemovalStrategy;
         @CommandLine.Option(names = {"--parent-page-publishing-strategy"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "APPEND_TO_ANCESTOR",
-                showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 8)
+                showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 12)
         public PublishingStrategy parentPagePublishingStrategy = PublishingStrategy.APPEND_TO_ANCESTOR;
-        @CommandLine.Option(names = {"--notify-watchers"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 8)
+        @CommandLine.Option(names = {"--notify-watchers"}, defaultValue = "false", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 13)
         public boolean notifyWatchers = false;
-        @CommandLine.Option(names = {"--version-message"}, description = "Version message", defaultValue = "Published by md2conf", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 10)
+        @CommandLine.Option(names = {"--version-message"}, description = "Version message", defaultValue = "Published by md2conf", showDefaultValue = CommandLine.Help.Visibility.ALWAYS, order = 14)
         public String versionMessage = "Published by md2conf";
     }
 

@@ -30,6 +30,7 @@ public class ConfluenceClientFactory {
                 properties.isSkipSslVerification(),
                 true,
                 properties.getMaxRequestsPerSecond(),
+                properties.getConnectionTTL(),
                 properties.getUsername(),
                 properties.getPasswordOrPersonalAccessToken());
     }

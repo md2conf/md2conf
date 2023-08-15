@@ -76,6 +76,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected boolean skipSslVerification = false;
     @Parameter(property = PREFIX + "maxRequestsPerSecond")
     protected Double maxRequestsPerSecond;
+    @Parameter(property = PREFIX + "connectionTimeToLive")
+    protected Integer connectionTimeToLive;
 
 
     @NotNull
@@ -122,6 +124,7 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         options.parentPageTitle = this.parentPageTitle;
         options.skipSslVerification = this.skipSslVerification;
         options.maxRequestsPerSecond = this.maxRequestsPerSecond;
+        options.connectionTimeToLive = this.connectionTimeToLive;
         return options;
 
     }
