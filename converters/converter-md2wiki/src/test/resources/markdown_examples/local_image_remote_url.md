@@ -1,1 +1,0 @@
-image ![image](http://link.com/image.png)

@@ -45,7 +45,6 @@ class Md2WikiConverterTest {
         assertThat(confluencePage.getType()).isEqualTo(ConfluenceContentModel.Type.WIKI);
         assertThat(confluencePage.getContentFilePath()).endsWith(".wiki");
         assertThat(confluencePage.getTitle()).isNotNull().isEqualTo("index");
-        assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/index.wiki");
     }
 
@@ -113,7 +112,6 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
-        assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/index.wiki");
         String dirWithAttachments = "index"+ATTACHMENTS_SUFFIX;
         assertThat(outputPath.resolve(dirWithAttachments)).isDirectory().exists();
@@ -131,8 +129,7 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
-        assertThat(outputPath).isNotEmptyDirectory();
-        assertThat(outputPath).isDirectoryContaining("glob:**/index.wiki");
+        assertThat(outputPath).isNotEmptyDirectory().isDirectoryContaining("glob:**/index.wiki");
         String dirWithAttachments = "index"+ATTACHMENTS_SUFFIX;
         assertThat(outputPath.resolve(dirWithAttachments)).isDirectory().exists();
         assertThat(outputPath.resolve(dirWithAttachments)).isDirectoryContaining("glob:**/sample.txt");
@@ -149,7 +146,6 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(2);
-        assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/a.wiki");
         assertThat(outputPath).isDirectoryContaining("glob:**/b.wiki");
         assertThat(outputPath.resolve("a.wiki")).content().contains("Page B");
@@ -167,7 +163,6 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
-        assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/a.wiki");
         assertThat(outputPath.resolve("a.wiki")).isRegularFile().content().doesNotContain("{code}").contains("{plantuml}");
     }
@@ -183,7 +178,6 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
-        assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/a.wiki");
         assertThat(outputPath.resolve("a.wiki")).isRegularFile().content().doesNotContain("{code}").contains("{plantumlrender}");
     }
@@ -199,7 +193,6 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
-        assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/a.wiki");
         assertThat(outputPath.resolve("a.wiki")).isRegularFile().content().contains("{code}").doesNotContain("{plantuml}");
     }
@@ -216,7 +209,6 @@ class Md2WikiConverterTest {
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
         assertThat(model.getPages()).hasSize(1);
-        assertThat(outputPath).isNotEmptyDirectory();
         assertThat(outputPath).isDirectoryContaining("glob:**/codeblock.wiki");
         assertThat(outputPath.resolve("codeblock.wiki")).isRegularFile().content()
                 .contains("{plantuml}")
