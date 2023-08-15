@@ -62,7 +62,7 @@ import static org.mockito.Mockito.when;
  * @author Alain Sahli
  * @author Christian Stettler
  */
-public class ConfluenceRestClientTest {
+public class RestApiInternalClientTest {
 
     private static final String CONFLUENCE_ROOT_URL = "http://confluence.com";
 
@@ -615,7 +615,7 @@ public class ConfluenceRestClientTest {
     private static CloseableHttpClient recordHttpClientForMultipleResponsesWithContentAndStatusCode(List<String> contentPayloads, List<Integer> statusCodes) throws IOException {
         CloseableHttpResponse httpResponseMock = mock(CloseableHttpResponse.class);
 
-        List<HttpEntity> httpEntities = contentPayloads.stream().map(ConfluenceRestClientTest::recordHttpEntityForContent).collect(toList());
+        List<HttpEntity> httpEntities = contentPayloads.stream().map(RestApiInternalClientTest::recordHttpEntityForContent).collect(toList());
         when(httpResponseMock.getEntity())
                 .thenReturn(httpEntities.get(0), httpEntities.subList(1, httpEntities.size()).toArray(new HttpEntity[httpEntities.size() - 1]));
 

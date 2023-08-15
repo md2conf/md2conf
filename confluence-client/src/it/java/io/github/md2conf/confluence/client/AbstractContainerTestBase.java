@@ -20,7 +20,8 @@ public class AbstractContainerTestBase {
                 .withUsername("admin")
                 .withPasswordOrPersonalAccessToken("admin")
                 .withSpaceKey(SPACE_KEY)
-                .withParentPageTitle(PARENT_PAGE_TITLE);
+                .withParentPageTitle(PARENT_PAGE_TITLE)
+                .withConnectionTTL(500);
     }
 
 

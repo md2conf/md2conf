@@ -13,6 +13,7 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
     private boolean notifyWatchers = false;
     private boolean skipSslVerification = false;
     private Double maxRequestsPerSecond;
+    private Integer connectionTTL;
 
     public String getConfluenceUrl() {
         return confluenceUrl;
@@ -102,6 +103,13 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
         this.maxRequestsPerSecond = maxRequestsPerSecond;
     }
 
+    public Integer getConnectionTTL() {
+        return connectionTTL;
+    }
+
+    public void setConnectionTTL(Integer connectionTTL) {
+        this.connectionTTL = connectionTTL;
+    }
 
     public static final class ConfluenceClientConfigurationPropertiesBuilder {
         private String confluenceUrl;
@@ -115,6 +123,7 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
         private boolean notifyWatchers = false;
         private boolean skipSslVerification = false;
         private Double maxRequestsPerSecond;
+        private Integer connectionTTL;
 
         private ConfluenceClientConfigurationPropertiesBuilder() {
         }
@@ -178,6 +187,11 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
             return this;
         }
 
+        public ConfluenceClientConfigurationPropertiesBuilder withConnectionTTL(Integer connectionTTL) {
+            this.connectionTTL = connectionTTL;
+            return this;
+        }
+
         public ConfluenceClientConfigurationProperties build() {
             ConfluenceClientConfigurationProperties confluenceClientConfigurationProperties = new ConfluenceClientConfigurationProperties();
             confluenceClientConfigurationProperties.setConfluenceUrl(confluenceUrl);
@@ -191,6 +205,7 @@ public class ConfluenceClientConfigurationProperties { //todo rename or delete?
             confluenceClientConfigurationProperties.setNotifyWatchers(notifyWatchers);
             confluenceClientConfigurationProperties.setSkipSslVerification(skipSslVerification);
             confluenceClientConfigurationProperties.setMaxRequestsPerSecond(maxRequestsPerSecond);
+            confluenceClientConfigurationProperties.setConnectionTTL(connectionTTL);
             return confluenceClientConfigurationProperties;
         }
     }
