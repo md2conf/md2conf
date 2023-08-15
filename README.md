@@ -59,16 +59,16 @@ markdown files.
 Start Confluence locally:
 
 ```bash
-docker run -p 18090:8090 -p 18091:8091 qwazer/atlassian-sdk-confluence
+docker run -p 8090:8090 -p 8091:8091 qwazer/atlassian-sdk-confluence
 ```
 
-After Confluence starts it will be accessible at http://localhost:18090
+After Confluence starts it will be accessible at http://localhost:8090
 with admin:admin credentials.
 
 Run next command
 
 ```bash
-java -jar md2conf-cli.jar conpub -i=main-application/src/it/resources/several-pages --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://localhost:18090
+java -jar md2conf-cli.jar conpub -i=main-application/src/it/resources/several-pages --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://localhost:8090
 ```
 
 See results at http://localhost:8090/display/ds/Sample

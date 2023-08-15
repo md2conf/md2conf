@@ -8,7 +8,7 @@ public class AbstractContainerTestBase {
 
 
     String confluenceBaseUrl(){
-        return "http://localhost:18090";
+        return "http://localhost:8090";
     }
 
     static String PARENT_PAGE_TITLE = "Welcome to Confluence";
