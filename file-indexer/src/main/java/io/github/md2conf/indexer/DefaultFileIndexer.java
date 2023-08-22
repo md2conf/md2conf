@@ -35,28 +35,30 @@ public class DefaultFileIndexer implements FileIndexer {
 
     @Override
     public DefaultPagesStructure indexPath(Path rootPath) {
+        final DefaultPagesStructure res;
         try {
             Map<Path, DefaultPage> pageIndex = indexPages(rootPath);
-            List<DefaultPage> allPages = linkPagesToParent(pageIndex);
+            List<DefaultPage> allPages = establishParentChildRelation(pageIndex);
             allPages.forEach(this::findAttachments);
             List<DefaultPage> topLevelPages = findTopLevelPages(allPages, rootPath);
             Optional<DefaultPage> rootPage = findRootPage(topLevelPages);
             if (rootPage.isPresent() && topLevelPages.size()>1){
                 relinkTopLevelPagesToRoot(rootPage.get(), topLevelPages);
-                return new DefaultPagesStructure(List.of(rootPage.get()));
+                res = new DefaultPagesStructure(List.of(rootPage.get()));
             } else {
-                return new DefaultPagesStructure(topLevelPages);
+                res = new DefaultPagesStructure(topLevelPages);
             }
         } catch (IOException e) {
-            logger.error("Could not index directory {} using properties {}", rootPath, properties); ;
+            logger.error("Could not index directory {} using properties {}", rootPath, properties);
             throw new RuntimeException(e);
         }
+        return res;
     }
 
     private static void relinkTopLevelPagesToRoot(DefaultPage rootPage, List<DefaultPage> topLevelPages) {
         topLevelPages.stream()
                 .filter(v->!v.equals(rootPage))
-                .forEach(v->rootPage.addChild(v));
+                .forEach(rootPage::addChild);
     }
 
     private Optional<DefaultPage> findRootPage(List<DefaultPage> topLevelPages) {
@@ -96,7 +98,7 @@ public class DefaultFileIndexer implements FileIndexer {
 
 
 
-    private static List<DefaultPage> linkPagesToParent(Map<Path, DefaultPage> pageIndex) {
+    public static List<DefaultPage> establishParentChildRelation(Map<Path, DefaultPage> pageIndex) {
         pageIndex.forEach((absolutePath, page) -> {
             pageIndex.computeIfPresent(page.path().getParent(), (ignored, parentPage) -> {
                 parentPage.addChild(page);

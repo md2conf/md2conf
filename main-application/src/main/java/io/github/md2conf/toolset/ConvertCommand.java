@@ -9,6 +9,7 @@ import io.github.md2conf.indexer.DefaultFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
+import io.github.md2conf.indexer.PagesStructurePrinter;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
@@ -102,6 +103,9 @@ public class ConvertCommand implements Runnable {
         if (pagesStructure.pages().isEmpty()) {
             logger.warn("No files found in input directory. Used file indexer options {}",
                     fileIndexerConfigurationProperties);
+        }else {
+            PagesStructurePrinter printer = new PagesStructurePrinter();
+            printer.prettyPrint(pagesStructure);
         }
         return pagesStructure;
     }
