@@ -4,7 +4,8 @@ import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import com.vladsch.flexmark.html2md.converter.LinkConversion;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.github.md2conf.converter.ConfluenceModelConverter;
-import io.github.md2conf.indexer.DefaultFileIndexer;
+import io.github.md2conf.indexer.DefaultPage;
+import io.github.md2conf.indexer.DefaultPagesStructure;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
@@ -49,7 +50,7 @@ public class View2MdConverter implements ConfluenceModelConverter {
     @Override
     public PagesStructure convert(ConfluenceContentModel model)  {
         List<ConfluencePage> pageList = model.getPages();
-        List<DefaultFileIndexer.DefaultPage> resList = new ArrayList<>();
+        List<DefaultPage> resList = new ArrayList<>();
         for (ConfluencePage page : pageList) {
             try {
                 resList.add(convertPage(page, outputDir));
@@ -57,10 +58,10 @@ public class View2MdConverter implements ConfluenceModelConverter {
                 throw new RuntimeException(e);
             }
         }
-        return new DefaultFileIndexer.DefaultPagesStructure(resList);
+        return new DefaultPagesStructure(resList);
     }
 
-    private DefaultFileIndexer.DefaultPage convertPage(ConfluencePage page, Path outputDir) throws IOException {
+    private DefaultPage convertPage(ConfluencePage page, Path outputDir) throws IOException {
         var baseName = FilenameUtils.getBaseName(page.getContentFilePath());
         var resName = baseName+".md";
         Path targetPath = outputDir.resolve(resName);
@@ -68,11 +69,11 @@ public class View2MdConverter implements ConfluenceModelConverter {
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
         FileUtils.writeStringToFile(targetPath.toFile(), md, Charset.defaultCharset());
         List<Path> attachments = copyAttachmentsMap(targetPath, page.getAttachments());
-        List<DefaultFileIndexer.DefaultPage> childrenPages = new ArrayList<>();
+        List<DefaultPage> childrenPages = new ArrayList<>();
         for (ConfluencePage child: page.getChildren()){
             childrenPages.add(convertPage(child, outputDir.resolve(baseName)));
         }
-        return new DefaultFileIndexer.DefaultPage(targetPath, childrenPages, attachments);
+        return new DefaultPage(targetPath, childrenPages, attachments);
     }
 
 }

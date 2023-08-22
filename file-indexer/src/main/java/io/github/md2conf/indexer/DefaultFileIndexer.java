@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.github.md2conf.indexer.PathNameUtils.attachmentsDirectoryByPagePath;
-import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -66,14 +65,14 @@ public class DefaultFileIndexer implements FileIndexer {
             return Optional.empty();
         }
         return topLevelPages.stream()
-                .filter(p->p.path.getFileName().toString().equals(rootPage))
+                .filter(p->p.path().getFileName().toString().equals(rootPage))
                 .findFirst();
     }
 
 
     private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
         try (Stream<Path> stream = Files.walk(rootPath)){
-            return stream.filter((path) -> isIncluded(path) && isNotExcluded(path))
+            return stream.filter(path -> isIncluded(path) && isNotExcluded(path))
                     .collect(toMap(PathNameUtils::removeExtension,
                             DefaultPage::new));
         }
@@ -87,7 +86,7 @@ public class DefaultFileIndexer implements FileIndexer {
         }
         List<Path> list;
         try (Stream<Path> stream = Files.walk(attachmentsDirectoryByPagePath(page.path()), 1)){
-            list = stream.filter((path) ->  path.toFile().isFile() && isNotExcluded(path))
+            list = stream.filter(path ->  path.toFile().isFile() && isNotExcluded(path))
                         .collect(toList());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
@@ -110,7 +109,7 @@ public class DefaultFileIndexer implements FileIndexer {
 
     private static List<DefaultPage> findTopLevelPages(List<DefaultPage> allPages, Path rootPath) {
         return allPages.stream()
-                       .filter((page) -> page.path().equals(rootPath.resolve(page.path().getFileName())))
+                       .filter(page -> page.path().equals(rootPath.resolve(page.path().getFileName())))
                        .collect(toList());
     }
 
@@ -123,61 +122,4 @@ public class DefaultFileIndexer implements FileIndexer {
     }
 
 
-    public static class DefaultPage implements Page {
-
-        private final Path path;
-        private final List<DefaultPage> children;
-
-        private final List<Path> attachments;
-
-        public DefaultPage(Path path) {
-            this.path = path;
-            this.children = new ArrayList<>();
-            attachments = new ArrayList<>();
-        }
-
-        public DefaultPage(Path path, List<Path> attachments) {
-            this.path = path;
-            this.children = new ArrayList<>();
-            this.attachments = attachments;
-        }
-
-        public DefaultPage(Path path, List<DefaultPage> children, List<Path> attachments) {
-            this.path = path;
-            this.children = children;
-            this.attachments = attachments;
-        }
-
-        @Override
-        public Path path() {
-            return path;
-        }
-
-        @Override
-        public List<Page> children() {
-            return unmodifiableList(this.children);
-        }
-
-        @Override
-        public List<Path> attachments() {
-            return attachments;
-        }
-
-        public void addChild(DefaultPage page) {
-            this.children.add(page);
-        }
-    }
-
-    public static class DefaultPagesStructure implements PagesStructure {
-        private final List<DefaultPage> pages;
-
-        public DefaultPagesStructure(List<DefaultPage> pages) {
-            this.pages = pages;
-        }
-
-        @Override
-        public List<? extends Page> pages() {
-            return pages;
-        }
-    }
 }
