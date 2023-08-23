@@ -1,4 +1,8 @@
-package io.github.md2conf.indexer;
+package io.github.md2conf.indexer.impl;
+
+import io.github.md2conf.indexer.DefaultPage;
+import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
+import io.github.md2conf.indexer.PathNameUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;

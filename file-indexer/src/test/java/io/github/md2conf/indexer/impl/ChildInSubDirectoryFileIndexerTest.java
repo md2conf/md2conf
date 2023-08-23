@@ -1,11 +1,13 @@
-package io.github.md2conf.indexer;
+package io.github.md2conf.indexer.impl;
 
+import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
+import io.github.md2conf.indexer.PagesStructure;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Path;
 
-import static io.github.md2conf.indexer.IndexerConfigurationPropertiesFactory.aDefaultIndexerConfigurationProperties;
+import static io.github.md2conf.indexer.FileIndexerConfigurationPropertiesFactory.aDefaultIndexerConfigurationProperties;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
@@ -21,7 +23,6 @@ class ChildInSubDirectoryFileIndexerTest extends AbstractFileIndexerTest {
     void index_dir_with_xml_files() {
         ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("xml")
-                .withIncludePattern("glob:**")
                 .build());
         String path = "src/test/resources/dir_with_xml_files";
         Path rootDir = (new File(path)).toPath();
@@ -41,7 +42,6 @@ class ChildInSubDirectoryFileIndexerTest extends AbstractFileIndexerTest {
     void test_dir_with_name_collision() {
         ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("wiki")
-                .withIncludePattern("glob:**")
                 .build());
         String path = "src/test/resources/dir_with_name_collision";
         Path rootDir = (new File(path)).toPath();

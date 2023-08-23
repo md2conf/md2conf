@@ -1,6 +1,6 @@
 package io.github.md2conf.converter.md2wiki;
 
-import io.github.md2conf.indexer.ChildInSubDirectoryFileIndexer;
+import io.github.md2conf.indexer.DelegatingFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
@@ -35,7 +35,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_with_inline_images"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -53,7 +53,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -76,7 +76,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -89,7 +89,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, true,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         Path input = Paths.get("src/test/resources/markdown_page_tree");
         Assertions.assertThat(input.resolve("index.md")).isRegularFile().content().contains("Heading");
         PagesStructure pagesStructure = fileIndexer.indexPath(input);
@@ -106,7 +106,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_with_inline_images"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -123,7 +123,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false,false, "plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_with_local_attachment"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -140,7 +140,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, false,"plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_crosslinks"));
         assertThat(pagesStructure.pages()).hasSize(2);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -157,7 +157,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true,"plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_plantuml"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -172,7 +172,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true,"plantumlrender");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_plantuml"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -187,7 +187,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, false,"plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_plantuml"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
@@ -203,7 +203,7 @@ class Md2WikiConverterTest {
         Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true,"plantuml");
         var prop = new FileIndexerConfigurationProperties();
         prop.setFileExtension("md");
-        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(prop);
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_codeblocks"));
         assertThat(pagesStructure.pages()).hasSize(1);
         ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);

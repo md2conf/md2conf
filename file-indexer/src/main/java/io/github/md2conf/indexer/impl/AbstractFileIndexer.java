@@ -1,5 +1,9 @@
-package io.github.md2conf.indexer;
+package io.github.md2conf.indexer.impl;
 
+import io.github.md2conf.indexer.DefaultPage;
+import io.github.md2conf.indexer.DefaultPagesStructure;
+import io.github.md2conf.indexer.FileIndexer;
+import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

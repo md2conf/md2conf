@@ -1,5 +1,7 @@
-package io.github.md2conf.indexer;
+package io.github.md2conf.indexer.impl;
 
+import io.github.md2conf.indexer.FileIndexer;
+import io.github.md2conf.indexer.PagesStructure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
