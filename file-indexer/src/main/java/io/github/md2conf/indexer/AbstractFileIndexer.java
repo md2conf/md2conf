@@ -10,24 +10,21 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.github.md2conf.indexer.PathNameUtils.attachmentsDirectoryByPagePath;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
-public class DefaultFileIndexer implements FileIndexer {
+public abstract class AbstractFileIndexer implements FileIndexer {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultFileIndexer.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractFileIndexer.class);
 
-    private final FileIndexerConfigurationProperties properties;
+    protected final FileIndexerConfigurationProperties properties;
     private final PathMatcher excludePathMatcher;
 
-    public DefaultFileIndexer(FileIndexerConfigurationProperties fileIndexerConfigurationProperties) {
+    public AbstractFileIndexer(FileIndexerConfigurationProperties fileIndexerConfigurationProperties) {
         this.properties = fileIndexerConfigurationProperties;
         FileSystem fileSystem = FileSystems.getDefault();
         this.excludePathMatcher = fileSystem.getPathMatcher(properties.getExcludePattern());
@@ -37,12 +34,11 @@ public class DefaultFileIndexer implements FileIndexer {
     public DefaultPagesStructure indexPath(Path rootPath) {
         final DefaultPagesStructure res;
         try {
-            Map<Path, DefaultPage> pageIndex = indexPages(rootPath);
-            List<DefaultPage> allPages = establishParentChildRelation(pageIndex);
+            List<DefaultPage> allPages = indexAndFindChildren(rootPath);
             allPages.forEach(this::findAttachments);
             List<DefaultPage> topLevelPages = findTopLevelPages(allPages, rootPath);
             Optional<DefaultPage> rootPage = findRootPage(topLevelPages);
-            if (rootPage.isPresent() && topLevelPages.size()>1){
+            if (rootPage.isPresent() && topLevelPages.size() > 1) {
                 relinkTopLevelPagesToRoot(rootPage.get(), topLevelPages);
                 res = new DefaultPagesStructure(List.of(rootPage.get()));
             } else {
@@ -55,30 +51,24 @@ public class DefaultFileIndexer implements FileIndexer {
         return res;
     }
 
+    public abstract List<DefaultPage> indexAndFindChildren(Path rootPath) throws IOException;
+
     private static void relinkTopLevelPagesToRoot(DefaultPage rootPage, List<DefaultPage> topLevelPages) {
         topLevelPages.stream()
-                .filter(v->!v.equals(rootPage))
+                .filter(v -> !v.equals(rootPage))
                 .forEach(rootPage::addChild);
     }
 
     private Optional<DefaultPage> findRootPage(List<DefaultPage> topLevelPages) {
         String rootPage = properties.getRootPage();
-        if (properties.getRootPage()==null){
+        if (properties.getRootPage() == null) {
             return Optional.empty();
         }
         return topLevelPages.stream()
-                .filter(p->p.path().getFileName().toString().equals(rootPage))
+                .filter(p -> p.path().getFileName().toString().equals(rootPage))
                 .findFirst();
     }
 
-
-    private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
-        try (Stream<Path> stream = Files.walk(rootPath)){
-            return stream.filter(path -> isIncluded(path) && isNotExcluded(path))
-                    .collect(toMap(PathNameUtils::removeExtension,
-                            DefaultPage::new));
-        }
-    }
 
 
     private void findAttachments(DefaultPage page) {
@@ -87,39 +77,26 @@ public class DefaultFileIndexer implements FileIndexer {
             return;
         }
         List<Path> list;
-        try (Stream<Path> stream = Files.walk(attachmentsDirectoryByPagePath(page.path()), 1)){
-            list = stream.filter(path ->  path.toFile().isFile() && isNotExcluded(path))
-                        .collect(toList());
+        try (Stream<Path> stream = Files.walk(attachmentsDirectoryByPagePath(page.path()), 1)) {
+            list = stream.filter(path -> path.toFile().isFile() && isNotExcluded(path))
+                    .collect(toList());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
         page.attachments().addAll(list);
     }
 
-
-
-    public static List<DefaultPage> establishParentChildRelation(Map<Path, DefaultPage> pageIndex) {
-        pageIndex.forEach((absolutePath, page) -> {
-            pageIndex.computeIfPresent(page.path().getParent(), (ignored, parentPage) -> {
-                parentPage.addChild(page);
-                return parentPage;
-            });
-        });
-        return new ArrayList<>(pageIndex.values());
-    }
-
-
     private static List<DefaultPage> findTopLevelPages(List<DefaultPage> allPages, Path rootPath) {
         return allPages.stream()
-                       .filter(page -> page.path().equals(rootPath.resolve(page.path().getFileName())))
-                       .collect(toList());
+                .filter(page -> page.path().equals(rootPath.resolve(page.path().getFileName())))
+                .collect(toList());
     }
 
-    private boolean isNotExcluded(Path path) {
+    protected boolean isNotExcluded(Path path) {
         return !excludePathMatcher.matches(path);
     }
 
-    private boolean isIncluded(Path path) {
+    protected boolean isIncluded(Path path) {
         return FilenameUtils.getExtension(path.toString()).equals(properties.getFileExtension());
     }
 

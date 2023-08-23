@@ -11,6 +11,7 @@ public class FileIndexerConfigurationProperties {
 //    private String childrenDirectorySuffix;
 //    private String childrenDirectoryBaseName;
     private String rootPage = null;
+    private ChildLayout childLayout = ChildLayout.NO;
 
     public String getExcludePattern() {
         return excludePattern;
@@ -36,12 +37,21 @@ public class FileIndexerConfigurationProperties {
         this.rootPage = rootPage;
     }
 
+    public ChildLayout getChildLayout() {
+        return childLayout;
+    }
+
+    public void setChildLayout(ChildLayout childLayout) {
+        this.childLayout = childLayout;
+    }
+
     @Override
     public String toString() {
         return "FileIndexerConfigurationProperties{" +
                 "fileExtension='" + fileExtension + '\'' +
                 ", excludePattern='" + excludePattern + '\'' +
                 ", rootPage='" + rootPage + '\'' +
+                ", childLayout=" + childLayout +
                 '}';
     }
 }

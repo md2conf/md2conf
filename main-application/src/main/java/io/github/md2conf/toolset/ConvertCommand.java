@@ -5,7 +5,7 @@ import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
 import io.github.md2conf.converter.view2md.View2MdConverter;
-import io.github.md2conf.indexer.DefaultFileIndexer;
+import io.github.md2conf.indexer.ChildInSubDirectoryFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
@@ -98,7 +98,7 @@ public class ConvertCommand implements Runnable {
         fileIndexerConfigurationProperties.setFileExtension(indexerOptions.fileExtension);
         fileIndexerConfigurationProperties.setExcludePattern(indexerOptions.excludePattern);
         fileIndexerConfigurationProperties.setRootPage(indexerOptions.indexerRootPage);
-        FileIndexer fileIndexer = new DefaultFileIndexer(fileIndexerConfigurationProperties);
+        FileIndexer fileIndexer = new ChildInSubDirectoryFileIndexer(fileIndexerConfigurationProperties); //todo
         PagesStructure pagesStructure = fileIndexer.indexPath(inputDirectory);
         if (pagesStructure.pages().isEmpty()) {
             logger.warn("No files found in input directory. Used file indexer options {}",

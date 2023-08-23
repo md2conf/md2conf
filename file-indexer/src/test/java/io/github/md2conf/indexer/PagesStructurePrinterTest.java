@@ -30,7 +30,7 @@ class PagesStructurePrinterTest {
         ((Logger) LoggerFactory.getLogger(PagesStructurePrinter.class)).detachAndStopAllAppenders();
     }
 
-    private final DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+    private final ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(new FileIndexerConfigurationProperties());
 
     @Test
     void index_dir_with_attachments() {
@@ -48,7 +48,7 @@ class PagesStructurePrinterTest {
 
     @Test
     void test_dir_with_name_collision() {
-        DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(aDefaultIndexerConfigurationProperties()
+        ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("wiki")
                 .withIncludePattern("glob:**")
                 .build());
@@ -69,7 +69,7 @@ class PagesStructurePrinterTest {
         FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
         markdownProps.setFileExtension("md");
         markdownProps.setRootPage(null);
-        DefaultFileIndexer markdownIndexer = new DefaultFileIndexer(markdownProps);
+        ChildInSubDirectoryFileIndexer markdownIndexer = new ChildInSubDirectoryFileIndexer(markdownProps);
         String path = "src/test/resources/dir_with_several_pages";
         File f = new File(path);
         PagesStructure structure = markdownIndexer.indexPath(f.toPath());
