@@ -26,6 +26,8 @@ public class PagesStructurePrinter {
 
     private void walk(List<? extends Page> list, String prefix) {
         Page page;
+        list = new ArrayList<>(list);
+        list.sort(Comparator.comparing(Page::path));
         for (int index = 0; index < list.size(); index++) {
             page = list.get(index);
             if (index == list.size() - 1) {

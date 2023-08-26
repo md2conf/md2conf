@@ -80,8 +80,8 @@ class PagesStructurePrinterTest {
         assertThat(logWatcher.list.get(0).getFormattedMessage()).contains("Page structure is:");
         assertThat(logWatcher.list.get(1).getFormattedMessage()).contains("├── index.md");
         assertThat(logWatcher.list.get(2).getFormattedMessage()).contains("├── page_a.md");
-        assertThat(logWatcher.list.get(3).getFormattedMessage()).contains("│   ├── page_a/sub_page_a.md");
-        assertThat(logWatcher.list.get(4).getFormattedMessage()).contains("│   └── page_a/index.md");
+        assertThat(logWatcher.list.get(3).getFormattedMessage()).contains("│   ├── page_a/index.md");
+        assertThat(logWatcher.list.get(4).getFormattedMessage()).contains("│   └── page_a/sub_page_a.md");
         assertThat(logWatcher.list.get(5).getFormattedMessage()).contains("└── page_b.md");
     }
 
@@ -101,9 +101,9 @@ class PagesStructurePrinterTest {
         assertThat(logWatcher.list.get(0).getFormattedMessage()).contains("Page structure is:");
         assertThat(logWatcher.list.get(1).getFormattedMessage()).contains("└── index.md");
         assertThat(logWatcher.list.get(2).getFormattedMessage()).contains("    ├── page_a.md");
-        assertThat(logWatcher.list.get(3).getFormattedMessage()).contains("    ├── page_b.md");
-        assertThat(logWatcher.list.get(4).getFormattedMessage()).contains("    └── page_a/index.md");
-        assertThat(logWatcher.list.get(5).getFormattedMessage()).contains("        └── page_a/sub_page_a.md");
+        assertThat(logWatcher.list.get(3).getFormattedMessage()).contains("    ├── page_a/index.md");
+        assertThat(logWatcher.list.get(4).getFormattedMessage()).contains("    │   └── page_a/sub_page_a.md");
+        assertThat(logWatcher.list.get(5).getFormattedMessage()).contains("    └── page_b.md");
     }
 
 }
