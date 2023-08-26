@@ -1,6 +1,6 @@
 package io.github.md2conf.converter.copying;
 
-import io.github.md2conf.indexer.DefaultFileIndexer;
+import io.github.md2conf.indexer.DelegatingFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
@@ -36,7 +36,7 @@ class CopyingConverterTest {
     @Test
     void copy_empty_dir() throws IOException {
         CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath, false);
-        FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+        FileIndexer fileIndexer = new DelegatingFileIndexer(new FileIndexerConfigurationProperties());
         PagesStructure pagesStructure = fileIndexer.indexPath(emptyDir);
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
         assertThat(model).isNotNull();
@@ -46,7 +46,7 @@ class CopyingConverterTest {
     @Test
     void copy_example_page_tree() throws IOException {
         CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath, false);
-        FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+        FileIndexer fileIndexer = new DelegatingFileIndexer(new FileIndexerConfigurationProperties());
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/example_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(2);
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
@@ -66,7 +66,7 @@ class CopyingConverterTest {
     @Test
     void copy_example_page_tree_twice() throws IOException {
         CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath, false);
-        FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+        FileIndexer fileIndexer = new DelegatingFileIndexer(new FileIndexerConfigurationProperties());
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/example_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(2);
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);
@@ -79,7 +79,7 @@ class CopyingConverterTest {
     @Test
     void copy_example_page_tree_with_title_remove() throws IOException {
         CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath, true);
-        FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+        FileIndexer fileIndexer = new DelegatingFileIndexer(new FileIndexerConfigurationProperties());
         Path input = Paths.get("src/test/resources/example_page_tree");
         PagesStructure pagesStructure = fileIndexer.indexPath(input);
         Assertions.assertThat(input.resolve("parent.wiki")).isRegularFile().content().contains("h1. parent");
@@ -96,7 +96,7 @@ class CopyingConverterTest {
     @Test
     void attachments_are_copied() throws IOException {
         CopyingConverter copyingConverter = new CopyingConverter(titleProcessor, outputPath, false);
-        FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+        FileIndexer fileIndexer = new DelegatingFileIndexer(new FileIndexerConfigurationProperties());
         PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/example_page_tree"));
         assertThat(pagesStructure.pages()).hasSize(2);
         ConfluenceContentModel model = copyingConverter.convert(pagesStructure);

@@ -1,7 +1,7 @@
 package io.github.md2conf.converter.noop;
 
 import io.github.md2conf.converter.PageStructureConverter;
-import io.github.md2conf.indexer.DefaultFileIndexer;
+import io.github.md2conf.indexer.DelegatingFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PagesStructure;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 class NoopConverterTest {
 
     static PageStructureTitleProcessor pageStructureTitleProcessor = new DefaultPageStructureTitleProcessor(TitleExtractStrategy.FROM_FILENAME, null, null, false);
-    FileIndexer fileIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
+    FileIndexer fileIndexer = new DelegatingFileIndexer(new FileIndexerConfigurationProperties());
 
     public static Stream<Arguments> converters() {
         return Stream.of(

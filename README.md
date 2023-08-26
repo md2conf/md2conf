@@ -164,25 +164,73 @@ Main dump-and-convert steps are
 File-indexer is a tool that build Confluence Content Model based on file
 name conventions.
 
-There are 2 types of relation between confluence objects 'child
-relation' and 'attachment relation'
+[//]: # (There are 2 types of relation between confluence objects 'child)
 
-#### Filename conventions
+[//]: # (relation' and 'attachment relation'.)
 
-| Relation              | Filename convention                                                                                                                                                    | Example                                               |
-|:----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------|
-| 'child relation'      | Child page of parent page `parent.md` must be located in directory with basename of parent page (`./parent`)                                                           | 2 files: `parent.md` and `parent/child.md`            |
-| 'attachment relation' | Attachment file of page `page.md` must be located in directory which name is concatenation of basename of parent page and "_attachments" suffix (`./page_attachments`) | 2 files: `page.md` and `./page_attachments/image.png` |
+[//]: # ()
+[//]: # (#### Child relation layout)
+
+[//]: # ()
+[//]: # (There are 2 options to specify child layout:)
+
+[//]: # ()
+[//]: # (##### SUB_DIRECTORY child relation layout)
+
+[//]: # ()
+[//]: # (This is layout when source files for children pages resides in directory with the name equals to basename of parent file.)
+
+[//]: # ()
+[//]: # (Example:)
+
+[//]: # ()
+[//]: # (Next files tree)
+
+[//]: # ()
+[//]: # (```)
+
+[//]: # (├── page_a)
+
+[//]: # (│   └─── child_to_page_a.md)
+
+[//]: # (└── page_a.md)
+
+[//]: # ()
+[//]: # (```)
+
+[//]: # ()
+[//]: # (Page structure is:)
+
+[//]: # (```)
+
+[//]: # (└── page_a.md)
+
+[//]: # (   └─── page_a/child_to_page_a.md)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (#### Filename conventions)
+
+[//]: # ()
+[//]: # (| Relation              | Filename convention                                                                                                                                                    | Example                                               |)
+
+[//]: # (|:----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------|)
+
+[//]: # (| 'child relation'      | Child page of parent page `parent.md` must be located in directory with basename of parent page &#40;`./parent`&#41;                                                           | 2 files: `parent.md` and `parent/child.md`            |)
+
+[//]: # (| 'attachment relation' | Attachment file of page `page.md` must be located in directory which name is concatenation of basename of parent page and "_attachments" suffix &#40;`./page_attachments`&#41; | 2 files: `page.md` and `./page_attachments/image.png` |)
 
 
 Controlled by properties:
 
-| Property key    | CLI name            | Description                                                                                                                 | Default value |
-|:----------------|:--------------------|:----------------------------------------------------------------------------------------------------------------------------|:--------------|
-| inputDirectory  | "-i", "--input-dir" | Input directory                                                                                                             |               |
-| fileExtension   | --file-extension    | File extension to index as confluence content pages                                                                         | md            |
-| excludePattern  | --exclude-pattern   | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method | "glob:**/.*"  |
-| indexerRootPage | --indexer-root-page | Use specified page as parent page for all another top-level pages in an input directory                                     |               |
+| Property key    | CLI name            | Description                                                                                                                                                                                                                                                                                                      | Default value |
+|:----------------|:--------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
+| inputDirectory  | "-i", "--input-dir" | Input directory                                                                                                                                                                                                                                                                                                  |               |
+| fileExtension   | --file-extension    | File extension to index as confluence content pages                                                                                                                                                                                                                                                              | md            |
+| excludePattern  | --exclude-pattern   | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method                                                                                                                                                                                      | "glob:**/.*"  |
+| indexerRootPage | --indexer-root-page | Use specified page as parent page for all another top-level pages in an input directory                                                                                                                                                                                                                          |               |
+| childLayout     | --child-layout      | SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file. SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages | SUB_DIRECTORY |
 
 
 ### Convert by converters

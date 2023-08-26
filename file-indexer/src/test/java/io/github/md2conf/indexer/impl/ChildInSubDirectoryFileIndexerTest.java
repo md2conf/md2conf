@@ -1,57 +1,28 @@
-package io.github.md2conf.indexer;
+package io.github.md2conf.indexer.impl;
 
+import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
+import io.github.md2conf.indexer.PagesStructure;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.nio.file.Path;
 
-import static io.github.md2conf.indexer.IndexerConfigurationPropertiesFactory.aDefaultIndexerConfigurationProperties;
+import static io.github.md2conf.indexer.FileIndexerConfigurationPropertiesFactory.aDefaultIndexerConfigurationProperties;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-class DefaultFileIndexerTest {
+class ChildInSubDirectoryFileIndexerTest extends AbstractFileIndexerTest {
 
-    @TempDir
-    private Path tmpDir;
 
-    private final DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(new FileIndexerConfigurationProperties());
-
-    @Test
-    void index_empty_dir() {
-        PagesStructure structure = defaultIndexer.indexPath(tmpDir);
-        assertThat(structure).isNotNull();
-        assertThat(structure.pages()).isEmpty();
+    ChildInSubDirectoryFileIndexerTest() {
+        super(new ChildInSubDirectoryFileIndexer(new FileIndexerConfigurationProperties()));
     }
 
-    @Test
-    void index_dir_with_hidden_files() {
-        String path = "src/test/resources/dir_with_hidden_files";
-        File f = new File(path);
-        PagesStructure structure = defaultIndexer.indexPath(f.toPath());
-        assertThat(structure).isNotNull();
-        assertThat(structure.pages()).isEmpty();
-    }
-
-    @Test
-    void index_dir_with_attachments() {
-        String path = "src/test/resources/dir_with_attachments";
-        File f = new File(path);
-        PagesStructure structure = defaultIndexer.indexPath(f.toPath());
-        assertThat(structure).isNotNull();
-        assertThat(structure.pages()).isNotEmpty();
-        assertThat(structure.pages()).hasSize(1);
-        assertThat(structure.pages().get(0)).isNotNull();
-        assertThat(structure.pages().get(0).children()).isNotEmpty();
-        assertThat(structure.pages().get(0).attachments()).isNotEmpty();
-        assertThat(structure.pages().get(0).attachments()).hasSize(2);
-    }
 
     @Test
     void index_dir_with_xml_files() {
-        DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(aDefaultIndexerConfigurationProperties()
+        ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("xml")
-                .withIncludePattern("glob:**")
                 .build());
         String path = "src/test/resources/dir_with_xml_files";
         Path rootDir = (new File(path)).toPath();
@@ -69,9 +40,8 @@ class DefaultFileIndexerTest {
 
     @Test
     void test_dir_with_name_collision() {
-        DefaultFileIndexer defaultIndexer = new DefaultFileIndexer(aDefaultIndexerConfigurationProperties()
+        ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
                 .withFileExtension("wiki")
-                .withIncludePattern("glob:**")
                 .build());
         String path = "src/test/resources/dir_with_name_collision";
         Path rootDir = (new File(path)).toPath();
@@ -91,7 +61,7 @@ class DefaultFileIndexerTest {
         FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
         markdownProps.setFileExtension("md");
         markdownProps.setRootPage(null);
-        DefaultFileIndexer markdownIndexer = new DefaultFileIndexer(markdownProps);
+        ChildInSubDirectoryFileIndexer markdownIndexer = new ChildInSubDirectoryFileIndexer(markdownProps);
         String path = "src/test/resources/dir_with_several_pages";
         File f = new File(path);
         PagesStructure structure = markdownIndexer.indexPath(f.toPath());
@@ -108,7 +78,7 @@ class DefaultFileIndexerTest {
         FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
         markdownProps.setFileExtension("md");
         markdownProps.setRootPage("index.md");
-        DefaultFileIndexer markdownIndexer = new DefaultFileIndexer(markdownProps);
+        ChildInSubDirectoryFileIndexer markdownIndexer = new ChildInSubDirectoryFileIndexer(markdownProps);
         String path = "src/test/resources/dir_with_several_pages";
         File f = new File(path);
         PagesStructure structure = markdownIndexer.indexPath(f.toPath());

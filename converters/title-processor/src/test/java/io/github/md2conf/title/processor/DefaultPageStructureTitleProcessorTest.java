@@ -1,7 +1,7 @@
 package io.github.md2conf.title.processor;
 
-import io.github.md2conf.indexer.DefaultFileIndexer;
-import io.github.md2conf.indexer.DefaultFileIndexer.DefaultPage;
+import io.github.md2conf.indexer.DefaultPage;
+import io.github.md2conf.indexer.DefaultPagesStructure;
 import io.github.md2conf.indexer.PagesStructure;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ class DefaultPageStructureTitleProcessorTest {
 
     @Test
     void empty_page_structure() throws IOException {
-        Map<Path, String> map = defaultPageStructureTitleProcessor.toTitleMap(new DefaultFileIndexer.DefaultPagesStructure(List.of()));
+        Map<Path, String> map = defaultPageStructureTitleProcessor.toTitleMap(new DefaultPagesStructure(List.of()));
         Assertions.assertThat(map).isEmpty();
     }
 
@@ -28,7 +28,7 @@ class DefaultPageStructureTitleProcessorTest {
     void one_page_structure() throws IOException {
         Path path = Path.of("tmp/1.md").toAbsolutePath();
         Map<Path, String> map = defaultPageStructureTitleProcessor.toTitleMap(
-                new DefaultFileIndexer.DefaultPagesStructure(List.of(new DefaultPage(path)))
+                new DefaultPagesStructure(List.of(new DefaultPage(path)))
         );
         Assertions.assertThat(map).hasSize(1);
         Assertions.assertThat(map.get(path)).isEqualTo("1");
@@ -39,7 +39,7 @@ class DefaultPageStructureTitleProcessorTest {
         Path path1 = Path.of("tmp/1.md").toAbsolutePath();
         Path path2 = Path.of("tmp/2.md").toAbsolutePath();
         Map<Path, String> map = defaultPageStructureTitleProcessor.toTitleMap(
-                new DefaultFileIndexer.DefaultPagesStructure(List.of(new DefaultPage(path1), new DefaultPage(path2)))
+                new DefaultPagesStructure(List.of(new DefaultPage(path1), new DefaultPage(path2)))
         );
         Assertions.assertThat(map).hasSize(2);
         Assertions.assertThat(map.get(path1)).isEqualTo("1");
@@ -107,6 +107,6 @@ class DefaultPageStructureTitleProcessorTest {
         page_lvl0.addChild(page_lvl1_0);
         page_lvl0.addChild(page_lvl1_1);
         page_lvl1_0.addChild(page_lvl2);
-        return new DefaultFileIndexer.DefaultPagesStructure(List.of(page_lvl0));
+        return new DefaultPagesStructure(List.of(page_lvl0));
     }
 }
