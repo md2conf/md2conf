@@ -164,40 +164,62 @@ Main dump-and-convert steps are
 File-indexer is a tool that build Confluence Content Model based on file
 name conventions.
 
-There are 2 types of relation between confluence objects 'child
-relation' and 'attachment relation'.
+[//]: # (There are 2 types of relation between confluence objects 'child)
 
-#### Child relation layout
+[//]: # (relation' and 'attachment relation'.)
 
-There are 2 options to specify child layout:
+[//]: # ()
+[//]: # (#### Child relation layout)
 
-##### SUB_DIRECTORY child relation layout
+[//]: # ()
+[//]: # (There are 2 options to specify child layout:)
 
-This is layout when source files for children pages resides in directory with the name equals to basename of parent file.
+[//]: # ()
+[//]: # (##### SUB_DIRECTORY child relation layout)
 
-Example:
+[//]: # ()
+[//]: # (This is layout when source files for children pages resides in directory with the name equals to basename of parent file.)
 
-Next files tree
+[//]: # ()
+[//]: # (Example:)
 
-```
-├── page_a
-│   └─── child_to_page_a.md
-└── page_a.md
+[//]: # ()
+[//]: # (Next files tree)
 
-```
+[//]: # ()
+[//]: # (```)
 
-Page structure is:
-```
-└── page_a.md
-   └─── page_a/child_to_page_a.md
-```
+[//]: # (├── page_a)
 
-#### Filename conventions
+[//]: # (│   └─── child_to_page_a.md)
 
-| Relation              | Filename convention                                                                                                                                                    | Example                                               |
-|:----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------|
-| 'child relation'      | Child page of parent page `parent.md` must be located in directory with basename of parent page (`./parent`)                                                           | 2 files: `parent.md` and `parent/child.md`            |
-| 'attachment relation' | Attachment file of page `page.md` must be located in directory which name is concatenation of basename of parent page and "_attachments" suffix (`./page_attachments`) | 2 files: `page.md` and `./page_attachments/image.png` |
+[//]: # (└── page_a.md)
+
+[//]: # ()
+[//]: # (```)
+
+[//]: # ()
+[//]: # (Page structure is:)
+
+[//]: # (```)
+
+[//]: # (└── page_a.md)
+
+[//]: # (   └─── page_a/child_to_page_a.md)
+
+[//]: # (```)
+
+[//]: # ()
+[//]: # (#### Filename conventions)
+
+[//]: # ()
+[//]: # (| Relation              | Filename convention                                                                                                                                                    | Example                                               |)
+
+[//]: # (|:----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------|)
+
+[//]: # (| 'child relation'      | Child page of parent page `parent.md` must be located in directory with basename of parent page &#40;`./parent`&#41;                                                           | 2 files: `parent.md` and `parent/child.md`            |)
+
+[//]: # (| 'attachment relation' | Attachment file of page `page.md` must be located in directory which name is concatenation of basename of parent page and "_attachments" suffix &#40;`./page_attachments`&#41; | 2 files: `page.md` and `./page_attachments/image.png` |)
 
 
 Controlled by properties:
