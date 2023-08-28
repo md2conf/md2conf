@@ -24,6 +24,16 @@ Start this project.
 
 Reasons why not to contribute to existing projects:
 
-* The main issue with `confluence-publisher` that it doesn't support markdown. It's not modularized properly. Hard to add own extension.
+* The main problem with `bsorrentino/maven-confluence-plugin` that is
+  the adding of new functionality requires a lot of effort. Internal API
+  and arhitecture is not clear. I tried to add idempotency to confluence
+  client
+  (see [maven-confluence-plugin/issues/233](https://github.com/bsorrentino/maven-confluence-plugin/issues/233)) but
+  found that I need to rework almost everything in
+  maven-confluence-plugin, becouse of a lot of tightly coupled
+  functional style code.
+* The main issue with `confluence-publisher` that it doesn't support
+  markdown. It's not modularized properly. Hard to add own markdown extension.
+* `markdown-confluence-gradle-plugin` - I'm author of this plugin :) It just obsolete.
 
 

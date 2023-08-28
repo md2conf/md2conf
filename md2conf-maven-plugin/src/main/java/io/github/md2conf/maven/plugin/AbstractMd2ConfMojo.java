@@ -3,6 +3,7 @@ package io.github.md2conf.maven.plugin;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.indexer.ChildLayout;
+import io.github.md2conf.indexer.OrphanFileStrategy;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.ConvertCommand;
 import io.github.md2conf.toolset.PublishCommand;
@@ -38,6 +39,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected String indexerRootPage = null;
     @Parameter(property = PREFIX + "childLayout")
     protected ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
+    @Parameter(property = PREFIX + "orphanFileStrategy")
+    protected OrphanFileStrategy orphanFileStrategy = OrphanFileStrategy.IGNORE;
     @Parameter(property = PREFIX + "titleExtract")
     protected TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
     @Parameter(property = PREFIX + "titlePrefix")
@@ -105,8 +108,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         indexerOptions.excludePattern = this.excludePattern;
         indexerOptions.indexerRootPage = this.indexerRootPage;
         indexerOptions.childLayout = this.childLayout;
+        indexerOptions.orphanFileStrategy = this.orphanFileStrategy;
         return indexerOptions;
-
     }
 
     @NotNull
@@ -136,6 +139,5 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     public File getConfluenceContentModelPath() {
         return confluenceContentModelPath;
     }
-
 
 }

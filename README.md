@@ -2,7 +2,7 @@
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
 
-[TOC]: # "md2conf toolset"
+[TOC levels=4]: # "md2conf toolset"
 
 # md2conf toolset
 - [Overview](#overview)
@@ -14,9 +14,15 @@
   - [Maven plugin](#maven-plugin)
 - [How it works inside?](#how-it-works-inside)
   - [Index by file-indexer](#index-by-file-indexer)
+    - [Attachments naming convention](#attachments-naming-convention)
+    - [Child relation layout examples](#child-relation-layout-examples)
+    - [orphanFileStrategy example](#orphanfilestrategy-example)
+    - [indexerRootPage example](#indexerrootpage-example)
   - [Convert by converters](#convert-by-converters)
   - [Publish using confluence-client](#publish-using-confluence-client)
   - [Confluence Content model](#confluence-content-model)
+    - [Confluence Page](#confluence-page)
+    - [Content Type](#content-type)
 - [Markdown extensions](#markdown-extensions)
   - [Confluence macros](#confluence-macros)
   - [Cross-page links between markdown pages](#cross-page-links-between-markdown-pages)
@@ -164,74 +170,119 @@ Main dump-and-convert steps are
 File-indexer is a tool that build Confluence Content Model based on file
 name conventions.
 
-[//]: # (There are 2 types of relation between confluence objects 'child)
+File-indexer controlled by properties:
 
-[//]: # (relation' and 'attachment relation'.)
+| Property key       | CLI name               | Description                                                                                                                                                                                                                                                                                                      | Default value |
+|:-------------------|:-----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
+| inputDirectory     | "-i", "--input-dir"    | Input directory                                                                                                                                                                                                                                                                                                  |               |
+| fileExtension      | --file-extension       | File extension to index as confluence content pages                                                                                                                                                                                                                                                              | md            |
+| excludePattern     | --exclude-pattern      | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method                                                                                                                                                                                      | "glob:**/.*"  |
+| indexerRootPage    | --indexer-root-page    | Use specified page as parent page for all another top-level pages in an input directory                                                                                                                                                                                                                          |               |
+| childLayout        | --child-layout         | SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file. SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages | SUB_DIRECTORY |
+| orphanFileStrategy | --orphan-file-strategy | What to do with page which source file that are not top-level page and not child of any page. Possible options are IGNORE, ADD_TO_TOP_LEVEL_PAGES                                                                                                                                                                | IGNORE        |
 
-[//]: # ()
-[//]: # (#### Child relation layout)
+#### Attachments naming convention
 
-[//]: # ()
-[//]: # (There are 2 options to specify child layout:)
+Attachment file of page `page.md` must be located in directory which
+name is concatenation of basename of parent page and "_attachments"
+suffix (`./page_attachments`).
 
-[//]: # ()
-[//]: # (##### SUB_DIRECTORY child relation layout)
+For example, next filesystem tree
 
-[//]: # ()
-[//]: # (This is layout when source files for children pages resides in directory with the name equals to basename of parent file.)
+```
+.
+├── page_attachments
+│   └── attach.txt
+└── page.md
+```
 
-[//]: # ()
-[//]: # (Example:)
-
-[//]: # ()
-[//]: # (Next files tree)
-
-[//]: # ()
-[//]: # (```)
-
-[//]: # (├── page_a)
-
-[//]: # (│   └─── child_to_page_a.md)
-
-[//]: # (└── page_a.md)
-
-[//]: # ()
-[//]: # (```)
-
-[//]: # ()
-[//]: # (Page structure is:)
-
-[//]: # (```)
-
-[//]: # (└── page_a.md)
-
-[//]: # (   └─── page_a/child_to_page_a.md)
-
-[//]: # (```)
-
-[//]: # ()
-[//]: # (#### Filename conventions)
-
-[//]: # ()
-[//]: # (| Relation              | Filename convention                                                                                                                                                    | Example                                               |)
-
-[//]: # (|:----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------|)
-
-[//]: # (| 'child relation'      | Child page of parent page `parent.md` must be located in directory with basename of parent page &#40;`./parent`&#41;                                                           | 2 files: `parent.md` and `parent/child.md`            |)
-
-[//]: # (| 'attachment relation' | Attachment file of page `page.md` must be located in directory which name is concatenation of basename of parent page and "_attachments" suffix &#40;`./page_attachments`&#41; | 2 files: `page.md` and `./page_attachments/image.png` |)
+will be indexed as Confluence page with source at path `./page.md` and
+one attachment at path `page_attachments/attach.txt`.
 
 
-Controlled by properties:
+#### Child relation layout examples
 
-| Property key    | CLI name            | Description                                                                                                                                                                                                                                                                                                      | Default value |
-|:----------------|:--------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| inputDirectory  | "-i", "--input-dir" | Input directory                                                                                                                                                                                                                                                                                                  |               |
-| fileExtension   | --file-extension    | File extension to index as confluence content pages                                                                                                                                                                                                                                                              | md            |
-| excludePattern  | --exclude-pattern   | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method                                                                                                                                                                                      | "glob:**/.*"  |
-| indexerRootPage | --indexer-root-page | Use specified page as parent page for all another top-level pages in an input directory                                                                                                                                                                                                                          |               |
-| childLayout     | --child-layout      | SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file. SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages | SUB_DIRECTORY |
+There are 2 options to specify child layout: SUB_DIRECTORY and
+SAME_DIRECTORY
 
+##### SUB_DIRECTORY example
+
+This is layout when source files for children pages resides in directory
+with the name equals to basename of parent file.
+
+Example:
+
+Next files tree
+
+```
+├── page_a
+│   └─── child_to_page_a.md
+└── page_a.md
+```
+
+will be indexed to next pages structure
+
+```
+└── page_a.md
+   └─── page_a/child_to_page_a.md
+```
+
+##### SAME_DIRECTORY example
+
+This is layout when file with name 'index.md' or 'README.md' is the
+source file of parent page and other files in the directory are source
+files for children pages.
+
+Next files tree
+
+```
+.
+├── index.md
+├── page_a.md
+└── page_b.md
+```
+
+will be indexed to next pages structure
+
+```
+└── index.md
+   ├─── page_a.md
+   └─── page_b.md
+```
+
+#### orphanFileStrategy example
+
+When `orphanFileStrategy` set to `ADD_TO_TOP_LEVEL_PAGES` the next files tree
+
+```
+├── some_dir
+│   └─── orphan.md
+└── page_a.md
+```
+
+will be indexed to next pages structure
+
+```
+├─── page_a.md
+└─── some_dir/orphan.md
+```
+
+#### indexerRootPage example
+
+When `indexerRootPage` set to `overview.md` the next files tree
+
+```
+├─── overview.md
+├─── page_a.md
+└─── page_b.md
+```
+will be indexed to next pages structure
+
+```
+└── overview.md
+   ├─── page_a.md
+   └─── page_b.md
+```
 
 ### Convert by converters
 

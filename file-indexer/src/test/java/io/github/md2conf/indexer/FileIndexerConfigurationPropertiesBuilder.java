@@ -5,6 +5,7 @@ public final class FileIndexerConfigurationPropertiesBuilder {
     private String excludePattern;
     private String rootPage;
     private ChildLayout childLayout;
+    private OrphanFileStrategy orphanFileStrategy;
 
     private FileIndexerConfigurationPropertiesBuilder() {
     }
@@ -33,12 +34,18 @@ public final class FileIndexerConfigurationPropertiesBuilder {
         return this;
     }
 
+    public FileIndexerConfigurationPropertiesBuilder withOrhanPagesStrategy(OrphanFileStrategy orphanFileStrategy) {
+        this.orphanFileStrategy = orphanFileStrategy;
+        return this;
+    }
+
     public FileIndexerConfigurationProperties build() {
         FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
         fileIndexerConfigurationProperties.setFileExtension(fileExtension);
         fileIndexerConfigurationProperties.setExcludePattern(excludePattern);
         fileIndexerConfigurationProperties.setRootPage(rootPage);
         fileIndexerConfigurationProperties.setChildLayout(childLayout);
+        fileIndexerConfigurationProperties.setOrhanPagesStrategy(orphanFileStrategy);
         return fileIndexerConfigurationProperties;
     }
 }

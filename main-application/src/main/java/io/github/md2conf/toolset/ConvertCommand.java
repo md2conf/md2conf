@@ -9,6 +9,7 @@ import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.DelegatingFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
+import io.github.md2conf.indexer.OrphanFileStrategy;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.indexer.PagesStructurePrinter;
 import io.github.md2conf.model.ConfluenceContentModel;
@@ -101,6 +102,7 @@ public class ConvertCommand implements Runnable {
         fileIndexerConfigurationProperties.setExcludePattern(indexerOptions.excludePattern);
         fileIndexerConfigurationProperties.setRootPage(indexerOptions.indexerRootPage);
         fileIndexerConfigurationProperties.setChildLayout(indexerOptions.childLayout);
+        fileIndexerConfigurationProperties.setOrhanPagesStrategy(indexerOptions.orphanFileStrategy);
         FileIndexer fileIndexer = new DelegatingFileIndexer(fileIndexerConfigurationProperties);
         PagesStructure pagesStructure = fileIndexer.indexPath(inputDirectory);
         if (pagesStructure.pages().isEmpty()) {
@@ -160,6 +162,11 @@ public class ConvertCommand implements Runnable {
                 defaultValue = "SUB_DIRECTORY",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
         public ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
+        @CommandLine.Option(names = {"--orphan-file-strategy"},
+                description = "What to do with page which source file that are not top-level page and not child of any page. Valid values: ${COMPLETION-CANDIDATES}",
+                defaultValue = "IGNORE",
+                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+        public OrphanFileStrategy orphanFileStrategy = OrphanFileStrategy.IGNORE;
     }
 
     public static class ConvertOptions { //todo split on mandatory and additional

@@ -9,6 +9,7 @@ public class FileIndexerConfigurationProperties {
 //    private String attachmentDirectorySuffix; //todo
     private String rootPage = null;
     private ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
+    private OrphanFileStrategy orphanFileStrategy = OrphanFileStrategy.IGNORE;
 
     public String getExcludePattern() {
         return excludePattern;
@@ -40,6 +41,14 @@ public class FileIndexerConfigurationProperties {
 
     public void setChildLayout(ChildLayout childLayout) {
         this.childLayout = childLayout;
+    }
+
+    public OrphanFileStrategy getOrhanPagesStrategy() {
+        return orphanFileStrategy;
+    }
+
+    public void setOrhanPagesStrategy(OrphanFileStrategy orphanFileStrategy) {
+        this.orphanFileStrategy = orphanFileStrategy;
     }
 
     @Override

@@ -3,35 +3,48 @@ package io.github.md2conf.indexer.impl;
 import io.github.md2conf.indexer.DefaultPage;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.PathNameUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
 public class ChildInSubDirectoryFileIndexer extends AbstractFileIndexer {
+
+    private final Logger logger = LoggerFactory.getLogger(ChildInSubDirectoryFileIndexer.class);
 
     public ChildInSubDirectoryFileIndexer(FileIndexerConfigurationProperties fileIndexerConfigurationProperties) {
         super(fileIndexerConfigurationProperties);
     }
 
     @Override
-    public List<DefaultPage> indexAndFindChildren(Path rootPath) throws IOException {
-        Map<Path, DefaultPage> pageIndex = indexPages(rootPath);
-        return establishParentChildRelation(pageIndex);
+    protected void logIgnored(List<Path> notIncludedToGraph) {
+        logger.warn("Some paths ignored by indexer with child layout {}",
+                properties.getChildLayout());
+        notIncludedToGraph.forEach(
+                v -> logger.warn("Ignored path {} because file at parent path {} doesn't exist", v, parentPath(v))
+        );
     }
 
-    private Map<Path, DefaultPage> indexPages(Path rootPath) throws IOException {
-        try (Stream<Path> stream = Files.walk(rootPath)) {
-            return stream.filter(path -> isIncluded(path) && isNotExcluded(path))
-                    .collect(toMap(PathNameUtils::removeExtension,
-                            DefaultPage::new));
+    private String parentPath(Path v) {
+        String fileName =  FilenameUtils.getBaseName(v.getParent().toString()) + "." + properties.getFileExtension();
+        if (v.getParent().getParent()!=null){
+            return v.getParent().getParent().resolve(fileName).toString();
         }
+        return fileName;
+    }
+
+    @Override
+    public List<DefaultPage> createPagesWithChildren(List<Path> pagePaths) {
+        Map<Path, DefaultPage> pageIndex = pagePaths.stream()
+                .collect(toMap(PathNameUtils::removeExtension,
+                        DefaultPage::new));
+        return establishParentChildRelation(pageIndex);
     }
 
     private static List<DefaultPage> establishParentChildRelation(Map<Path, DefaultPage> pageIndex) {
@@ -43,7 +56,6 @@ public class ChildInSubDirectoryFileIndexer extends AbstractFileIndexer {
         });
         return new ArrayList<>(pageIndex.values());
     }
-
 
 
 }
