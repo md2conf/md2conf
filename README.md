@@ -421,7 +421,7 @@ See mappings here:
 
 ## History and motivation
 
-See [decisions](docs/decisions).
+See [decisions](docs/decisions) and [comparison with other tools](docs/comparison_with_other_tools.md).
 
 In short, existing projects doesn't fit my needs.
 
