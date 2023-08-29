@@ -8,6 +8,7 @@ public class FileIndexerConfigurationPropertiesFactory {
         return aFileIndexerConfigurationProperties()
                 .withFileExtension("wiki")
                 .withChildLayout(ChildLayout.SUB_DIRECTORY)
+                .withOrhanPagesStrategy(OrphanFileStrategy.IGNORE)
                 .withExcludePattern("glob:**/.*");
     }
 }

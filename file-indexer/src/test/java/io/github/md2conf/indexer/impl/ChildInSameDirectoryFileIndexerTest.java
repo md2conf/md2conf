@@ -3,6 +3,7 @@ package io.github.md2conf.indexer.impl;
 import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
+import io.github.md2conf.indexer.OrphanFileStrategy;
 import io.github.md2conf.indexer.PagesStructure;
 import org.junit.jupiter.api.Test;
 
@@ -47,12 +48,13 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
         assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("page_a.md")).singleElement().matches(v -> v.children().size() == 0);
         assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("page_b.md")).singleElement().matches(v -> v.children().size() == 0);
         assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("index.md")).singleElement().matches(v -> v.children().size() == 1);
+        assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("index.md")).singleElement().matches(v -> v.attachments().size() == 1);
     }
 
     @Test
-    void dir_with_index_md_and_orhans() {
-        FileIndexer markdownIndexer = mdFileIndexer();
-        String path = "src/test/resources/dir_with_index_md_and_orhans";
+    void dir_with_index_md_and_orphans_ignore() {
+        FileIndexer markdownIndexer = mdFileIndexer(OrphanFileStrategy.IGNORE);
+        String path = "src/test/resources/dir_with_index_md_and_orphans";
         File f = new File(path);
         PagesStructure structure = markdownIndexer.indexPath(f.toPath());
         assertThat(structure).isNotNull();
@@ -63,11 +65,36 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
         assertThat(structure.pages().get(0).children().get(0).children()).hasSize(1).singleElement().matches(page -> page.path().endsWith("child/child_level_2.md"));
     }
 
+    @Test
+    void dir_with_index_md_and_orphans_add_to_top_level() {
+        FileIndexer markdownIndexer = mdFileIndexer(OrphanFileStrategy.ADD_TO_TOP_LEVEL_PAGES);
+        String path = "src/test/resources/dir_with_index_md_and_orphans";
+        File f = new File(path);
+        PagesStructure structure = markdownIndexer.indexPath(f.toPath());
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isNotEmpty();
+        assertThat(structure.pages()).hasSize(3)
+                .extracting(v -> v.path().getFileName().toString())
+                .containsExactlyInAnyOrder("index.md", "orhan.md", "level_2.md");
+        assertThat(structure.pages().get(0).children()).hasSize(1);
+        assertThat(structure.pages().get(0).children()).hasSize(1).singleElement().matches(page -> page.path().endsWith("child/index.md"));
+        assertThat(structure.pages().get(0).children().get(0).children()).hasSize(1).singleElement().matches(page -> page.path().endsWith("child/child_level_2.md"));
+    }
+
     private static FileIndexer mdFileIndexer() {
         FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
         markdownProps.setFileExtension("md");
         markdownProps.setRootPage(null);
         markdownProps.setChildLayout(ChildLayout.SAME_DIRECTORY);
+        return new ChildInSameDirectoryFileIndexer(markdownProps);
+    }
+
+    private static FileIndexer mdFileIndexer(OrphanFileStrategy orphanFileStrategy) {
+        FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
+        markdownProps.setFileExtension("md");
+        markdownProps.setRootPage(null);
+        markdownProps.setChildLayout(ChildLayout.SAME_DIRECTORY);
+            markdownProps.setOrhanPagesStrategy(orphanFileStrategy);
         return new ChildInSameDirectoryFileIndexer(markdownProps);
     }
 }
