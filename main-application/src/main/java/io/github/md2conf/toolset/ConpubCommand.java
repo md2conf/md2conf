@@ -11,14 +11,14 @@ public class ConpubCommand implements Runnable {
 
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
-    @CommandLine.ArgGroup(exclusive = false)
-    ConvertCommand.ConvertOptions convertOptions;
-    @CommandLine.ArgGroup(exclusive = false)
-    ConvertCommand.IndexerOptions indexerOptions;
-    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
+    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1", heading = "Confluence options:\n")
     PublishCommand.ConfluenceOptions confluenceOptions;
-    @CommandLine.ArgGroup(exclusive = false)
+    @CommandLine.ArgGroup(exclusive = false,  heading = "Publish options:\n")
     PublishCommand.PublishOptions publishOptions;
+    @CommandLine.ArgGroup(exclusive = false,  heading = "Indexer options:\n")
+    ConvertCommand.IndexerOptions indexerOptions;
+    @CommandLine.ArgGroup(exclusive = false,  heading = "Convert options:\n")
+    ConvertCommand.ConvertOptions convertOptions;
 
     @Override
     public void run() {
