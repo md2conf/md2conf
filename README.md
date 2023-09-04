@@ -12,6 +12,7 @@
 - [Usage](#usage)
   - [Command-line](#command-line)
   - [Maven plugin](#maven-plugin)
+  - [Generation diagram from sources](#generation-diagram-from-sources)
 - [How it works inside?](#how-it-works-inside)
   - [Index by file-indexer](#index-by-file-indexer)
     - [Attachments naming convention](#attachments-naming-convention)
@@ -29,6 +30,8 @@
   - [Image attachments](#image-attachments)
   - [Link to local file](#link-to-local-file)
   - [Confluence supported languages in fenced code blocks](#confluence-supported-languages-in-fenced-code-blocks)
+- [Diagram generations](#diagram-generations)
+  - [Example to include PlantUML diagram generation in Maven](#example-to-include-plantuml-diagram-generation-in-maven)
 - [History and motivation](#history-and-motivation)
   - [Regards](#regards)
   - [License](#license)
@@ -138,6 +141,10 @@ attachments on a local filesystem. See 'md2conf help model' for details.
     </configuration>
 </plugin>
 ```
+
+### Generation diagram from sources
+
+
 
 
 ## How it works inside?
@@ -417,6 +424,42 @@ Confluence.
 
 See mappings here:
 [CustomFencedCodeBlockRenderer.java: Line 22](converters/flexmark-ext-fenced-code-block/src/main/java/io/github/md2conf/flexmart/ext/fenced/code/block/internal/CustomFencedCodeBlockRenderer.java#L22)
+
+## Diagram generations
+
+The `md2conf` toolset doesn't contain embedded diagram generation support from textual diagram formats like PlantUML, Mermaid, etc.
+Users can setup own diagram generators in their pipelines.
+
+### Example to include PlantUML diagram generation in Maven
+
+This setup use Apache Maven as orchestrator for diagram generation and for docs publishing.
+
+Next setup will convert all "*.puml" files from "plantuml" directory and saves output in "markdown" directory.
+Actual version of PlantUML should be specified by a user.
+
+```xml
+            <plugin>
+                <groupId>com.github.jeluard</groupId>
+                <artifactId>plantuml-maven-plugin</artifactId>
+                <version>1.2</version>
+                <configuration>
+                    <sourceFiles>
+                        <directory>plantuml</directory>
+                        <includes>
+                            <include>**/*.puml</include>
+                        </includes>
+                    </sourceFiles>
+                    <outputDirectory>markdown</outputDirectory>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>net.sourceforge.plantuml</groupId>
+                        <artifactId>plantuml</artifactId>
+                        <version>1.2023.10</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+```
 
 
 ## History and motivation
