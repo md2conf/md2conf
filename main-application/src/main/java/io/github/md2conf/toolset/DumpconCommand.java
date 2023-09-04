@@ -18,13 +18,15 @@ public class DumpconCommand implements Runnable {
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
     PublishCommand.ConfluenceOptions confluenceOptions;
 
-
     @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
     protected Path outputDirectory;
 
-
     @Override
     public void run() {
+        dumpcon(confluenceOptions, outputDirectory);
+    }
+
+    public static void dumpcon(PublishCommand.ConfluenceOptions confluenceOptions, Path outputDirectory){
         var intermediateDir = outputDirectory.resolve(".dump");
         dump(confluenceOptions, intermediateDir);
         ConvertCommand.ConvertOptions convertOptions = new ConvertCommand.ConvertOptions();
@@ -33,6 +35,5 @@ public class DumpconCommand implements Runnable {
         convertOptions.converter = ConvertCommand.ConverterType.VIEW2MD;
         ConvertCommand.convert(convertOptions, new ConvertCommand.IndexerOptions(), intermediateDir);
     }
-
 
 }

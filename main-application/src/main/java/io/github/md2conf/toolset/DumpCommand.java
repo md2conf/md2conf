@@ -4,7 +4,6 @@ import io.github.md2conf.confluence.client.ConfluenceClientFactory;
 import io.github.md2conf.confluence.client.DumpConfluenceClient;
 import io.github.md2conf.confluence.client.http.ApiInternalClient;
 import io.github.md2conf.model.ConfluenceContentModel;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -46,7 +45,6 @@ public class DumpCommand implements Runnable {
         logger.info("Confluence content model saved at file {}", contentModelFile);
     }
 
-    @NotNull
     protected static DumpConfluenceClient prepareConfluenceClient(PublishCommand.ConfluenceOptions confluenceOptions, Path outputDir) {
         var clientProps = buildConfluenceClientConfigurationProperties(confluenceOptions, new PublishCommand.PublishOptions()); //todo drop  PublishOptions
         ApiInternalClient apiInternalClient = ConfluenceClientFactory.createApiInternalClient(clientProps);
