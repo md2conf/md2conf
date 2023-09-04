@@ -116,3 +116,28 @@ Document[0, 33]
   Paragraph[29, 33]
     Text[29, 33] chars:[29, 33, "text"]
 ````````````````````````````````
+
+
+Custom Fenced code block should preserve indentation
+
+```````````````````````````````` example Custom Fenced code transformer: 6
+```yaml
+a:
+  sub_a1: value
+  sub_a2: value
+```
+text
+.
+{code:language=yml}
+a:
+  sub_a1: value
+  sub_a2: value
+{code}
+text
+
+.
+Document[0, 51]
+  CustomFencedCodeBlock[8, 43] info:[3, 7, "yaml"] lines[0]
+  Paragraph[47, 51]
+    Text[47, 51] chars:[47, 51, "text"]
+````````````````````````````````

@@ -73,7 +73,9 @@ public class CustomFencedCodeBlockRenderer implements NodeRenderer {
             html.raw(":language=" + language);
         }
         html.raw("}\n");
+        html.openPreFormatted(true);
         html.raw(node.getChars());
+        html.closePreFormatted();
         html.raw("{code}\n");
     }
 
