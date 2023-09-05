@@ -12,7 +12,6 @@
 - [Usage](#usage)
   - [Command-line](#command-line)
   - [Maven plugin](#maven-plugin)
-  - [Generation diagram from sources](#generation-diagram-from-sources)
 - [How it works inside?](#how-it-works-inside)
   - [Index by file-indexer](#index-by-file-indexer)
     - [Attachments naming convention](#attachments-naming-convention)
@@ -141,10 +140,6 @@ attachments on a local filesystem. See 'md2conf help model' for details.
     </configuration>
 </plugin>
 ```
-
-### Generation diagram from sources
-
-
 
 
 ## How it works inside?
