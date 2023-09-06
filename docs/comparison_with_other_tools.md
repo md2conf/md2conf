@@ -1,7 +1,7 @@
 # Comparison with other tools
 
 Comparison with other tools used in java world.
-Comparison performed in 2023 June
+The comparison performed in 2023 June
 
 ## Comparison table
 
@@ -29,7 +29,34 @@ Comparison performed in 2023 June
 
 ## Markdown flavored comparison
 
-<!--TODO -->
+
+| Feature                                                | [bsorrentino/maven-confluence-plugin]                                                  | [md2conf/md2conf]                                                                      | [zeldigas/text2confl]                                                                                                              |
+|:-------------------------------------------------------|:---------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------|
+| Custom macros                                          | Use confluence wiki macros markup, wrapped as HTML comment ```<!-- {jira:ABC-1} -->``` | Use confluence wiki macros markup, wrapped as HTML comment ```<!-- {jira:ABC-1} -->``` | Special link references without actual links. For example ```[JIRA key=ABC-1]```                                                   |
+| Adding raw confluence storage formatting into markdown | No                                                                                     | No                                                                                     | Yes                                                                                                                                |
+| Admonitions                                            | Yes, see below                                                                         | No                                                                                     | Yes, based on [admonitions in flexmark-java](https://github.com/vsch/flexmark-java/wiki/Admonition-Extension)  (see example below) |
+| Table of contents                                      | No                                                                                     | No                                                                                     | Yes, based on [ToC extension from flexmark-java](https://github.com/vsch/flexmark-java/wiki/Table-of-Contents-Extension)           |
+| Popular confluence macros                              | No                                                                                     | No                                                                                     | Yes. status, mentioning user, render date with Confluence style. Based on [text2confl docs]                                        |
+
+### Some examples
+
+#### Admonitions in `bsorrentino/maven-confluence-plugin`
+
+```
+> **info:** title
+>
+> Body Text
+>
+```
+
+#### Admonitions in flexmark-java
+
+```
+!!! info
+
+    Information message
+
+```
 
 
 [bsorrentino/maven-confluence-plugin]: https://github.com/bsorrentino/maven-confluence-plugin
@@ -37,3 +64,4 @@ Comparison performed in 2023 June
 [md2conf/md2conf]: https://github.com/md2conf/md2conf
 [confluence-publisher/confluence-publisher]: https://github.com/confluence-publisher/confluence-publisher
 [zeldigas/text2confl]: https://github.com/zeldigas/text2confl
+[text2confl docs]: https://github.com/zeldigas/text2confl/blob/master/docs/storage-formats/markdown/confluence-specific.md
