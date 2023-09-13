@@ -15,12 +15,13 @@
     <version>0.1.4-SNAPSHOT</version>
 
     <modules>
+        <module>flexmark-ext-confluence-macro</module>
+        <module>flexmark-ext-crosspage-link</module>
+        <module>flexmark-ext-curly-braced-escaper</module>
+        <module>flexmark-ext-fenced-code-block</module>
         <module>flexmark-ext-local-attachment</module>
         <module>flexmark-ext-local-image</module>
-        <module>flexmark-ext-crosspage-link</module>
-        <module>flexmark-ext-confluence-macro</module>
         <module>flexmark-ext-plantuml-code-macro</module>
-        <module>flexmark-ext-fenced-code-block</module>
         <module>title-processor</module>
         <module>converter-common</module>
         <module>converter-noop</module>

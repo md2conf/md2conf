@@ -13,6 +13,7 @@ import io.github.md2conf.converter.AttachmentUtil;
 import io.github.md2conf.converter.PageStructureConverter;
 import io.github.md2conf.flexmart.ext.confluence.macros.ConfluenceMacroExtension;
 import io.github.md2conf.flexmart.ext.crosspage.links.CrosspageLinkExtension;
+import io.github.md2conf.flexmart.ext.curly.braced.escaper.CurlyBracedBlockExtension;
 import io.github.md2conf.flexmart.ext.fenced.code.block.CustomFencedCodeBlockExtension;
 import io.github.md2conf.flexmart.ext.local.attachments.LocalAttachmentLinkExtension;
 import io.github.md2conf.flexmart.ext.local.image.LocalImageExtension;
@@ -63,6 +64,7 @@ public class Md2WikiConverter implements PageStructureConverter {
         extensions.add(LocalAttachmentLinkExtension.create());
         extensions.add(LocalImageExtension.create());
         extensions.add(CrosspageLinkExtension.create());
+        extensions.add(CurlyBracedBlockExtension.create());
         extensions.add(ConfluenceMacroExtension.create());
         extensions.add(JiraConverterExtension.create());
         if (plantumlMacro) {
