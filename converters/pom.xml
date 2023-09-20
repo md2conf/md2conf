@@ -7,12 +7,12 @@
     <parent>
         <groupId>io.github.md2conf</groupId>
         <artifactId>md2conf-parent</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.2</version>
     </parent>
 
     <artifactId>converters</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.2</version>
 
     <modules>
         <module>flexmark-ext-confluence-macro</module>

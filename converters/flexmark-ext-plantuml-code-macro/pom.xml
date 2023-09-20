@@ -6,11 +6,11 @@
     <parent>
         <groupId>io.github.md2conf</groupId>
         <artifactId>converters</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.2</version>
     </parent>
 
     <artifactId>flexmark-ext-plantuml-code-macro</artifactId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.2</version>
 
     <dependencies>
         <dependency>
