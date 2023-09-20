@@ -90,5 +90,5 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 #          build-args: |
 #            VERSION=${{env.RELEASE_VERSION_SUFFIX}}
-          cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/text2confl:buildcache
-          cache-to: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/text2confl:buildcache,mode=max
+          cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/md2conf:buildcache
+          cache-to: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/md2conf:buildcache,mode=max

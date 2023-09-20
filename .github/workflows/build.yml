@@ -48,4 +48,4 @@ jobs:
         context: .
         platforms: linux/amd64,linux/arm64
         push: false
-        cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/text2confl:buildcache
+        cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/md2conf:buildcache
