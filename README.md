@@ -112,6 +112,12 @@ Commands:
 attachments on a local filesystem. See 'md2conf help model' for details.
 ```
 
+### Docker
+
+```
+docker run md2conf/md2conf:latest help
+```
+
 
 ### Maven plugin
 
