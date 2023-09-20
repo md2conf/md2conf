@@ -107,7 +107,7 @@ public class AbstractMd2ConfMojoIT {
     }
 
     private static String generatePom(Map<String, String> properties) {
-        String pluginVersion = System.getProperty("md2conf.version", "0.2.2-SNAPSHOT");
+        String pluginVersion = System.getProperty("md2conf.version", "0.2.3-SNAPSHOT");
 
         return "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"" +
                 "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
