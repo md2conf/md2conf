@@ -10,7 +10,7 @@ jobs:
 
   # Prepare and publish to the Maven Central
   release:
-    name: Publish to Maven Central
+    name: Publish to Maven Central and to Docker Hub
     runs-on: ubuntu-latest
     permissions:
       contents: write
