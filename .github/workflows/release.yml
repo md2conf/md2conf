@@ -73,7 +73,7 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/text2confl:${{env.RELEASE_DOCKER_TAG}}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/md2conf:latest
 #          build-args: |
 #            VERSION=${{env.RELEASE_VERSION_SUFFIX}}
           cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/text2confl:buildcache
