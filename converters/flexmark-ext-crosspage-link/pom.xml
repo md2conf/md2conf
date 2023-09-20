@@ -7,11 +7,11 @@
     <parent>
         <groupId>io.github.md2conf</groupId>
         <artifactId>converters</artifactId>
-        <version>0.2.0</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>flexmark-ext-crosspage-link</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1-SNAPSHOT</version>
 
 
     <dependencies>
