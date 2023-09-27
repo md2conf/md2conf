@@ -217,4 +217,22 @@ class Md2WikiConverterTest {
 
     }
 
+    @Test
+    void convert_html_comment() throws IOException {
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessorFromFirstHeader, outputPath, false, true,"plantuml");
+        var prop = new FileIndexerConfigurationProperties();
+        prop.setFileExtension("md");
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_html_comment"));
+        assertThat(pagesStructure.pages()).hasSize(1);
+        ConfluenceContentModel model = md2WikiConverter.convert(pagesStructure);
+        assertThat(model).isNotNull();
+        assertThat(model.getPages()).hasSize(1);
+        assertThat(outputPath).isDirectoryContaining("glob:**/page_with_html_comment.wiki");
+        assertThat(outputPath.resolve("page_with_html_comment.wiki")).isRegularFile().content()
+                .doesNotContain("{code:html}")
+                .doesNotContain("HTML_COMMENT_BLOCK")
+                .doesNotContain("INLINE_HTML_COMMENT");
+    }
+
 }

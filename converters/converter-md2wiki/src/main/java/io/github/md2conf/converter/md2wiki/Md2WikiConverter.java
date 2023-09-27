@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.vladsch.flexmark.html.HtmlRenderer.SUPPRESS_HTML_COMMENT_BLOCKS;
+import static com.vladsch.flexmark.html.HtmlRenderer.SUPPRESS_INLINE_HTML_COMMENTS;
 import static io.github.md2conf.converter.md2wiki.attachment.LocalPathUtil.collectLocalAttachmentPaths;
 import static io.github.md2conf.converter.md2wiki.attachment.LocalPathUtil.collectLocalImagePaths;
 
@@ -56,7 +58,7 @@ public class Md2WikiConverter implements PageStructureConverter {
         this.plantumlCodeMacroName = plantumlCodeMacroName;
     }
 
-    public MutableDataSet getFlexmarkExtensions() {
+    private MutableDataSet flexmarkOptions() {
         List<Extension> extensions = new ArrayList<>();
         MutableDataSet res =  new MutableDataSet().set(Parser.EXTENSIONS, extensions);
         extensions.add(TablesExtension.create());
@@ -72,6 +74,8 @@ public class Md2WikiConverter implements PageStructureConverter {
             res.set(PlantUmlCodeMacroExtension.CONFLUENCE_PLANTUML_MACRO, plantumlCodeMacroName);
         }
         extensions.add(CustomFencedCodeBlockExtension.create());
+        res.set(SUPPRESS_HTML_COMMENT_BLOCKS, true);
+        res.set(SUPPRESS_INLINE_HTML_COMMENTS, true);
         return res;
     }
 
@@ -99,7 +103,7 @@ public class Md2WikiConverter implements PageStructureConverter {
         String markdown = FileUtils.readFileToString(page.path().toFile(), Charset.defaultCharset()); //todo extract charset as parameter
 
         //Convert to wiki using FlexMark parser and renderer
-        DataHolder flexmarkOptions = getFlexmarkExtensions()
+        DataHolder flexmarkOptions = flexmarkOptions()
                 .set(LocalAttachmentLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
                 .set(LocalImageExtension.CURRENT_FILE_PATH, page.path().getParent())
                 .set(CrosspageLinkExtension.CURRENT_FILE_PATH, page.path().getParent())
