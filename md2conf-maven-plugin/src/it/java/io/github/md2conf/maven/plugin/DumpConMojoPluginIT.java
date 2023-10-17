@@ -30,7 +30,7 @@ public class DumpConMojoPluginIT extends AbstractMd2ConfMojoIT {
         Path outputPath = res.toPath().resolve("target/md2conf");
         assertThat(outputPath).isNotEmptyDirectory();
         // assert
-        assertThat(outputPath.resolve("65552.md")).isRegularFile();
+        assertThat(outputPath.resolve("What is Confluence? (step 1 of 9).md")).isRegularFile();
     }
 
 

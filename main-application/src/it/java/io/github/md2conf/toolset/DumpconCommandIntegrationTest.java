@@ -22,9 +22,9 @@ public class DumpconCommandIntegrationTest extends AbstractContainerTestBase {
         int exitCode = cmd.execute(args);
         assertThat(exitCode).isEqualTo(0);
         assertThat(outputPath).isDirectoryNotContaining("glob:**.xhtml");
-        assertThat(outputPath.resolve("65551.md")).isRegularFile();
-        assertThat(outputPath.resolve("65551_attachments")).isDirectoryContaining("glob:**.png");
-        assertThat(outputPath.resolve("65551")).isDirectoryContaining("glob:**.md");
+        assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile();
+        assertThat(outputPath.resolve("Welcome to Confluence_attachments")).isDirectoryContaining("glob:**.png");
+        assertThat(outputPath.resolve("Welcome to Confluence")).isDirectoryContaining("glob:**.md");
     }
 
     private String[] commonConfluenceArgs() {

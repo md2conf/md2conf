@@ -176,7 +176,7 @@ class ConvertCommandTest {
         assertThat(outputPath).isEmptyDirectory();
         int exitCode = cmd.execute("convert", "--converter=VIEW2MD", "--input-dir="+ inputDir, "-o=" + outputPath);
         assertThat(exitCode).isEqualTo(0);
-        assertThat(outputPath.resolve("65551.md")).isRegularFile().content().contains("Share your page with a team member");
-        assertThat(outputPath.resolve("65551_attachments/welcome.png")).isRegularFile().content();
+        assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile().content().contains("Share your page with a team member");
+        assertThat(outputPath.resolve("Welcome to Confluence_attachments/welcome.png")).isRegularFile().content();
     }
 }

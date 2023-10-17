@@ -63,15 +63,16 @@ public class View2MdConverter implements ConfluenceModelConverter {
 
     private DefaultPage convertPage(ConfluencePage page, Path outputDir) throws IOException {
         var baseName = FilenameUtils.getBaseName(page.getContentFilePath());
-        var resName = baseName+".md";
+        var resName = page.getTitle()+".md";
         Path targetPath = outputDir.resolve(resName);
         String html = FileUtils.readFileToString(new File(page.getContentFilePath()), Charset.defaultCharset());
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
+        md = "#" + page.getTitle() +"\n\n" + md;
         FileUtils.writeStringToFile(targetPath.toFile(), md, Charset.defaultCharset());
         List<Path> attachments = copyAttachmentsMap(targetPath, page.getAttachments());
         List<DefaultPage> childrenPages = new ArrayList<>();
         for (ConfluencePage child: page.getChildren()){
-            childrenPages.add(convertPage(child, outputDir.resolve(baseName)));
+            childrenPages.add(convertPage(child, outputDir.resolve(page.getTitle())));
         }
         return new DefaultPage(targetPath, childrenPages, attachments);
     }
