@@ -11,13 +11,14 @@
   - [Publish to remote Confluence instance](#publish-to-remote-confluence-instance)
 - [Usage](#usage)
   - [Command-line](#command-line)
+  - [Docker](#docker)
   - [Maven plugin](#maven-plugin)
 - [How it works inside?](#how-it-works-inside)
   - [Index by file-indexer](#index-by-file-indexer)
     - [Attachments naming convention](#attachments-naming-convention)
     - [Child relation layout examples](#child-relation-layout-examples)
-    - [orphanFileStrategy example](#orphanfilestrategy-example)
-    - [indexerRootPage example](#indexerrootpage-example)
+    - [Property "orphanFileStrategy"](#property-orphanfilestrategy)
+    - [Property "indexerRootPage"](#property-indexerrootpage)
   - [Convert by converters](#convert-by-converters)
   - [Publish using confluence-client](#publish-using-confluence-client)
   - [Confluence Content model](#confluence-content-model)
@@ -114,8 +115,21 @@ attachments on a local filesystem. See 'md2conf help model' for details.
 
 ### Docker
 
+Run to read the help message
 ```
 docker run md2conf/md2conf:latest help
+```
+
+Mount current working dir with "docs" directory and publish content to a remote confluence.
+
+```
+docker run -v ./docs:/docs md2conf/md2conf conpub -i=/docs --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://confluence.local
+```
+
+Mount current working dir with "docs" directory and dump content from a remote confluence.
+
+```
+docker run -v ./docs:/docs md2conf/md2conf dumpcon -o=/docs --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://confluence.local
 ```
 
 
@@ -210,10 +224,10 @@ one attachment at path `page_attachments/attach.txt`.
 
 #### Child relation layout examples
 
-There are 2 options to specify child layout: SUB_DIRECTORY and
+There are 2 options to specify `childLayout`: SUB_DIRECTORY and
 SAME_DIRECTORY
 
-##### SUB_DIRECTORY example
+##### SUB_DIRECTORY
 
 This is layout when source files for children pages resides in directory
 with the name equals to basename of parent file.
@@ -235,7 +249,7 @@ will be indexed to next pages structure
    └─── page_a/child_to_page_a.md
 ```
 
-##### SAME_DIRECTORY example
+##### SAME_DIRECTORY
 
 This is layout when file with name 'index.md' or 'README.md' is the
 source file of parent page and other files in the directory are source
@@ -258,7 +272,7 @@ will be indexed to next pages structure
    └─── page_b.md
 ```
 
-#### orphanFileStrategy example
+#### Property "orphanFileStrategy"
 
 When `orphanFileStrategy` set to `ADD_TO_TOP_LEVEL_PAGES` the next files tree
 
@@ -275,7 +289,7 @@ will be indexed to next pages structure
 └─── some_dir/orphan.md
 ```
 
-#### indexerRootPage example
+#### Property "indexerRootPage"
 
 When `indexerRootPage` set to `overview.md` the next files tree
 
