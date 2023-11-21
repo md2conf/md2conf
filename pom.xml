@@ -38,7 +38,7 @@
         <assertj.version>3.24.2</assertj.version>
         <flexmark.version>0.64.8</flexmark.version>
         <httpcomponents.version>4.5.14</httpcomponents.version>
-        <jackson.version>2.15.3</jackson.version>
+        <jackson.version>2.16.0</jackson.version>
         <junit.version>5.10.1</junit.version>
         <logback.version>1.4.11</logback.version>
         <maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
