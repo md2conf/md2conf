@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class View2MdConverterTest {
 
     @TempDir
@@ -47,5 +49,15 @@ class View2MdConverterTest {
         Assertions.assertThat(pagesStructure.pages().get(0).children().get(0).attachments()).isEmpty();
         Assertions.assertThat(pagesStructure.pages().get(0).children().get(0).children().get(0).attachments()).hasSize(3);
         Assertions.assertThat(pagesStructure.pages().get(0).children().get(0).children().get(0).children()).hasSize(0);
+    }
+
+    @Test
+    void link_is_converted() {
+        Path modelPath= Paths.get("src/test/resources/view_single_page/confluence-content-model.json");
+        ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
+        PagesStructure pagesStructure = view2MdConverter.convert(model);
+        Assertions.assertThat(pagesStructure).isNotNull();
+        assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
+                .content().contains("[What is Confluence?](/pages/viewpage.action?pageId=65552)");
     }
 }
