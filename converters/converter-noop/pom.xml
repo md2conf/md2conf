@@ -7,11 +7,11 @@
     <parent>
         <groupId>io.github.md2conf</groupId>
         <artifactId>converters</artifactId>
-        <version>0.2.5-SNAPSHOT</version>
+        <version>0.2.5</version>
     </parent>
 
     <artifactId>converter-noop</artifactId>
-    <version>0.2.5-SNAPSHOT</version>
+    <version>0.2.5</version>
 
     <dependencies>
         <dependency>
