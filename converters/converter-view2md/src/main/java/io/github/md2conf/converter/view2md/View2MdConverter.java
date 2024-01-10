@@ -41,7 +41,7 @@ public class View2MdConverter implements ConfluenceModelConverter {
             .set(LIST_CONTENT_INDENT, false)
             .set(BR_AS_EXTRA_BLANK_LINES, false)
             .set(BR_AS_PARA_BREAKS, false)
-            .set(EXT_INLINE_LINK, LinkConversion.TEXT ); //todo enable link conversion
+            .set(EXT_INLINE_LINK, LinkConversion.MARKDOWN_EXPLICIT );
 
     public View2MdConverter(Path outputDir) {
         this.outputDir = outputDir;
