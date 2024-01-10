@@ -28,6 +28,7 @@ import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.OUTPU
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.SKIP_ATTRIBUTES;
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.WRAP_AUTO_LINKS;
 import static io.github.md2conf.converter.AttachmentUtil.copyAttachmentsMap;
+import static io.github.md2conf.converter.view2md.FileNameUtil.sanitizeFileName;
 
 public class View2MdConverter implements ConfluenceModelConverter {
 
@@ -63,7 +64,7 @@ public class View2MdConverter implements ConfluenceModelConverter {
 
     private DefaultPage convertPage(ConfluencePage page, Path outputDir) throws IOException {
         var baseName = FilenameUtils.getBaseName(page.getContentFilePath());
-        var resName = page.getTitle()+".md";
+        var resName = sanitizeFileName(page.getTitle()+".md");
         Path targetPath = outputDir.resolve(resName);
         String html = FileUtils.readFileToString(new File(page.getContentFilePath()), Charset.defaultCharset());
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
