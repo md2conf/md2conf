@@ -36,6 +36,7 @@ public class DumpCommand implements Runnable {
     public static void dump(PublishCommand.ConfluenceOptions confluenceOptions, Path outputDirectory) {
         DumpConfluenceClient confluenceClient = prepareConfluenceClient(confluenceOptions, outputDirectory);
         ConfluenceContentModel model = null;
+        logger.info("Dumping...");
         try {
             model = confluenceClient.dump(confluenceOptions.spaceKey, confluenceOptions.parentPageTitle);
         } catch (IOException e) {
