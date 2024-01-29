@@ -42,7 +42,7 @@
         <junit.version>5.10.1</junit.version>
         <logback.version>1.4.14</logback.version>
         <maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
-        <mockito.version>5.9.0</mockito.version>
+        <mockito.version>5.10.0</mockito.version>
     </properties>
 
     <modules>
