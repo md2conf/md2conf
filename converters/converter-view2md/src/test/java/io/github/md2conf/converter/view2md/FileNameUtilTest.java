@@ -11,4 +11,13 @@ class FileNameUtilTest {
         String res = FileNameUtil.sanitizeFileName(s);
         Assertions.assertThat(res).isEqualTo("%_?");
     }
+
+    @Test
+    void sanitize_long_file_name() {
+        String s = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"+
+                "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"+
+                "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.md";
+        String res = FileNameUtil.sanitizeFileName(s);
+        Assertions.assertThat(res).hasSize(255).endsWith(".md");
+    }
 }
