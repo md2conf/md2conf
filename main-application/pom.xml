@@ -6,11 +6,11 @@
     <parent>
         <groupId>io.github.md2conf</groupId>
         <artifactId>md2conf-parent</artifactId>
-        <version>0.2.8-SNAPSHOT</version>
+        <version>0.2.8</version>
     </parent>
 
     <artifactId>main-application</artifactId>
-    <version>0.2.8-SNAPSHOT</version>
+    <version>0.2.8</version>
 
 
     <dependencies>
