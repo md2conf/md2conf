@@ -4,7 +4,10 @@
 name: Release
 on:
   release:
-    types: [prereleased, released]
+# types: [prereleased, released]
+# The "released" type excluded, since "prereleased" is mandatory stage of release.
+# After manual release in https://s01.oss.sonatype.org need to mark pre-release as released
+    types: [prereleased]
 
 jobs:
 
