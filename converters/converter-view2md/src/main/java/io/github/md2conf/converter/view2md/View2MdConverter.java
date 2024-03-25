@@ -10,7 +10,6 @@ import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +62,6 @@ public class View2MdConverter implements ConfluenceModelConverter {
     }
 
     private DefaultPage convertPage(ConfluencePage page, Path outputDir) throws IOException {
-        var baseName = FilenameUtils.getBaseName(page.getContentFilePath());
         var resName = sanitizeFileName(page.getTitle()+".md");
         Path targetPath = outputDir.resolve(resName);
         String html = FileUtils.readFileToString(new File(page.getContentFilePath()), Charset.defaultCharset());
