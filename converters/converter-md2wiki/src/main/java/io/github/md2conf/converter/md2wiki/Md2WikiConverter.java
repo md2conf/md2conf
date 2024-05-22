@@ -34,6 +34,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.vladsch.flexmark.html.HtmlRenderer.SUPPRESS_HTML_COMMENT_BLOCKS;
 import static com.vladsch.flexmark.html.HtmlRenderer.SUPPRESS_INLINE_HTML_COMMENTS;
@@ -124,7 +125,7 @@ public class Md2WikiConverter implements PageStructureConverter {
 
         //copy converted content and attachments
         FileUtils.writeStringToFile(targetPath.toFile(), wiki, Charset.defaultCharset());
-        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments(), imagePaths, localAttachmentPaths);
+        Set<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments(), imagePaths, localAttachmentPaths);
 
         // create ConfluencePage model
         ConfluencePage result = new ConfluencePage();

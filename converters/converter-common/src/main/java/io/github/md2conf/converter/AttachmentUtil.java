@@ -9,16 +9,19 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static io.github.md2conf.indexer.PathNameUtils.attachmentsDirectoryByPagePath;
 
 public class AttachmentUtil {
 
-    public static Map<String, String> toAttachmentsMap(List<Path> pathList) {
+    public static Map<String, String> toAttachmentsMap(Collection<Path> pathList) {
         return pathList.stream()
                 .collect(Collectors.toMap(
                         path -> FilenameUtils.getName(path.toString()),
@@ -26,11 +29,11 @@ public class AttachmentUtil {
     }
 
     @SafeVarargs
-    public static List<Path> copyPageAttachments(Path destinationPagePath, List<Path>... sourceAttachments) throws IOException {
-        List<Path> copiedAttachments = new ArrayList<>();
-        List<Path> sources = Arrays.stream(sourceAttachments)
+    public static Set<Path> copyPageAttachments(Path destinationPagePath, List<Path>... sourceAttachments) throws IOException {
+        Set<Path> copiedAttachments = new HashSet<>();
+        Set<Path> sources = Arrays.stream(sourceAttachments)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         for (Path sourceAttachment : sources) {
             File directoryWithAttachments = attachmentsDirectoryByPagePath(destinationPagePath).toFile();
             if (directoryWithAttachments.exists() && !directoryWithAttachments.isDirectory()) {
