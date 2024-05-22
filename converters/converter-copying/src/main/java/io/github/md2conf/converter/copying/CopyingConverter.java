@@ -19,6 +19,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class CopyingConverter implements PageStructureConverter {
@@ -49,7 +50,7 @@ public class CopyingConverter implements PageStructureConverter {
     private ConfluencePage copyAndCreateConfluencePage(Page page, Path relativePart, Map<Path, String> titleMap) throws IOException {
         //copy
         Path targetPath = PathUtils.copyFileToDirectory(page.path(), outputPath.resolve(relativePart), StandardCopyOption.REPLACE_EXISTING);
-        List<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments());
+        Set<Path> copiedAttachments = AttachmentUtil.copyPageAttachments(targetPath, page.attachments());
         // create ConfluencePage
         ConfluencePage result = new ConfluencePage();
         result.setContentFilePath(targetPath.toString());

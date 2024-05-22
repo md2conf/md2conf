@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static io.github.md2conf.converter.AttachmentUtil.copyAttachmentsMap;
 import static io.github.md2conf.converter.AttachmentUtil.copyPageAttachments;
@@ -34,9 +35,17 @@ class AttachmentUtilTest {
         Path attachment = Path.of("src/test/resources/sample.txt");
         Path dstPath = tmpDir.resolve("1/dstPath_01.wiki");
         assertThat(dstPath).doesNotExist();
-        List<Path> copiedAttachments = copyPageAttachments(dstPath, List.of(attachment));
-        assertThat(copiedAttachments).hasSize(1);
-        assertThat(copiedAttachments.get(0)).exists();
+        Set<Path> copiedAttachments = copyPageAttachments(dstPath, List.of(attachment));
+        assertThat(copiedAttachments).hasSize(1).doesNotContainNull();
+    }
+
+    @Test
+    void copyPageAttachments_will_remove_duplicates() throws IOException {
+        Path attachment = Path.of("src/test/resources/sample.txt");
+        Path dstPath = tmpDir.resolve("remove_dups.wiki");
+        assertThat(dstPath).doesNotExist();
+        Set<Path> copiedAttachments = copyPageAttachments(dstPath, List.of(attachment), List.of(attachment) );
+        assertThat(copiedAttachments).hasSize(1).doesNotContainNull();
     }
 
     @Test
@@ -45,9 +54,8 @@ class AttachmentUtilTest {
         Path dstPath = tmpDir.resolve("1/dstPath_02.wiki");
         assertThat(dstPath).doesNotExist();
         copyPageAttachments(dstPath, List.of(attachment));
-        List<Path> copiedAttachments2 = copyPageAttachments(dstPath, List.of(attachment));
-        assertThat(copiedAttachments2).hasSize(1);
-        assertThat(copiedAttachments2.get(0)).exists();
+        Set<Path> copiedAttachments2 = copyPageAttachments(dstPath, List.of(attachment));
+        assertThat(copiedAttachments2).hasSize(1).doesNotContainNull();
     }
 
     @Test
