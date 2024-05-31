@@ -22,6 +22,7 @@
         <module>flexmark-ext-local-attachment</module>
         <module>flexmark-ext-local-image</module>
         <module>flexmark-ext-plantuml-code-macro</module>
+        <module>markdown-formatter</module>
         <module>title-processor</module>
         <module>converter-common</module>
         <module>converter-noop</module>

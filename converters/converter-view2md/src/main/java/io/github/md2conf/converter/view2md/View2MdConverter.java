@@ -7,6 +7,7 @@ import io.github.md2conf.converter.ConfluenceModelConverter;
 import io.github.md2conf.indexer.DefaultPage;
 import io.github.md2conf.indexer.DefaultPagesStructure;
 import io.github.md2conf.indexer.PagesStructure;
+import io.github.md2conf.markdown.formatter.MarkdownFormatter;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
 import org.apache.commons.io.FileUtils;
@@ -67,8 +68,9 @@ public class View2MdConverter implements ConfluenceModelConverter {
         String html = FileUtils.readFileToString(new File(page.getContentFilePath()), Charset.defaultCharset());
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
         md = "#" + page.getTitle() +"\n\n" + md;
-        FileUtils.writeStringToFile(targetPath.toFile(), md, Charset.defaultCharset());
         List<Path> attachments = copyAttachmentsMap(targetPath, page.getAttachments());
+        String formattedText = MarkdownFormatter.format(md, attachments);
+        FileUtils.writeStringToFile(targetPath.toFile(), formattedText, Charset.defaultCharset());
         List<DefaultPage> childrenPages = new ArrayList<>();
         for (ConfluencePage child: page.getChildren()){
             childrenPages.add(convertPage(child, outputDir.resolve(page.getTitle())));
