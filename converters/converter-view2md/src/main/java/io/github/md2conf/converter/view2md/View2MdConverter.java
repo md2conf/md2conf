@@ -4,19 +4,23 @@ import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import com.vladsch.flexmark.html2md.converter.LinkConversion;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.github.md2conf.converter.ConfluenceModelConverter;
+import io.github.md2conf.converter.view2md.internal.PreparedPage;
+import io.github.md2conf.converter.view2md.internal.PreparedPageFactory;
+import io.github.md2conf.converter.view2md.internal.PreparedPageStructure;
 import io.github.md2conf.indexer.DefaultPage;
 import io.github.md2conf.indexer.DefaultPagesStructure;
 import io.github.md2conf.indexer.PagesStructure;
+import io.github.md2conf.markdown.formatter.MarkdownFormatter;
 import io.github.md2conf.model.ConfluenceContentModel;
-import io.github.md2conf.model.ConfluencePage;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES;
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.BR_AS_PARA_BREAKS;
@@ -27,7 +31,6 @@ import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.OUTPU
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.SKIP_ATTRIBUTES;
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.WRAP_AUTO_LINKS;
 import static io.github.md2conf.converter.AttachmentUtil.copyAttachmentsMap;
-import static io.github.md2conf.converter.view2md.FileNameUtil.sanitizeFileName;
 
 public class View2MdConverter implements ConfluenceModelConverter {
 
@@ -49,11 +52,13 @@ public class View2MdConverter implements ConfluenceModelConverter {
 
     @Override
     public PagesStructure convert(ConfluenceContentModel model)  {
-        List<ConfluencePage> pageList = model.getPages();
+
+        PreparedPageStructure preparedPageStructure = PreparedPageFactory.fromModel(model, outputDir);
+        Map<Long,Path> pageIdPathMap = structureAsMap(preparedPageStructure);
         List<DefaultPage> resList = new ArrayList<>();
-        for (ConfluencePage page : pageList) {
+        for (PreparedPage page : preparedPageStructure.getPages()) {
             try {
-                resList.add(convertPage(page, outputDir));
+                resList.add(convertPage(page, pageIdPathMap, outputDir));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -61,19 +66,33 @@ public class View2MdConverter implements ConfluenceModelConverter {
         return new DefaultPagesStructure(resList);
     }
 
-    private DefaultPage convertPage(ConfluencePage page, Path outputDir) throws IOException {
-        var resName = sanitizeFileName(page.getTitle()+".md");
-        Path targetPath = outputDir.resolve(resName);
-        String html = FileUtils.readFileToString(new File(page.getContentFilePath()), Charset.defaultCharset());
+    private DefaultPage convertPage(PreparedPage page, Map<Long, Path> pageIdPathMap, Path outputDir) throws IOException {
+        String html = FileUtils.readFileToString(page.getSourcePath().toFile(), Charset.defaultCharset());
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
-        md = "#" + page.getTitle() +"\n\n" + md;
-        FileUtils.writeStringToFile(targetPath.toFile(), md, Charset.defaultCharset());
-        List<Path> attachments = copyAttachmentsMap(targetPath, page.getAttachments());
+        md = "#" + page.getPageTitle() +"\n\n" + md;
+        List<Path> attachments = copyAttachmentsMap(page.getTargetPath(), page.getAttachments());
+        String formattedText = MarkdownFormatter.format(md, attachments, pageIdPathMap, outputDir);
+        FileUtils.writeStringToFile(page.getTargetPath().toFile(), formattedText, Charset.defaultCharset());
         List<DefaultPage> childrenPages = new ArrayList<>();
-        for (ConfluencePage child: page.getChildren()){
-            childrenPages.add(convertPage(child, outputDir.resolve(page.getTitle())));
+        for (PreparedPage child: page.getChildren()){
+            childrenPages.add(convertPage(child, pageIdPathMap, outputDir.resolve(page.getPageTitle())));
         }
-        return new DefaultPage(targetPath, childrenPages, attachments);
+        return new DefaultPage(page.getTargetPath(), childrenPages, attachments);
+    }
+
+    private static Map<Long,Path> structureAsMap(PreparedPageStructure preparedPageStructure){
+        Map<Long,Path> pageIdToPathMap = new HashMap<>();
+        for (PreparedPage page: preparedPageStructure.getPages()){
+            addPageToMap(pageIdToPathMap, page);
+        }
+        return pageIdToPathMap;
+    }
+
+    private static void addPageToMap(Map<Long,Path> map, PreparedPage preparedPage){
+        map.put(preparedPage.getPageId(),preparedPage.getTargetPath());
+        for (PreparedPage child: preparedPage.getChildren()){
+            addPageToMap(map, child);
+        }
     }
 
 }

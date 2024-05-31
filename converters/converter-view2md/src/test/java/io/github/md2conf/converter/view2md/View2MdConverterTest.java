@@ -52,12 +52,38 @@ class View2MdConverterTest {
     }
 
     @Test
-    void link_is_converted() {
+    void external_link_is_converted() {
         Path modelPath= Paths.get("src/test/resources/view_single_page/confluence-content-model.json");
         ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
         PagesStructure pagesStructure = view2MdConverter.convert(model);
         Assertions.assertThat(pagesStructure).isNotNull();
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
-                .content().contains("[What is Confluence?](/pages/viewpage.action?pageId=65552)");
+                .content().contains("[Let's edit this page](/pages/viewpage.action?pageId=65549)")
+                .contains("![welcome.png](Welcome to Confluence_attachments/welcome.png)");
+    }
+
+    @Test
+    void crosspage_link_is_converted() {
+        Path modelPath= Paths.get("src/test/resources/view_multiple_page/confluence-content-model.json");
+        ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
+        PagesStructure pagesStructure = view2MdConverter.convert(model);
+        Assertions.assertThat(pagesStructure).isNotNull();
+        assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
+                .content()
+                .contains("[What is Confluence?](Welcome to Confluence/What is Confluence? (step 1 of 9).md)")
+                .contains("[A quick look at the editor](Welcome to Confluence/What is Confluence? (step 1 of 9)/A quick look at the editor (step\n" +
+                        "   2 of 9).md)") //todo fix caret return
+                .contains("![welcome.png](Welcome to Confluence_attachments/welcome.png)");
+    }
+
+    @Test
+    void attachment_image_is_converted() {
+        Path modelPath= Paths.get("src/test/resources/view_single_page/confluence-content-model.json");
+        ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
+        PagesStructure pagesStructure = view2MdConverter.convert(model);
+        Assertions.assertThat(pagesStructure).isNotNull();
+        assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
+                .content()
+                .contains("![welcome.png](Welcome to Confluence_attachments/welcome.png)");
     }
 }

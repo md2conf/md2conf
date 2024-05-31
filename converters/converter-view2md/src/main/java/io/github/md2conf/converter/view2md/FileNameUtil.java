@@ -1,8 +1,10 @@
 package io.github.md2conf.converter.view2md;
 
+import io.github.md2conf.model.ConfluencePage;
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class FileNameUtil {
@@ -12,6 +14,11 @@ public class FileNameUtil {
     public static final char[] INVALID_CHARS = {'\\', '/', ':', '*', '"', '<', '>', '|', '\'', ';', '=', ','};
     private static final char SANITIZED_CHAR = '_';
     private static final int MAX_FILE_NAME_LENGHT_IN_BYTES = 255;
+
+    public static Path getTargetPath(ConfluencePage page, Path outputDir) {
+        var resName = sanitizeFileName(page.getTitle()+".md");
+        return outputDir.resolve(resName);
+    }
 
     /**
      * Given an input, return a sanitized form of the input suitable for use as
