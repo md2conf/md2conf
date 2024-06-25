@@ -5,7 +5,6 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.ast.NodeVisitor;
 import com.vladsch.flexmark.util.ast.VisitHandler;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
-import org.jetbrains.annotations.NotNull;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -26,10 +25,10 @@ public class ImageAttachmentUrlReplacer {
     public ImageAttachmentUrlReplacer(List<Path> attachments) {
         this.fileNameByParentDir = attachments.stream()
                 .distinct()
-                .collect(Collectors.toMap(v -> v.getFileName().toString(), getParentFolderName()));
+                .collect(Collectors.toMap(v -> v.getFileName().toString(), getParentDirName()));
     }
 
-    private static @NotNull Function<Path, String> getParentFolderName() {
+    private static Function<Path, String> getParentDirName() {
         return v -> {
             if (v.getParent() != null && v.getParent().getParent() != null) {
                 return v.getParent().getParent().relativize(v).toString();

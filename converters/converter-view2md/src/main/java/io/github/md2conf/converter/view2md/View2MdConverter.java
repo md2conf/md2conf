@@ -28,7 +28,8 @@ import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.OUTPU
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.SKIP_ATTRIBUTES;
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.WRAP_AUTO_LINKS;
 import static io.github.md2conf.converter.AttachmentUtil.copyAttachmentsMap;
-import static io.github.md2conf.converter.view2md.FileNameUtil.sanitizeFileName;
+import static io.github.md2conf.converter.view2md.ConfluenceContentModelUtil.pageIdToPathMap;
+import static io.github.md2conf.converter.view2md.FileNameUtil.getTargetPath;
 
 public class View2MdConverter implements ConfluenceModelConverter {
 
@@ -54,7 +55,7 @@ public class View2MdConverter implements ConfluenceModelConverter {
         List<DefaultPage> resList = new ArrayList<>();
         for (ConfluencePage page : pageList) {
             try {
-                resList.add(convertPage(page, outputDir));
+                resList.add(convertPage(page, model, outputDir));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -62,18 +63,17 @@ public class View2MdConverter implements ConfluenceModelConverter {
         return new DefaultPagesStructure(resList);
     }
 
-    private DefaultPage convertPage(ConfluencePage page, Path outputDir) throws IOException {
-        var resName = sanitizeFileName(page.getTitle()+".md");
-        Path targetPath = outputDir.resolve(resName);
+    private DefaultPage convertPage(ConfluencePage page, ConfluenceContentModel model, Path outputDir) throws IOException {
+        Path targetPath = getTargetPath(page, outputDir);
         String html = FileUtils.readFileToString(new File(page.getContentFilePath()), Charset.defaultCharset());
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
         md = "#" + page.getTitle() +"\n\n" + md;
         List<Path> attachments = copyAttachmentsMap(targetPath, page.getAttachments());
-        String formattedText = MarkdownFormatter.format(md, attachments);
+        String formattedText = MarkdownFormatter.format(md, attachments, pageIdToPathMap(model, outputDir));
         FileUtils.writeStringToFile(targetPath.toFile(), formattedText, Charset.defaultCharset());
         List<DefaultPage> childrenPages = new ArrayList<>();
         for (ConfluencePage child: page.getChildren()){
-            childrenPages.add(convertPage(child, outputDir.resolve(page.getTitle())));
+            childrenPages.add(convertPage(child, model, outputDir.resolve(page.getTitle())));
         }
         return new DefaultPage(targetPath, childrenPages, attachments);
     }

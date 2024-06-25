@@ -12,6 +12,15 @@ class MarkdownFormatterTest {
         Assertions.assertThat(res).isEqualTo(text);
     }
 
+
+    @Test
+    void testFormatLink() {
+        String text = "header1\n=======\n\n" +
+                "[What is Confluence?](/pages/viewpage.action?pageId=65552)";
+        String res = MarkdownFormatter.format(text).trim();
+        Assertions.assertThat(res).isEqualTo(text);
+    }
+
     @Test
     void reformatLongLines() {
 

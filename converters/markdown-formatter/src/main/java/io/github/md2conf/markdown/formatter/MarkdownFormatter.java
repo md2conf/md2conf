@@ -16,6 +16,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.vladsch.flexmark.util.format.options.HeadingStyle.AS_IS;
 
@@ -24,8 +25,10 @@ public class MarkdownFormatter {
     final private static DataHolder OPTIONS = ParserEmulationProfile.GITHUB_DOC.getProfileOptions()
             .set(Formatter.RIGHT_MARGIN, 120)
             .set(Formatter.HEADING_STYLE, AS_IS)
-            .set(Formatter.MAX_TRAILING_BLANK_LINES, 0)
+            .set(Formatter.MAX_TRAILING_BLANK_LINES, 1)
             .set(Formatter.KEEP_IMAGE_LINKS_AT_START, Boolean.TRUE)
+//            .set(Formatter.KEEP_SOFT_LINE_BREAKS, Boolean.TRUE)
+//            .set(Formatter.KEEP_HARD_LINE_BREAKS, Boolean.TRUE)
             .set(Parser.EXTENSIONS, Arrays.asList(
 //                    DefinitionExtension.create(),
                     EmojiExtension.create(),
@@ -50,13 +53,15 @@ public class MarkdownFormatter {
     static final Formatter RENDERER = Formatter.builder(FORMAT_OPTIONS).build();
 
     public static String format(String text) {
-       return format(text, List.of());
+       return format(text, List.of(), Map.of());
     }
 
-    public static String format(String text, List<Path> attachments) {
+    public static String format(String text, List<Path> attachments, Map<Long, Path> pageIdPathMap) {
         Node document = PARSER.parse(text);
         ImageAttachmentUrlReplacer visitor = new ImageAttachmentUrlReplacer(attachments);
         visitor.replaceUrl(document);
+        CrosspageLinkReplacer crosspageLinkReplacer = new CrosspageLinkReplacer(pageIdPathMap);
+        crosspageLinkReplacer.replacePageLinks(document);
         return RENDERER.render(document);
     }
 }
