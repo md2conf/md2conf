@@ -4,15 +4,16 @@ import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import com.vladsch.flexmark.html2md.converter.LinkConversion;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.github.md2conf.converter.ConfluenceModelConverter;
+import io.github.md2conf.converter.view2md.internal.PreparedPage;
+import io.github.md2conf.converter.view2md.internal.PreparedPageFactory;
+import io.github.md2conf.converter.view2md.internal.PreparedPageStructure;
 import io.github.md2conf.indexer.DefaultPage;
 import io.github.md2conf.indexer.DefaultPagesStructure;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.markdown.formatter.MarkdownFormatter;
 import io.github.md2conf.model.ConfluenceContentModel;
-import io.github.md2conf.model.ConfluencePage;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -29,7 +30,6 @@ import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.SKIP_
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.WRAP_AUTO_LINKS;
 import static io.github.md2conf.converter.AttachmentUtil.copyAttachmentsMap;
 import static io.github.md2conf.converter.view2md.ConfluenceContentModelUtil.pageIdToPathMap;
-import static io.github.md2conf.converter.view2md.FileNameUtil.getTargetPath;
 
 public class View2MdConverter implements ConfluenceModelConverter {
 
@@ -51,9 +51,10 @@ public class View2MdConverter implements ConfluenceModelConverter {
 
     @Override
     public PagesStructure convert(ConfluenceContentModel model)  {
-        List<ConfluencePage> pageList = model.getPages();
+
+        PreparedPageStructure preparedPageStructure = PreparedPageFactory.fromModel(model, outputDir);
         List<DefaultPage> resList = new ArrayList<>();
-        for (ConfluencePage page : pageList) {
+        for (PreparedPage page : preparedPageStructure.getPages()) {
             try {
                 resList.add(convertPage(page, model, outputDir));
             } catch (IOException e) {
@@ -63,19 +64,18 @@ public class View2MdConverter implements ConfluenceModelConverter {
         return new DefaultPagesStructure(resList);
     }
 
-    private DefaultPage convertPage(ConfluencePage page, ConfluenceContentModel model, Path outputDir) throws IOException {
-        Path targetPath = getTargetPath(page, outputDir);
-        String html = FileUtils.readFileToString(new File(page.getContentFilePath()), Charset.defaultCharset());
+    private DefaultPage convertPage(PreparedPage page, ConfluenceContentModel model, Path outputDir) throws IOException {
+        String html = FileUtils.readFileToString(page.getSourcePath().toFile(), Charset.defaultCharset());
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
-        md = "#" + page.getTitle() +"\n\n" + md;
-        List<Path> attachments = copyAttachmentsMap(targetPath, page.getAttachments());
+        md = "#" + page.getPageTitle() +"\n\n" + md;
+        List<Path> attachments = copyAttachmentsMap(page.getTargetPath(), page.getAttachments());
         String formattedText = MarkdownFormatter.format(md, attachments, pageIdToPathMap(model, outputDir));
-        FileUtils.writeStringToFile(targetPath.toFile(), formattedText, Charset.defaultCharset());
+        FileUtils.writeStringToFile(page.getTargetPath().toFile(), formattedText, Charset.defaultCharset());
         List<DefaultPage> childrenPages = new ArrayList<>();
-        for (ConfluencePage child: page.getChildren()){
-            childrenPages.add(convertPage(child, model, outputDir.resolve(page.getTitle())));
+        for (PreparedPage child: page.getChildren()){
+            childrenPages.add(convertPage(child, model, outputDir.resolve(page.getPageTitle())));
         }
-        return new DefaultPage(targetPath, childrenPages, attachments);
+        return new DefaultPage(page.getTargetPath(), childrenPages, attachments);
     }
 
 }

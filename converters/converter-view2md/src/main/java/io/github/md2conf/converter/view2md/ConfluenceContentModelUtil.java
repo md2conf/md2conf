@@ -34,7 +34,7 @@ public class ConfluenceContentModelUtil {
     private static void addPageToMap(Map<Long, Path> map, ConfluencePage confluencePage, Path baseOutput, Path currentOutput) {
         Long pageId = extractPageId(confluencePage.getContentFilePath());
         Path targetPath = getTargetPath(confluencePage, currentOutput);
-        map.put(pageId, baseOutput.relativize(targetPath));
+        map.put(pageId, baseOutput.relativize(targetPath)); //todo fix
         for (ConfluencePage page: confluencePage.getChildren()){
             addPageToMap(map, page, baseOutput, currentOutput.resolve(page.getTitle()));
         }
