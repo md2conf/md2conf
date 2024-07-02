@@ -16,9 +16,11 @@ public class CrosspageLinkReplacer {
     );
 
     private final Map<Long,Path> pageIdPathMap;
+    private final Path currentDir;
 
-    public CrosspageLinkReplacer(Map<Long,Path> pageIdPathMap) {
+    public CrosspageLinkReplacer(Map<Long,Path> pageIdPathMap, Path currentDir) {
         this.pageIdPathMap = pageIdPathMap;
+        this.currentDir = currentDir.toAbsolutePath();
     }
 
     public void replacePageLinks(Node node) {
@@ -29,8 +31,9 @@ public class CrosspageLinkReplacer {
         if (node.getPageRef().startsWith("/pages/viewpage.action?pageId=")) {
             Long pageId = extractPageId(node.getPageRef().toString());
             if (pageIdPathMap.containsKey(pageId)) {
-                String pagePath = pageIdPathMap.get(pageId).toString();
-                BasedSequence url = BasedSequence.of(pagePath);
+                Path pagePath = pageIdPathMap.get(pageId).toAbsolutePath();
+                Path relativePath = currentDir.relativize(pagePath);
+                BasedSequence url = BasedSequence.of(relativePath.toString());
                 node.setUrl(url);
                 node.setUrlChars(url);
             }

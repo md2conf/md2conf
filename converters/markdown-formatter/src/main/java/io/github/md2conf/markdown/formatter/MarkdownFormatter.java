@@ -53,14 +53,14 @@ public class MarkdownFormatter {
     static final Formatter RENDERER = Formatter.builder(FORMAT_OPTIONS).build();
 
     public static String format(String text) {
-       return format(text, List.of(), Map.of());
+       return format(text, List.of(), Map.of(), Path.of("."));
     }
 
-    public static String format(String text, List<Path> attachments, Map<Long, Path> pageIdPathMap) {
+    public static String format(String text, List<Path> attachments, Map<Long, Path> pageIdPathMap, Path currentDir) {
         Node document = PARSER.parse(text);
         ImageAttachmentUrlReplacer visitor = new ImageAttachmentUrlReplacer(attachments);
         visitor.replaceUrl(document);
-        CrosspageLinkReplacer crosspageLinkReplacer = new CrosspageLinkReplacer(pageIdPathMap);
+        CrosspageLinkReplacer crosspageLinkReplacer = new CrosspageLinkReplacer(pageIdPathMap, currentDir);
         crosspageLinkReplacer.replacePageLinks(document);
         return RENDERER.render(document);
     }

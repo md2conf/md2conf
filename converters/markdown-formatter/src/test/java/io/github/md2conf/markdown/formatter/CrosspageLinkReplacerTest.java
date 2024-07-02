@@ -19,11 +19,11 @@ class CrosspageLinkReplacerTest {
                 "[What is Confluence?](/pages/viewpage.action?pageId=65552)";
 
         Node document = PARSER.parse(text);
-        CrosspageLinkReplacer visitor = new CrosspageLinkReplacer(Map.of(65552L, Path.of("./What is Confluence?.md")));
+        CrosspageLinkReplacer visitor = new CrosspageLinkReplacer(Map.of(65552L, Path.of("./child/What is Confluence?.md")), Path.of("."));
         visitor.replacePageLinks(document);
 
         String res =  RENDERER.render(document);
-        String expected = "# Welcome to Confluence" +   "\n\n" +"[What is Confluence?](./What is Confluence?.md)\n";
+        String expected = "# Welcome to Confluence" +   "\n\n" +"[What is Confluence?](child/What is Confluence?.md)\n";
         Assertions.assertThat(res).isEqualTo(expected);
     }
 }

@@ -71,7 +71,7 @@ public class View2MdConverter implements ConfluenceModelConverter {
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
         md = "#" + page.getPageTitle() +"\n\n" + md;
         List<Path> attachments = copyAttachmentsMap(page.getTargetPath(), page.getAttachments());
-        String formattedText = MarkdownFormatter.format(md, attachments, pageIdPathMap);
+        String formattedText = MarkdownFormatter.format(md, attachments, pageIdPathMap, outputDir);
         FileUtils.writeStringToFile(page.getTargetPath().toFile(), formattedText, Charset.defaultCharset());
         List<DefaultPage> childrenPages = new ArrayList<>();
         for (PreparedPage child: page.getChildren()){

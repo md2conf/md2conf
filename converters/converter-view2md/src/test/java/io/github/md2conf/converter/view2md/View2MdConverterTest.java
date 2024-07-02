@@ -69,7 +69,10 @@ class View2MdConverterTest {
         PagesStructure pagesStructure = view2MdConverter.convert(model);
         Assertions.assertThat(pagesStructure).isNotNull();
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
-                .content().contains("[What is Confluence? (step 1 of 9)](What is Confluence? (step 1 of 9)/What is Confluence? (step 1 of 9).md)")
+                .content()
+                .contains("[What is Confluence?](Welcome to Confluence/What is Confluence? (step 1 of 9).md)")
+                .contains("[A quick look at the editor](Welcome to Confluence/What is Confluence? (step 1 of 9)/A quick look at the editor (step\n" +
+                        "   2 of 9).md)") //todo fix caret return
                 .contains("![welcome.png](Welcome to Confluence_attachments/welcome.png)");
     }
 
