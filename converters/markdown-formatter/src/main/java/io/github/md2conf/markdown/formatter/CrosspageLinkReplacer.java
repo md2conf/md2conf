@@ -5,7 +5,6 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.ast.NodeVisitor;
 import com.vladsch.flexmark.util.ast.VisitHandler;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
-import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -31,11 +30,9 @@ public class CrosspageLinkReplacer {
             Long pageId = extractPageId(node.getPageRef().toString());
             if (pageIdPathMap.containsKey(pageId)) {
                 String pagePath = pageIdPathMap.get(pageId).toString();
-                String titleFromPath = FilenameUtils.getBaseName(pagePath);
                 BasedSequence url = BasedSequence.of(pagePath);
                 node.setUrl(url);
                 node.setUrlChars(url);
-                node.setText(BasedSequence.of(titleFromPath));
             }
         }
     }

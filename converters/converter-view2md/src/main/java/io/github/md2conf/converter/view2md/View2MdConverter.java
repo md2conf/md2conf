@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES;
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.BR_AS_PARA_BREAKS;
@@ -29,7 +31,6 @@ import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.OUTPU
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.SKIP_ATTRIBUTES;
 import static com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter.WRAP_AUTO_LINKS;
 import static io.github.md2conf.converter.AttachmentUtil.copyAttachmentsMap;
-import static io.github.md2conf.converter.view2md.ConfluenceContentModelUtil.pageIdToPathMap;
 
 public class View2MdConverter implements ConfluenceModelConverter {
 
@@ -53,10 +54,11 @@ public class View2MdConverter implements ConfluenceModelConverter {
     public PagesStructure convert(ConfluenceContentModel model)  {
 
         PreparedPageStructure preparedPageStructure = PreparedPageFactory.fromModel(model, outputDir);
+        Map<Long,Path> pageIdPathMap = structureAsMap(preparedPageStructure);
         List<DefaultPage> resList = new ArrayList<>();
         for (PreparedPage page : preparedPageStructure.getPages()) {
             try {
-                resList.add(convertPage(page, model, outputDir));
+                resList.add(convertPage(page, pageIdPathMap, outputDir));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -64,18 +66,33 @@ public class View2MdConverter implements ConfluenceModelConverter {
         return new DefaultPagesStructure(resList);
     }
 
-    private DefaultPage convertPage(PreparedPage page, ConfluenceContentModel model, Path outputDir) throws IOException {
+    private DefaultPage convertPage(PreparedPage page, Map<Long, Path> pageIdPathMap, Path outputDir) throws IOException {
         String html = FileUtils.readFileToString(page.getSourcePath().toFile(), Charset.defaultCharset());
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
         md = "#" + page.getPageTitle() +"\n\n" + md;
         List<Path> attachments = copyAttachmentsMap(page.getTargetPath(), page.getAttachments());
-        String formattedText = MarkdownFormatter.format(md, attachments, pageIdToPathMap(model, outputDir));
+        String formattedText = MarkdownFormatter.format(md, attachments, pageIdPathMap);
         FileUtils.writeStringToFile(page.getTargetPath().toFile(), formattedText, Charset.defaultCharset());
         List<DefaultPage> childrenPages = new ArrayList<>();
         for (PreparedPage child: page.getChildren()){
-            childrenPages.add(convertPage(child, model, outputDir.resolve(page.getPageTitle())));
+            childrenPages.add(convertPage(child, pageIdPathMap, outputDir.resolve(page.getPageTitle())));
         }
         return new DefaultPage(page.getTargetPath(), childrenPages, attachments);
+    }
+
+    private static Map<Long,Path> structureAsMap(PreparedPageStructure preparedPageStructure){
+        Map<Long,Path> pageIdToPathMap = new HashMap<>();
+        for (PreparedPage page: preparedPageStructure.getPages()){
+            addPageToMap(pageIdToPathMap, page);
+        }
+        return pageIdToPathMap;
+    }
+
+    private static void addPageToMap(Map<Long,Path> map, PreparedPage preparedPage){
+        map.put(preparedPage.getPageId(),preparedPage.getTargetPath());
+        for (PreparedPage child: preparedPage.getChildren()){
+            addPageToMap(map, child);
+        }
     }
 
 }
