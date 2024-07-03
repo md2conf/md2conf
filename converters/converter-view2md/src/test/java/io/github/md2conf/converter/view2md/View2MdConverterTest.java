@@ -59,7 +59,7 @@ class View2MdConverterTest {
         Assertions.assertThat(pagesStructure).isNotNull();
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
                 .content().contains("[Let's edit this page](/pages/viewpage.action?pageId=65549)")
-                .contains("![welcome.png](Welcome to Confluence_attachments/welcome.png)");
+                .contains("![welcome.png](Welcome%20to%20Confluence_attachments/welcome.png)");
     }
 
     @Test
@@ -70,10 +70,9 @@ class View2MdConverterTest {
         Assertions.assertThat(pagesStructure).isNotNull();
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
                 .content()
-                .contains("[What is Confluence?](Welcome to Confluence/What is Confluence? (step 1 of 9).md)")
-                .contains("[A quick look at the editor](Welcome to Confluence/What is Confluence? (step 1 of 9)/A quick look at the editor (step\n" +
-                        "   2 of 9).md)") //todo fix caret return
-                .contains("![welcome.png](Welcome to Confluence_attachments/welcome.png)");
+                .contains("[What is Confluence?](Welcome%20to%20Confluence/What%20is%20Confluence?%20(step%201%20of%209).md)")
+                .contains("[A quick look at the editor](Welcome%20to%20Confluence/What%20is%20Confluence?%20(step%201%20of%209)/A%20quick%20look%20at%20the%20editor%20(step%202%20of%209).md)")
+                .contains("![welcome.png](Welcome%20to%20Confluence_attachments/welcome.png)");
     }
 
     @Test
@@ -84,6 +83,6 @@ class View2MdConverterTest {
         Assertions.assertThat(pagesStructure).isNotNull();
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
                 .content()
-                .contains("![welcome.png](Welcome to Confluence_attachments/welcome.png)");
+                .contains("![welcome.png](Welcome%20to%20Confluence_attachments/welcome.png)");
     }
 }
