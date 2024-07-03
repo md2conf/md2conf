@@ -23,7 +23,7 @@ class ImageAttachmentUrlReplacerTest {
         visitor.replaceUrl(document);
 
         String res =  RENDERER.render(document);
-        String expected = "#Welcome to Confluence" +   "\n" +"![welcome.png](Welcome to Confluence_attachments/welcome.png)\n";
+        String expected = "#Welcome to Confluence" +   "\n" +"![welcome.png](Welcome%20to%20Confluence_attachments/welcome.png)\n";
         Assertions.assertThat(res).isEqualTo(expected);
     }
 
@@ -38,7 +38,7 @@ class ImageAttachmentUrlReplacerTest {
         visitor.replaceUrl(document);
 
         String res =  RENDERER.render(document);
-        String expected = "#Welcome to Confluence" +   "\n" +"![welcome to Confluence.png](Welcome to Confluence_attachments/welcome to Confluence.png)\n";
+        String expected = "#Welcome to Confluence" +   "\n" +"![welcome to Confluence.png](Welcome%20to%20Confluence_attachments/welcome%20to%20Confluence.png)\n";
         Assertions.assertThat(res).isEqualTo(expected);
     }
 }

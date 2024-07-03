@@ -5,6 +5,7 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.ast.NodeVisitor;
 import com.vladsch.flexmark.util.ast.VisitHandler;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
+import com.vladsch.flexmark.util.sequence.Escaping;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class CrosspageLinkReplacer {
             if (pageIdPathMap.containsKey(pageId)) {
                 Path pagePath = pageIdPathMap.get(pageId).toAbsolutePath();
                 Path relativePath = currentDir.relativize(pagePath);
-                BasedSequence url = BasedSequence.of(relativePath.toString());
+                BasedSequence url = BasedSequence.of(Escaping.percentEncodeUrl(relativePath.toString()));
                 node.setUrl(url);
                 node.setUrlChars(url);
             }

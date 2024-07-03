@@ -5,6 +5,7 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.ast.NodeVisitor;
 import com.vladsch.flexmark.util.ast.VisitHandler;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
+import com.vladsch.flexmark.util.sequence.Escaping;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -47,7 +48,7 @@ public class ImageAttachmentUrlReplacer {
             String fileName = extractFileNameFromConfluenceLink(node.getPageRef().toString());
             String decodedFilename = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
             if (fileNameByParentDir.containsKey(decodedFilename)) {
-                BasedSequence url = BasedSequence.of(fileNameByParentDir.get(decodedFilename));
+                BasedSequence url = BasedSequence.of(Escaping.percentEncodeUrl(fileNameByParentDir.get(decodedFilename)));
                 node.setUrl(url);
                 node.setUrlChars(url);
                 node.setText(BasedSequence.of(decodedFilename));
