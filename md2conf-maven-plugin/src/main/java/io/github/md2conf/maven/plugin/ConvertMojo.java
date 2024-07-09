@@ -18,6 +18,7 @@ public class ConvertMojo extends AbstractMd2ConfMojo{
         ConvertCommand.ConvertOptions convertOptions = getConvertOptions();
         ConvertCommand.IndexerOptions indexerOptions = getIndexerOptions();
         Path modelPath = getConfluenceContentModelPath()==null? null: getConfluenceContentModelPath().toPath();
-        ConvertCommand.convert(convertOptions, indexerOptions, modelPath);
+        ConvertCommand.FormatOptions formatOptions = getFormatOptions();
+        ConvertCommand.convert(convertOptions, indexerOptions, modelPath, formatOptions);
     }
 }

@@ -48,6 +48,7 @@
                                 <exclude>META-INF/NOTICE</exclude>
                                 <exclude>META-INF/NOTICE.txt</exclude>
                                 <exclude>META-INF/DEPENDENCIES</exclude>
+                                <exclude>META-INF/LICENSE-notice.md</exclude>
                             </excludes>
                         </filter>
                     </filters>

@@ -29,7 +29,7 @@ public class ConpubCommand implements Runnable {
     }
 
     public static void conpub(ConvertCommand.ConvertOptions convertOptions, ConvertCommand.IndexerOptions indexerOptions, PublishCommand.ConfluenceOptions confluenceOptions, PublishCommand.PublishOptions publishOptions) {
-        var modelFile = ConvertCommand.convert(convertOptions, indexerOptions, null);
+        var modelFile = ConvertCommand.convert(convertOptions, indexerOptions, null, new ConvertCommand.FormatOptions());
         PublishCommand.publish(confluenceOptions, publishOptions, modelFile.toPath());
     }
 

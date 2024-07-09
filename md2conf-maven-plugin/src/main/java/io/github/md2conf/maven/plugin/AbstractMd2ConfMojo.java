@@ -1,5 +1,6 @@
 package io.github.md2conf.maven.plugin;
 
+import com.vladsch.flexmark.util.format.options.HeadingStyle;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.indexer.ChildLayout;
@@ -55,6 +56,10 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected Boolean plantumlCodeMacroEnable=false;
     @Parameter(property = PREFIX + "plantumlCodeMacroName")
     protected String plantumlCodeMacroName;
+    @Parameter(property = PREFIX + "markdownRightMargin")
+    protected Integer markdownRightMargin;
+    @Parameter(property = PREFIX + "markdownHeadingStyle")
+    protected HeadingStyle markdownHeadingStyle;
 
     /// --- PUBLISH options
 
@@ -102,6 +107,14 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         return convertOptions;
     }
 
+    @NotNull
+    protected ConvertCommand.FormatOptions getFormatOptions() {
+        ConvertCommand.FormatOptions formatOptions = new ConvertCommand.FormatOptions();
+        formatOptions.markdownRightMargin = this.markdownRightMargin;
+        formatOptions.markdownHeadingStyle = this.markdownHeadingStyle;
+        return formatOptions;
+    }
+
     protected ConvertCommand.IndexerOptions getIndexerOptions(){
         ConvertCommand.IndexerOptions indexerOptions = new ConvertCommand.IndexerOptions();
         indexerOptions.fileExtension = this.fileExtension;
@@ -133,7 +146,6 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         options.maxRequestsPerSecond = this.maxRequestsPerSecond;
         options.connectionTimeToLive = this.connectionTimeToLive;
         return options;
-
     }
 
     public File getConfluenceContentModelPath() {

@@ -8,7 +8,7 @@ import static io.restassured.RestAssured.given;
 
 public class AbstractContainerTestBase {
 
-
+   // docker run -p8090:8090 -p8091:8091 --name=atlassian-sdk-confluence qwazer/atlassian-sdk-confluence:latest
     String confluenceBaseUrl(){
         return "http://localhost:8090";
     }

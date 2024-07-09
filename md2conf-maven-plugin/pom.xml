@@ -119,12 +119,14 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <configuration>
                             <testSourceDirectory>src/it/java</testSourceDirectory>
+<!--                            use forkCount=0 for debug-->
+<!--                            <forkCount>0</forkCount>-->
                             <includes>
                                 <include>**/*PluginIT.java</include>
                             </includes>
-                            <systemProperties>
+                            <systemPropertyVariables>
                                 <md2conf.version>${project.version}</md2conf.version>
-                            </systemProperties>
+                            </systemPropertyVariables>
                         </configuration>
                         <executions>
                             <execution>

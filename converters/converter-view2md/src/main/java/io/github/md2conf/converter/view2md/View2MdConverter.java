@@ -2,6 +2,7 @@ package io.github.md2conf.converter.view2md;
 
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import com.vladsch.flexmark.html2md.converter.LinkConversion;
+import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.github.md2conf.converter.ConfluenceModelConverter;
 import io.github.md2conf.converter.view2md.internal.PreparedPage;
@@ -46,8 +47,11 @@ public class View2MdConverter implements ConfluenceModelConverter {
             .set(BR_AS_PARA_BREAKS, false)
             .set(EXT_INLINE_LINK, LinkConversion.MARKDOWN_EXPLICIT );
 
-    public View2MdConverter(Path outputDir) {
+    private final MarkdownFormatter markdownFormatter;
+
+    public View2MdConverter(Path outputDir, DataHolder formatOptions) {
         this.outputDir = outputDir;
+        markdownFormatter = new MarkdownFormatter(formatOptions);
     }
 
     @Override
@@ -71,7 +75,7 @@ public class View2MdConverter implements ConfluenceModelConverter {
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
         md = "#" + page.getPageTitle() +"\n\n" + md;
         List<Path> attachments = copyAttachmentsMap(page.getTargetPath(), page.getAttachments());
-        String formattedText = MarkdownFormatter.format(md, attachments, pageIdPathMap, outputDir);
+        String formattedText = markdownFormatter.format(md, attachments, pageIdPathMap, outputDir);
         FileUtils.writeStringToFile(page.getTargetPath().toFile(), formattedText, Charset.defaultCharset());
         List<DefaultPage> childrenPages = new ArrayList<>();
         for (PreparedPage child: page.getChildren()){
