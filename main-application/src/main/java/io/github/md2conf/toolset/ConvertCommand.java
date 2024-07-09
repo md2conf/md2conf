@@ -1,5 +1,9 @@
 package io.github.md2conf.toolset;
 
+import com.vladsch.flexmark.formatter.Formatter;
+import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.util.format.options.HeadingStyle;
 import io.github.md2conf.converter.PageStructureConverter;
 import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
@@ -48,6 +52,9 @@ public class ConvertCommand implements Runnable {
     @CommandLine.ArgGroup(exclusive = false, heading = "Indexer options:\n", order = 3)
     private IndexerOptions indexerOptions;
 
+    @CommandLine.ArgGroup(exclusive = false, heading = "Format options for view2md converter:\n", order = 4)
+    private FormatOptions formatOptions;
+
     //todo adjust description
     @CommandLine.Option(names = {"-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file. Default value is current working directory.", defaultValue = ".", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     public Path confluenceContentModelPath;
@@ -55,14 +62,14 @@ public class ConvertCommand implements Runnable {
     @Override
     public void run() {
         var indexerOptionsLocal = indexerOptions == null ? new ConvertCommand.IndexerOptions() : indexerOptions;
-        convert(this.convertOptions, indexerOptionsLocal, this.confluenceContentModelPath);
+        convert(this.convertOptions, indexerOptionsLocal, this.confluenceContentModelPath, this.formatOptions);
     }
 
-    public static File convert(ConvertOptions convertOptions, IndexerOptions indexerOptions, Path confluenceContentModelPath) {
+    public static File convert(ConvertOptions convertOptions, IndexerOptions indexerOptions, Path confluenceContentModelPath, FormatOptions formatOptions) {
         initOptionsIfRequired(convertOptions);
         if (convertOptions.converter == VIEW2MD) {
             ConfluenceContentModel model = loadContentModelFromPathOrDefault(convertOptions, confluenceContentModelPath);
-            View2MdConverter view2MdConverter = new View2MdConverter(convertOptions.outputDirectory);
+            View2MdConverter view2MdConverter = new View2MdConverter(convertOptions.outputDirectory, formatOptionsAsDataHolder(formatOptions));
             view2MdConverter.convert(model);
             logger.info("Converting to markdown result saved to {}", convertOptions.outputDirectory);
             return null;
@@ -74,6 +81,15 @@ public class ConvertCommand implements Runnable {
             logger.info("Confluence content model saved at file {}", contentModelFile);
             return contentModelFile;
         }
+    }
+
+    private static DataHolder formatOptionsAsDataHolder(FormatOptions formatOptions) {
+        MutableDataSet mutableDataSet = new MutableDataSet();
+        if (formatOptions!=null) {
+            mutableDataSet.set(Formatter.RIGHT_MARGIN, formatOptions.markdownRightMargin);
+            mutableDataSet.set(Formatter.HEADING_STYLE, formatOptions.markdownHeadingStyle);
+        }
+        return mutableDataSet;
     }
 
     private static ConfluenceContentModel loadContentModelFromPathOrDefault(ConvertOptions convertOptions, Path confluenceContentModelPath) {
@@ -195,7 +211,13 @@ public class ConvertCommand implements Runnable {
         public Boolean plantumlCodeMacroEnable = false;
         @CommandLine.Option(names = {"--plantuml-code-macro-name"}, description = "Name of confluence macro to render plantuml. Need to have custom Confluence plugin on a server. Possible known options are: 'plantuml' or 'plantumlrender' or 'plantumlcloud'. By default, 'plantuml' is used.")
         public String plantumlCodeMacroName = "plantuml";
+    }
 
+    public static class FormatOptions{
+        @CommandLine.Option(names = {"--markdown-right-margin"}, description = "Markdown right margin size")
+        public Integer markdownRightMargin = 120;
+        @CommandLine.Option(names = {"--markdown-heading-style"}, description = "Markdown heading style. Valid values: ${COMPLETION-CANDIDATES}")
+        public HeadingStyle markdownHeadingStyle = HeadingStyle.ATX_PREFERRED;
     }
 
     public enum ConverterType {

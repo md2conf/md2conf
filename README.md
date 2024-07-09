@@ -2,41 +2,6 @@
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
 
-[TOC levels=4]: # "md2conf toolset"
-
-# md2conf toolset
-- [Overview](#overview)
-- [Installation](#installation)
-  - [Play locally](#play-locally)
-  - [Publish to remote Confluence instance](#publish-to-remote-confluence-instance)
-- [Usage](#usage)
-  - [Command-line](#command-line)
-  - [Docker](#docker)
-  - [Maven plugin](#maven-plugin)
-- [How it works inside?](#how-it-works-inside)
-  - [Index by file-indexer](#index-by-file-indexer)
-    - [Attachments naming convention](#attachments-naming-convention)
-    - [Child relation layout examples](#child-relation-layout-examples)
-    - [Property "orphanFileStrategy"](#property-orphanfilestrategy)
-    - [Property "indexerRootPage"](#property-indexerrootpage)
-  - [Convert by converters](#convert-by-converters)
-  - [Publish using confluence-client](#publish-using-confluence-client)
-  - [Confluence Content model](#confluence-content-model)
-    - [Confluence Page](#confluence-page)
-    - [Content Type](#content-type)
-- [Markdown extensions](#markdown-extensions)
-  - [Confluence macros](#confluence-macros)
-  - [Cross-page links between markdown pages](#cross-page-links-between-markdown-pages)
-  - [Image attachments](#image-attachments)
-  - [Link to local file](#link-to-local-file)
-  - [Confluence supported languages in fenced code blocks](#confluence-supported-languages-in-fenced-code-blocks)
-- [Diagram generations](#diagram-generations)
-  - [Example to include PlantUML diagram generation in Maven](#example-to-include-plantuml-diagram-generation-in-maven)
-- [History and motivation](#history-and-motivation)
-  - [Regards](#regards)
-  - [License](#license)
-
-
 ## Overview
 
 Set of command-line tools to publish markdown files to a Confluence or
@@ -49,8 +14,8 @@ Notable features:
 - Idempotence confluence client. Avoid limitation of Confluence REST
   API, that create a new version of a page on every update.
 - Support cross-page links between markdown pages, inline images, etc.
-- Dump Confluence pages and convert to local markdown files
-  (experimental feature with initial support)
+- Dump Confluence pages and convert to local markdown files keeping links
+  to images and links between pages in local markdown files. This is unique feature among similar tools.
 - Extensible by design
 
 This toolset designed to support "docs-as-code" approach to use markdown
@@ -314,6 +279,11 @@ Controlled by properties:
 |:-----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
 | converter              | --converter                  | Converter. Valid values are MD2WIKI, COPYING, NO, VIEW2MD                                                                                                                              | MD2WIKI           |
 | outputDirectory        | "-o", "--output-dir"         | Output directory                                                                                                                                                                       |                   |
+
+#### Markdown to Wiki Converter properties (MD2WIKI)
+
+| Property key           | CLI name                     | Description                                                                                                                                                                            | Default value     |
+|:-----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
 | titleExtract           | --title-extract              | Strategy to extract title from file, FROM_FIRST_HEADER or FROM_FILENAME                                                                                                                | FROM_FIRST_HEADER |
 | titlePrefix            | --title-prefix               | Title prefix common for all pages                                                                                                                                                      |                   |
 | titleSuffix            | --title-suffix               | Title suffix common for all pages                                                                                                                                                      |                   |
@@ -326,9 +296,16 @@ Controlled by properties:
 The result of conversion saved in output directory file
 `confluence-content-model.json`'.
 
+#### View to Markdown Converter properties (VIEW2MD)
 
-### Publish using confluence-client
+There are properties to format markdown produced by VIEW2MD converter.
 
+| Property key         | CLI name                 | Description                                                                   | Default value |
+|:---------------------|:-------------------------|:------------------------------------------------------------------------------|:--------------|
+| markdownRightMargin  | --markdown-right-margin  | Markdown right margin size                                                    | 120           |
+| markdownHeadingStyle | --markdown-heading-style | Markdown heading style. Valid values:  AS_IS, ATX_PREFERRED, SETEXT_PREFERRED | ATX_PREFERRED |
+
+### Confluence connection options
 Controlled by properties:
 
 | Property key                 | CLI name                           | Description                                                                                                     | Default value                    |
@@ -341,12 +318,23 @@ Controlled by properties:
 | skipSslVerification          | --skip-ssl-verification            |                                                                                                                 | false                            |
 | maxRequestsPerSecond         | --max-requests-per-second          |                                                                                                                 |                                  |
 | connectionTimeToLive         | --connection-time-to-live          | Connection TTL. Useful in case a server is configured to have a very low TTL to keep existing connectings alive |                                  |
+
+
+### Publish
+
+Controlled by properties:
+
+| Property key                 | CLI name                           | Description                                                                                                     | Default value                    |
+|:-----------------------------|:-----------------------------------|:----------------------------------------------------------------------------------------------------------------|:---------------------------------|
 | orphanRemovalStrategy        | --orphan-removal-strategy          | REMOVE_ORPHANS or KEEP_ORPHANS                                                                                  | KEEP_ORPHANS                     |
 | parentPagePublishingStrategy | --parent-page-publishing-strategy  | APPEND_TO_ANCESTOR or REPLACE_ANCESTOR                                                                          | APPEND_TO_ANCESTOR               |
 | notifyWatchers               | --notify-watchers                  |                                                                                                                 | false                            |
 | versionMessage               | --version-message                  |                                                                                                                 | Published by md2conf             |
 | confluenceContentModelPath   | "-m", "--confluence-content-model" | Path to file with `confluence-content-model` JSON file.                                                         | '.confluence-content-model.json' |
 
+### Dump
+
+For Confluence Content model dump need to provide [Confluence connection options](#confluence-connection-options) and output directory.
 
 ### Confluence Content model
 

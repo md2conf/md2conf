@@ -174,7 +174,23 @@ class ConvertCommandTest {
         cmd.setErr(new PrintWriter(swErr));
         String inputDir = "src/test/resources/view_single_page";
         assertThat(outputPath).isEmptyDirectory();
-        int exitCode = cmd.execute("convert", "--converter=VIEW2MD", "--input-dir="+ inputDir, "-o=" + outputPath);
+        int exitCode = cmd.execute("convert", "--converter=VIEW2MD", "--input-dir=" + inputDir, "-o=" + outputPath);
+        assertThat(exitCode).isEqualTo(0);
+        assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile().content().contains("Share your page with a team member");
+        assertThat(outputPath.resolve("Welcome to Confluence_attachments/welcome.png")).isRegularFile().content();
+    }
+
+    @Test
+    void invoke_view2md_converter_with_format_options() {
+        MainApp mainApp = new MainApp();
+        CommandLine cmd = new CommandLine(mainApp);
+        StringWriter swOut = new StringWriter();
+        StringWriter swErr = new StringWriter();
+        cmd.setOut(new PrintWriter(swOut));
+        cmd.setErr(new PrintWriter(swErr));
+        String inputDir = "src/test/resources/view_single_page";
+        assertThat(outputPath).isEmptyDirectory();
+        int exitCode = cmd.execute("convert", "--converter=VIEW2MD", "--input-dir=" + inputDir, "-o=" + outputPath, "--markdown-right-margin=40");
         assertThat(exitCode).isEqualTo(0);
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile().content().contains("Share your page with a team member");
         assertThat(outputPath.resolve("Welcome to Confluence_attachments/welcome.png")).isRegularFile().content();

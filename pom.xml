@@ -199,9 +199,9 @@
                             <includes>
                                 <include>**/*IntegrationTest.java</include>
                             </includes>
-                            <systemProperties>
+                            <systemPropertyVariables>
                                 <md2conf.version>${project.version}</md2conf.version>
-                            </systemProperties>
+                            </systemPropertyVariables>
                         </configuration>
                         <executions>
                             <execution>

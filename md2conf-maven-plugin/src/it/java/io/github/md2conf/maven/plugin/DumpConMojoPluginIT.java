@@ -21,7 +21,7 @@ public class DumpConMojoPluginIT extends AbstractMd2ConfMojoIT {
     }
 
     @Test
-    void dump() {
+    void dumpcon() {
         // arrange
         Map<String, String> properties = mandatoryProperties();
         properties.put("parentPageTitle", "What is Confluence? (step 1 of 9)");

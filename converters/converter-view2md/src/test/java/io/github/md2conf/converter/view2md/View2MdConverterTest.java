@@ -1,5 +1,6 @@
 package io.github.md2conf.converter.view2md;
 
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.util.ModelReadWriteUtil;
@@ -23,7 +24,7 @@ class View2MdConverterTest {
 
     @BeforeEach
     void setUp() {
-        view2MdConverter = new View2MdConverter(outputPath);
+        view2MdConverter = new View2MdConverter(outputPath, new MutableDataSet());
     }
 
     @Test
