@@ -2,12 +2,10 @@
 # with the Build workflow. Running the publishPlugin task requires the PUBLISH_TOKEN secret provided.
 
 name: Release
+
 on:
-  release:
-# types: [prereleased, released]
-# The "released" type excluded, since "prereleased" is mandatory stage of release.
-# After manual release in https://s01.oss.sonatype.org need to mark pre-release as released
-    types: [prereleased]
+  push:
+    tags: ['v[0-9].[0-9]+.[0-9]+']
 
 jobs:
 
@@ -15,6 +13,7 @@ jobs:
   release:
     name: Publish to Maven Central and to Docker Hub
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     permissions:
       contents: write
       pull-requests: write
@@ -95,3 +94,7 @@ jobs:
 #            VERSION=${{env.RELEASE_VERSION_SUFFIX}}
           cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/md2conf:buildcache
           cache-to: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/md2conf:buildcache,mode=max
+      - name: Publish release to github
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: true
