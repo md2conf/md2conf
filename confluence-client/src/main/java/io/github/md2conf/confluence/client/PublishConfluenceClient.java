@@ -31,7 +31,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
 import static io.github.md2conf.confluence.client.utils.AssertUtils.assertMandatoryParameter;
@@ -59,7 +58,6 @@ public class PublishConfluenceClient {
     private final PublishConfluenceClientListener publishConfluenceClientListener;
     private final String versionMessage;
     private final boolean notifyWatchers;
-    private final Pattern latinPattern = Pattern.compile("^[\\p{Print}\\p{IsLatin}]*$");
 
     public PublishConfluenceClient( PublishingStrategy publishingStrategy, OrphanRemovalStrategy orphanRemovalStrategy,
                                    ApiInternalClient apiInternalClient, PublishConfluenceClientListener publishConfluenceClientListener,
