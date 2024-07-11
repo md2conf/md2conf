@@ -73,7 +73,7 @@ public class View2MdConverter implements ConfluenceModelConverter {
     private DefaultPage convertPage(PreparedPage page, Map<Long, Path> pageIdPathMap, Path outputDir) throws IOException {
         String html = FileUtils.readFileToString(page.getSourcePath().toFile(), Charset.defaultCharset());
         String md = FlexmarkHtmlConverter.builder(options).build().convert(html);
-        md = "#" + page.getPageTitle() +"\n\n" + md;
+        md = "# " + page.getPageTitle() +"\n\n" + md;
         List<Path> attachments = copyAttachmentsMap(page.getTargetPath(), page.getAttachments());
         String formattedText = markdownFormatter.format(md, attachments, pageIdPathMap, outputDir);
         FileUtils.writeStringToFile(page.getTargetPath().toFile(), formattedText, Charset.defaultCharset());

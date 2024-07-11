@@ -36,6 +36,8 @@ class View2MdConverterTest {
         Assertions.assertThat(pagesStructure.pages()).hasSize(1);
         Assertions.assertThat(pagesStructure.pages().get(0).attachments()).hasSize(1);
         Assertions.assertThat(pagesStructure.pages().get(0).children()).isEmpty();
+        assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
+                .content().contains("# Welcome to Confluence");
     }
 
     @Test
