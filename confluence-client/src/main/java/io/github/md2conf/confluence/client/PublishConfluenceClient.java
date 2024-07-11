@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static io.github.md2conf.confluence.client.OrphanRemovalStrategy.REMOVE_ORPHANS;
 import static io.github.md2conf.confluence.client.utils.AssertUtils.assertMandatoryParameter;
@@ -50,6 +51,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class PublishConfluenceClient {
 
     static final String CONTENT_HASH_PROPERTY_KEY = "content-hash";
+    static final String ATTACHMENT_HASH_SUFFIX = "-attachment-hash";
     static final int INITIAL_PAGE_VERSION = 1;
     private final PublishingStrategy publishingStrategy;
     private final OrphanRemovalStrategy orphanRemovalStrategy;
@@ -57,6 +59,7 @@ public class PublishConfluenceClient {
     private final PublishConfluenceClientListener publishConfluenceClientListener;
     private final String versionMessage;
     private final boolean notifyWatchers;
+    private final Pattern latinPattern = Pattern.compile("^[\\p{Print}\\p{IsLatin}]*$");
 
     public PublishConfluenceClient( PublishingStrategy publishingStrategy, OrphanRemovalStrategy orphanRemovalStrategy,
                                    ApiInternalClient apiInternalClient, PublishConfluenceClientListener publishConfluenceClientListener,
@@ -243,8 +246,8 @@ public class PublishConfluenceClient {
         }
     }
 
-    private String getAttachmentHashKey(String attachmentFileName) {
-        return attachmentFileName + "-hash";
+    protected static String getAttachmentHashKey(String attachmentFileName) {
+        return hash(attachmentFileName) + ATTACHMENT_HASH_SUFFIX;
     }
 
     private Path absoluteAttachmentPath(String attachmentPath) {
