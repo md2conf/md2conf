@@ -1,4 +1,4 @@
-package io.github.md2conf.toolset;
+package io.github.md2conf.toolset; //todo rename to command?
 
 import picocli.CommandLine;
 
@@ -7,6 +7,7 @@ import picocli.CommandLine;
         subcommands = {ConvertCommand.class,
                 PublishCommand.class,
                 ConpubCommand.class,
+                ConvertMainCommand.class,
                 DumpCommand.class,
                 DumpconCommand.class,
                 IndexCommand.class,

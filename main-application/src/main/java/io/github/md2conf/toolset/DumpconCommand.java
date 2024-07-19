@@ -1,5 +1,7 @@
 package io.github.md2conf.toolset;
 
+import io.github.md2conf.toolset.subcommand.Md2WikiConvertCommand;
+import io.github.md2conf.toolset.subcommand.View2MdConvertCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -19,7 +21,7 @@ public class DumpconCommand implements Runnable {
     PublishCommand.ConfluenceOptions confluenceOptions;
 
     @CommandLine.ArgGroup(exclusive = false, heading = "Format options for view2md converter:\n", order = 4)
-    ConvertCommand.FormatOptions formatOptions;
+    View2MdConvertCommand.FormatOptions formatOptions;
 
     @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
     protected Path outputDirectory;
@@ -29,10 +31,10 @@ public class DumpconCommand implements Runnable {
         dumpcon(confluenceOptions, formatOptions, outputDirectory);
     }
 
-    public static void dumpcon(PublishCommand.ConfluenceOptions confluenceOptions, ConvertCommand.FormatOptions formatOptions, Path outputDirectory){
+    public static void dumpcon(PublishCommand.ConfluenceOptions confluenceOptions, View2MdConvertCommand.FormatOptions formatOptions, Path outputDirectory){
         var intermediateDir = outputDirectory.resolve(".dump");
         dump(confluenceOptions, intermediateDir);
-        ConvertCommand.ConvertOptions convertOptions = new ConvertCommand.ConvertOptions();
+        Md2WikiConvertCommand.ConvertOptions convertOptions = new Md2WikiConvertCommand.ConvertOptions();
         convertOptions.outputDirectory = outputDirectory;
         convertOptions.converter = ConvertCommand.ConverterType.VIEW2MD;
         ConvertCommand.convert(convertOptions, new IndexCommand.IndexerOptions(), intermediateDir, formatOptions);

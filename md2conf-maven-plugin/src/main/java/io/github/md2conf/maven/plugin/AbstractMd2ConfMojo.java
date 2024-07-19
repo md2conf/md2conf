@@ -9,6 +9,8 @@ import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.ConvertCommand;
 import io.github.md2conf.toolset.IndexCommand;
 import io.github.md2conf.toolset.PublishCommand;
+import io.github.md2conf.toolset.subcommand.Md2WikiConvertCommand;
+import io.github.md2conf.toolset.subcommand.View2MdConvertCommand;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.jetbrains.annotations.NotNull;
@@ -93,8 +95,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
 
     @NotNull
-    protected ConvertCommand.ConvertOptions getConvertOptions() {
-        ConvertCommand.ConvertOptions convertOptions = new ConvertCommand.ConvertOptions();
+    protected Md2WikiConvertCommand.ConvertOptions getConvertOptions() {
+        Md2WikiConvertCommand.ConvertOptions convertOptions = new Md2WikiConvertCommand.ConvertOptions();
         convertOptions.converter = this.converter;
         convertOptions.outputDirectory = this.outputDirectory.toPath();
         convertOptions.titleExtract = this.titleExtract;
@@ -108,8 +110,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     }
 
     @NotNull
-    protected ConvertCommand.FormatOptions getFormatOptions() {
-        ConvertCommand.FormatOptions formatOptions = new ConvertCommand.FormatOptions();
+    protected View2MdConvertCommand.FormatOptions getFormatOptions() {
+        View2MdConvertCommand.FormatOptions formatOptions = new View2MdConvertCommand.FormatOptions();
         formatOptions.markdownRightMargin = this.markdownRightMargin;
         formatOptions.markdownHeadingStyle = this.markdownHeadingStyle;
         return formatOptions;
