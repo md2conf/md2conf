@@ -9,13 +9,7 @@ import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
 import io.github.md2conf.converter.noop.NoopConverter;
 import io.github.md2conf.converter.view2md.View2MdConverter;
-import io.github.md2conf.indexer.ChildLayout;
-import io.github.md2conf.indexer.DelegatingFileIndexer;
-import io.github.md2conf.indexer.FileIndexer;
-import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
-import io.github.md2conf.indexer.OrphanFileStrategy;
 import io.github.md2conf.indexer.PagesStructure;
-import io.github.md2conf.indexer.PagesStructurePrinter;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
@@ -41,8 +35,6 @@ public class ConvertCommand implements Runnable {
 
     private final static Logger logger = LoggerFactory.getLogger(ConvertCommand.class);
 
-    public final static String DEFAULT_OUTPUT = ".md2conf";
-
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
@@ -50,7 +42,7 @@ public class ConvertCommand implements Runnable {
     private ConvertOptions convertOptions;
 
     @CommandLine.ArgGroup(exclusive = false, heading = "Indexer options:\n", order = 3)
-    private IndexerOptions indexerOptions;
+    private IndexCommand.IndexerOptions indexerOptions;
 
     @CommandLine.ArgGroup(exclusive = false, heading = "Format options for view2md converter:\n", order = 4)
     private FormatOptions formatOptions;
@@ -61,12 +53,11 @@ public class ConvertCommand implements Runnable {
 
     @Override
     public void run() {
-        var indexerOptionsLocal = indexerOptions == null ? new ConvertCommand.IndexerOptions() : indexerOptions;
+        var indexerOptionsLocal = indexerOptions == null ? new IndexCommand.IndexerOptions() : indexerOptions;
         convert(this.convertOptions, indexerOptionsLocal, this.confluenceContentModelPath, this.formatOptions);
     }
 
-    public static File convert(ConvertOptions convertOptions, IndexerOptions indexerOptions, Path confluenceContentModelPath, FormatOptions formatOptions) {
-        initOptionsIfRequired(convertOptions);
+    public static File convert(ConvertOptions convertOptions, IndexCommand.IndexerOptions indexerOptions, Path confluenceContentModelPath, FormatOptions formatOptions) {
         if (convertOptions.converter == VIEW2MD) {
             ConfluenceContentModel model = loadContentModelFromPathOrDefault(convertOptions, confluenceContentModelPath);
             View2MdConverter view2MdConverter = new View2MdConverter(convertOptions.outputDirectory, formatOptionsAsDataHolder(formatOptions));
@@ -74,7 +65,7 @@ public class ConvertCommand implements Runnable {
             logger.info("Converting to markdown result saved to {}", convertOptions.outputDirectory);
             return null;
         } else {
-            PagesStructure pagesStructure = indexInputDirectory(convertOptions.inputDirectory, indexerOptions);
+            PagesStructure pagesStructure = IndexCommand.indexInputDirectory(indexerOptions);
             PageStructureConverter converterService = createConverter(convertOptions);
             ConfluenceContentModel model = convert(pagesStructure, converterService);
             File contentModelFile = saveConfluenceContentModelAtPath(model, convertOptions.outputDirectory);
@@ -95,41 +86,13 @@ public class ConvertCommand implements Runnable {
     private static ConfluenceContentModel loadContentModelFromPathOrDefault(ConvertOptions convertOptions, Path confluenceContentModelPath) {
         ConfluenceContentModel model;
         if (confluenceContentModelPath == null || confluenceContentModelPath.toString().equals(".")) {
-            model = loadConfluenceContentModel(convertOptions.inputDirectory);
+            model = loadConfluenceContentModel(convertOptions.modelPath);
         } else {
             model = loadConfluenceContentModel(confluenceContentModelPath);
         }
         return model;
     }
 
-
-    protected static void initOptionsIfRequired(ConvertOptions convertOptions) {
-        if (convertOptions.outputDirectory == null) {
-            logger.warn("Output directory is not specified, default is " + DEFAULT_OUTPUT);
-            convertOptions.outputDirectory = new File(convertOptions.inputDirectory.toFile(), DEFAULT_OUTPUT).toPath();
-        }
-    }
-
-    protected static PagesStructure indexInputDirectory(Path inputDirectory, IndexerOptions indexerOptions) {
-        logger.info("Indexing path {}", inputDirectory);
-        logger.info("Child relation established using {} layout", indexerOptions.childLayout);
-        FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
-        fileIndexerConfigurationProperties.setFileExtension(indexerOptions.fileExtension);
-        fileIndexerConfigurationProperties.setExcludePattern(indexerOptions.excludePattern);
-        fileIndexerConfigurationProperties.setRootPage(indexerOptions.indexerRootPage);
-        fileIndexerConfigurationProperties.setChildLayout(indexerOptions.childLayout);
-        fileIndexerConfigurationProperties.setOrhanPagesStrategy(indexerOptions.orphanFileStrategy);
-        FileIndexer fileIndexer = new DelegatingFileIndexer(fileIndexerConfigurationProperties);
-        PagesStructure pagesStructure = fileIndexer.indexPath(inputDirectory);
-        if (pagesStructure.pages().isEmpty()) {
-            logger.warn("No files found in input directory. Used file indexer options {}",
-                    fileIndexerConfigurationProperties);
-        } else {
-            PagesStructurePrinter printer = new PagesStructurePrinter();
-            printer.prettyPrint(pagesStructure);
-        }
-        return pagesStructure;
-    }
 
     protected static PageStructureConverter createConverter(ConvertOptions convertOptions) {
         PageStructureTitleProcessor pageStructureTitleProcessor =
@@ -165,34 +128,14 @@ public class ConvertCommand implements Runnable {
         }
     }
 
-    public static class IndexerOptions {
-        @CommandLine.Option(names = {"--file-extension"}, description = "File extension to index as confluence content pages")
-        public String fileExtension = "md"; //todo change fileExtension based on converter
-        @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
-        public String excludePattern = "glob:**/.*";
-        @CommandLine.Option(names = {"--indexer-root-page"}, description = "Use specified page as parent page for all another top-level pages in an input directory")
-        public String indexerRootPage = null;
-        @CommandLine.Option(names = {"--child-layout"}, description =
-                "SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file\n " +
-                        "SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages",
-                defaultValue = "SUB_DIRECTORY",
-                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        public ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
-        @CommandLine.Option(names = {"--orphan-file-strategy"},
-                description = "What to do with page which source file that are not top-level page and not child of any page. Valid values: ${COMPLETION-CANDIDATES}",
-                defaultValue = "IGNORE",
-                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        public OrphanFileStrategy orphanFileStrategy = OrphanFileStrategy.IGNORE;
-    }
-
     public static class ConvertOptions { //todo split on mandatory and additional
         @CommandLine.Option(names = {"--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "MD2WIKI",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
         public ConverterType converter = MD2WIKI;
-        @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "Input directory")
-        public Path inputDirectory;
-        @CommandLine.Option(names = {"-o", "--output-dir"}, description = "Output directory")
+        @CommandLine.Option(names = { "--model-path"}, required = false, description = "Model path directory") //todo rework
+        public Path modelPath;
+        @CommandLine.Option(names = {"-o", "--output-dir"}, required = true, description = "Output directory")
         public Path outputDirectory;
         @CommandLine.Option(names = {"--title-extract"}, description = "Strategy to extract title from file", //todo rename to TitleExtractFrom
                 defaultValue = "FROM_FIRST_HEADER",

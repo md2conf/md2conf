@@ -24,8 +24,8 @@ class ConpubIntegrationTest extends AbstractContainerTestBase{
         CommandLine cmd = new CommandLine(mainApp);
         String inputPath = "src/it/resources/several-pages";
         String[] args = ArrayUtils.addAll(commonConvertAndPublishArgs(),
-                "-i", inputPath);
-//                "-o", outputPath.toString());
+                "-i", inputPath,
+                "-o", outputPath.toString());
         int exitCode = cmd.execute(args);
         assertThat(exitCode).isEqualTo(0);
 

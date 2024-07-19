@@ -33,10 +33,9 @@ public class DumpconCommand implements Runnable {
         var intermediateDir = outputDirectory.resolve(".dump");
         dump(confluenceOptions, intermediateDir);
         ConvertCommand.ConvertOptions convertOptions = new ConvertCommand.ConvertOptions();
-        convertOptions.inputDirectory = intermediateDir;
         convertOptions.outputDirectory = outputDirectory;
         convertOptions.converter = ConvertCommand.ConverterType.VIEW2MD;
-        ConvertCommand.convert(convertOptions, new ConvertCommand.IndexerOptions(), intermediateDir, formatOptions);
+        ConvertCommand.convert(convertOptions, new IndexCommand.IndexerOptions(), intermediateDir, formatOptions);
     }
 
 }

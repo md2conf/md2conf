@@ -9,6 +9,7 @@ import picocli.CommandLine;
                 ConpubCommand.class,
                 DumpCommand.class,
                 DumpconCommand.class,
+                IndexCommand.class,
                 ModelHelpCommand.class,
                 CommandLine.HelpCommand.class},
         description = "Set of tools to work with 'confluence-content-model': publish, dump, convert.",

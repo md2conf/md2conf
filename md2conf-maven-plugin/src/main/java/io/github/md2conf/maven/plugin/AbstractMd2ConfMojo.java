@@ -7,6 +7,7 @@ import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.OrphanFileStrategy;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.ConvertCommand;
+import io.github.md2conf.toolset.IndexCommand;
 import io.github.md2conf.toolset.PublishCommand;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -95,7 +96,6 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected ConvertCommand.ConvertOptions getConvertOptions() {
         ConvertCommand.ConvertOptions convertOptions = new ConvertCommand.ConvertOptions();
         convertOptions.converter = this.converter;
-        convertOptions.inputDirectory = this.inputDirectory.toPath();
         convertOptions.outputDirectory = this.outputDirectory.toPath();
         convertOptions.titleExtract = this.titleExtract;
         convertOptions.titlePrefix = this.titlePrefix;
@@ -115,8 +115,9 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         return formatOptions;
     }
 
-    protected ConvertCommand.IndexerOptions getIndexerOptions(){
-        ConvertCommand.IndexerOptions indexerOptions = new ConvertCommand.IndexerOptions();
+    protected IndexCommand.IndexerOptions getIndexerOptions(){
+        IndexCommand.IndexerOptions indexerOptions = new IndexCommand.IndexerOptions();
+        indexerOptions.inputDirectory = this.inputDirectory.toPath();
         indexerOptions.fileExtension = this.fileExtension;
         indexerOptions.excludePattern = this.excludePattern;
         indexerOptions.indexerRootPage = this.indexerRootPage;
