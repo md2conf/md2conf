@@ -5,7 +5,6 @@ import io.github.md2conf.confluence.client.ConfluenceClientFactory;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.model.ConfluenceContentModel;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -15,6 +14,7 @@ import java.nio.file.Path;
 
 import static io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperties.ConfluenceClientConfigurationPropertiesBuilder.aConfluenceClientConfigurationProperties;
 import static io.github.md2conf.model.util.ModelReadWriteUtil.readFromYamlOrJson;
+import static io.github.md2conf.toolset.ConvertCommand.findFilePathWithModel;
 
 @Command(name = "publish", description = "Publish content to a Confluence instance", sortOptions = false)
 public class PublishCommand implements Runnable {
@@ -76,12 +76,7 @@ public class PublishCommand implements Runnable {
         return readFromYamlOrJson(modelFilePath.toFile());
     }
 
-    @NotNull
-    private static Path findFilePathWithModel(Path searchDir) {
-        var result = searchDir.resolve(ConfluenceContentModel.DEFAULT_FILE_NAME);
-        logger.info("Load confluence content model from {}", result);
-        return result;
-    }
+
 
     public static class ConfluenceOptions{
         @CommandLine.Option(names = {"-url", "--confluence-url"}, required = true, description = "The root URL of the Confluence instance", order = 1)

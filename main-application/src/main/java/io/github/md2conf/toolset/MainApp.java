@@ -4,10 +4,10 @@ import picocli.CommandLine;
 
 @CommandLine.Command(
         name = "md2conf",
-        subcommands = {ConvertCommand.class,
+        subcommands = {
                 PublishCommand.class,
                 ConpubCommand.class,
-                ConvertMainCommand.class,
+                ConvertCommand.class,
                 DumpCommand.class,
                 DumpconCommand.class,
                 IndexCommand.class,
