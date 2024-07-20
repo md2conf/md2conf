@@ -1,6 +1,7 @@
 package io.github.md2conf.maven.plugin;
 
 import io.github.md2conf.toolset.ConvertCommand;
+import io.github.md2conf.toolset.IndexCommand;
 import org.apache.maven.plugins.annotations.Mojo;
 
 import java.nio.file.Path;
@@ -16,7 +17,7 @@ public class ConvertMojo extends AbstractMd2ConfMojo{
             return;
         }
         ConvertCommand.ConvertOptions convertOptions = getConvertOptions();
-        ConvertCommand.IndexerOptions indexerOptions = getIndexerOptions();
+        IndexCommand.IndexerOptions indexerOptions = getIndexerOptions();
         Path modelPath = getConfluenceContentModelPath()==null? null: getConfluenceContentModelPath().toPath();
         ConvertCommand.FormatOptions formatOptions = getFormatOptions();
         ConvertCommand.convert(convertOptions, indexerOptions, modelPath, formatOptions);
