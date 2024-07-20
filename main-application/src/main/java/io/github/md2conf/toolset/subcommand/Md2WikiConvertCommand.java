@@ -35,14 +35,14 @@ public class Md2WikiConvertCommand implements Runnable {
     private IndexCommand.IndexerOptions indexerOptions;
 
 
-    @SneakyThrows
     @Override
     public void run() {
         var indexerOptionsLocal = indexerOptions == null ? new IndexCommand.IndexerOptions() : indexerOptions;
         convertMd2Wiki(this.md2WikiConvertOptions, indexerOptionsLocal);
     }
 
-    public static File convertMd2Wiki(Md2WikiConvertOptions md2WikiConvertOptions, IndexCommand.IndexerOptions indexerOptions) throws IOException {
+    @SneakyThrows
+    public static File convertMd2Wiki(Md2WikiConvertOptions md2WikiConvertOptions, IndexCommand.IndexerOptions indexerOptions) {
         PagesStructure pagesStructure = IndexCommand.indexInputDirectory(indexerOptions);
         PageStructureConverter converterService = createConverter(md2WikiConvertOptions);
         ConfluenceContentModel model = converterService.convert(pagesStructure);

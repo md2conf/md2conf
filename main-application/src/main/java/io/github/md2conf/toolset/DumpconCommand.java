@@ -2,8 +2,6 @@ package io.github.md2conf.toolset;
 
 import io.github.md2conf.toolset.subcommand.Md2WikiConvertCommand;
 import io.github.md2conf.toolset.subcommand.View2MdConvertCommand;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
 import java.nio.file.Path;
@@ -15,15 +13,11 @@ public class DumpconCommand implements Runnable {
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
-    private final static Logger logger = LoggerFactory.getLogger(DumpconCommand.class);
-
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1")
     PublishCommand.ConfluenceOptions confluenceOptions;
 
     @CommandLine.ArgGroup(exclusive = false, heading = "Format options for view2md converter:\n", order = 4)
     View2MdConvertCommand.FormatOptions formatOptions;
-
-
 
     @Override
     public void run() {

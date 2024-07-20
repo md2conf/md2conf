@@ -90,7 +90,7 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
 
     @NotNull
-    protected Md2WikiConvertCommand.Md2WikiConvertOptions getConvertOptions() {
+    protected Md2WikiConvertCommand.Md2WikiConvertOptions getMd2WikiConvertOptions() {
         Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions = new Md2WikiConvertCommand.Md2WikiConvertOptions();
         md2WikiConvertOptions.outputDirectory = this.outputDirectory.toPath();
         md2WikiConvertOptions.titleExtract = this.titleExtract;
