@@ -3,7 +3,7 @@ package io.github.md2conf.converter.view2md;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.model.ConfluenceContentModel;
-import io.github.md2conf.model.util.ModelReadWriteUtil;
+import io.github.md2conf.model.util.ModelFilesystemUtil;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class View2MdConverterTest {
     @Test
     void convert_single_page_with_attachment() throws IOException {
         Path modelPath= Paths.get("src/test/resources/view_single_page/confluence-content-model.json");
-        ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
+        ConfluenceContentModel model = ModelFilesystemUtil.readModel(modelPath);
         PagesStructure pagesStructure = view2MdConverter.convert(model);
         Assertions.assertThat(pagesStructure).isNotNull();
         Assertions.assertThat(pagesStructure.pages()).hasSize(1);
@@ -43,7 +43,7 @@ class View2MdConverterTest {
     @Test
     void convert_multiple() throws IOException {
         Path modelPath= Paths.get("src/test/resources/view_multiple_page/confluence-content-model.json");
-        ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
+        ConfluenceContentModel model = ModelFilesystemUtil.readModel(modelPath);
         PagesStructure pagesStructure = view2MdConverter.convert(model);
         Assertions.assertThat(pagesStructure).isNotNull();
         Assertions.assertThat(pagesStructure.pages()).hasSize(1);
@@ -57,7 +57,7 @@ class View2MdConverterTest {
     @Test
     void external_link_is_converted() {
         Path modelPath= Paths.get("src/test/resources/view_single_page/confluence-content-model.json");
-        ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
+        ConfluenceContentModel model = ModelFilesystemUtil.readModel(modelPath);
         PagesStructure pagesStructure = view2MdConverter.convert(model);
         Assertions.assertThat(pagesStructure).isNotNull();
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
@@ -68,7 +68,7 @@ class View2MdConverterTest {
     @Test
     void crosspage_link_is_converted() {
         Path modelPath= Paths.get("src/test/resources/view_multiple_page/confluence-content-model.json");
-        ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
+        ConfluenceContentModel model = ModelFilesystemUtil.readModel(modelPath);
         PagesStructure pagesStructure = view2MdConverter.convert(model);
         Assertions.assertThat(pagesStructure).isNotNull();
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()
@@ -81,7 +81,7 @@ class View2MdConverterTest {
     @Test
     void attachment_image_is_converted() {
         Path modelPath= Paths.get("src/test/resources/view_single_page/confluence-content-model.json");
-        ConfluenceContentModel model = ModelReadWriteUtil.readFromYamlOrJson(modelPath.toFile());
+        ConfluenceContentModel model = ModelFilesystemUtil.readModel(modelPath);
         PagesStructure pagesStructure = view2MdConverter.convert(model);
         Assertions.assertThat(pagesStructure).isNotNull();
         assertThat(outputPath.resolve("Welcome to Confluence.md")).isRegularFile()

@@ -4,7 +4,7 @@ import io.github.md2conf.indexer.DefaultPage;
 import io.github.md2conf.indexer.DefaultPagesStructure;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
-import io.github.md2conf.indexer.OrphanFileStrategy;
+import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.indexer.Page;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -72,9 +72,9 @@ public abstract class AbstractFileIndexer implements FileIndexer {
 
     private void processOrphans(List<Path> pagePaths, List<DefaultPage> topLevelPages) {
         List<Path> notIncludedToGraph = notIncludedToGraph(topLevelPages, pagePaths);
-        if (properties.getOrhanPagesStrategy() == OrphanFileStrategy.ADD_TO_TOP_LEVEL_PAGES) {
+        if (properties.getOrphanFileAction() == OrphanFileAction.ADD_TO_TOP_LEVEL_PAGES) {
             notIncludedToGraph.forEach(v-> topLevelPages.add(new DefaultPage(v)));
-        } else if (properties.getOrhanPagesStrategy().equals(OrphanFileStrategy.IGNORE)){
+        } else if (properties.getOrphanFileAction().equals(OrphanFileAction.IGNORE)){
             if (!notIncludedToGraph.isEmpty()) {
                 logIgnored(notIncludedToGraph);
             }

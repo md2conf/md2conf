@@ -14,8 +14,10 @@ import java.util.Map;
 
 class DefaultPageStructureTitleProcessorTest {
 
-    DefaultPageStructureTitleProcessor defaultPageStructureTitleProcessor = new DefaultPageStructureTitleProcessor(TitleExtractStrategy.FROM_FILENAME, null, null, false);
-
+    DefaultPageStructureTitleProcessor defaultPageStructureTitleProcessor = new DefaultPageStructureTitleProcessor(
+            TitleProcessorOptions.builder()
+                    .titleExtractStrategy(TitleExtractStrategy.FROM_FILENAME)
+                    .build());
 
     @Test
     void empty_page_structure() throws IOException {

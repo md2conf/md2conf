@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>io.github.md2conf</groupId>
-            <artifactId>main-application</artifactId>
+            <artifactId>md2conf-command</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -35,7 +35,7 @@
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>io.github.md2conf.toolset.MainApp</mainClass>
+                            <mainClass>io.github.md2conf.command.MainApp</mainClass>
                         </transformer>
                     </transformers>
                     <filters>

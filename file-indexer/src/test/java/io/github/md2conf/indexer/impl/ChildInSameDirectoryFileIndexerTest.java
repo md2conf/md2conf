@@ -3,7 +3,7 @@ package io.github.md2conf.indexer.impl;
 import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
-import io.github.md2conf.indexer.OrphanFileStrategy;
+import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.indexer.PagesStructure;
 import org.junit.jupiter.api.Test;
 
@@ -22,8 +22,8 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
     @Test
     void index_dir_with_xml_files() {
         FileIndexer defaultIndexer = new ChildInSameDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
-                .withFileExtension("xml")
-                .withExcludePattern("glob:**")
+                .fileExtension("xml")
+                .excludePattern("glob:**")
                 .build());
         String path = "src/test/resources/dir_with_xml_files";
         Path rootDir = (new File(path)).toPath();
@@ -53,7 +53,7 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
 
     @Test
     void dir_with_index_md_and_orphans_ignore() {
-        FileIndexer markdownIndexer = mdFileIndexer(OrphanFileStrategy.IGNORE);
+        FileIndexer markdownIndexer = mdFileIndexer(OrphanFileAction.IGNORE);
         String path = "src/test/resources/dir_with_index_md_and_orphans";
         File f = new File(path);
         PagesStructure structure = markdownIndexer.indexPath(f.toPath());
@@ -67,7 +67,7 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
 
     @Test
     void dir_with_index_md_and_orphans_add_to_top_level() {
-        FileIndexer markdownIndexer = mdFileIndexer(OrphanFileStrategy.ADD_TO_TOP_LEVEL_PAGES);
+        FileIndexer markdownIndexer = mdFileIndexer(OrphanFileAction.ADD_TO_TOP_LEVEL_PAGES);
         String path = "src/test/resources/dir_with_index_md_and_orphans";
         File f = new File(path);
         PagesStructure structure = markdownIndexer.indexPath(f.toPath());
@@ -89,12 +89,12 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
         return new ChildInSameDirectoryFileIndexer(markdownProps);
     }
 
-    private static FileIndexer mdFileIndexer(OrphanFileStrategy orphanFileStrategy) {
+    private static FileIndexer mdFileIndexer(OrphanFileAction orphanFileAction) {
         FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
         markdownProps.setFileExtension("md");
         markdownProps.setRootPage(null);
         markdownProps.setChildLayout(ChildLayout.SAME_DIRECTORY);
-            markdownProps.setOrhanPagesStrategy(orphanFileStrategy);
+            markdownProps.setOrphanFileAction(orphanFileAction);
         return new ChildInSameDirectoryFileIndexer(markdownProps);
     }
 }

@@ -1,10 +1,8 @@
 package io.github.md2conf.maven.plugin;
 
-import io.github.md2conf.toolset.ConvertCommand;
-import io.github.md2conf.toolset.DumpconCommand;
+import io.github.md2conf.command.DumpconCommand;
+import io.github.md2conf.command.subcommand.View2MdConvertCommand;
 import org.apache.maven.plugins.annotations.Mojo;
-
-import java.nio.file.Path;
 
 @Mojo(name = "dumpcon")
 public class DumpConMojo extends AbstractMd2ConfMojo{
@@ -14,16 +12,8 @@ public class DumpConMojo extends AbstractMd2ConfMojo{
             getLog().info("md2conf plugin dumpcon skipped ('skip' is enabled)");
             return;
         }
-        ConvertCommand.FormatOptions formatOptions = getFormatOptions();
-        DumpconCommand.dumpcon(getConfluenceOptions(), formatOptions, getOutputDirectoryAsPath());
-    }
-
-    public Path getOutputDirectoryAsPath() {
-        if (outputDirectory != null) {
-            return outputDirectory.toPath();
-        } else {
-            return null;
-        }
+        View2MdConvertCommand.MarkdownFormatOptions markdownFormatOptions = getMarkdownFormatOptions();
+        DumpconCommand.dumpcon(getConfluenceOptions(), getOutputDirectoryAsPath(), markdownFormatOptions);
     }
 
 }

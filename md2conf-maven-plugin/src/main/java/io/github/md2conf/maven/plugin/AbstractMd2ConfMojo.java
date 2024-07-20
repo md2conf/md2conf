@@ -1,20 +1,22 @@
 package io.github.md2conf.maven.plugin;
 
 import com.vladsch.flexmark.util.format.options.HeadingStyle;
+import io.github.md2conf.command.ConvertCommand;
+import io.github.md2conf.command.IndexCommand;
+import io.github.md2conf.command.PublishCommand;
+import io.github.md2conf.command.subcommand.Md2WikiConvertCommand;
+import io.github.md2conf.command.subcommand.View2MdConvertCommand;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.indexer.ChildLayout;
-import io.github.md2conf.indexer.OrphanFileStrategy;
+import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
-import io.github.md2conf.toolset.ConvertCommand;
-import io.github.md2conf.toolset.PublishCommand;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-
-import static io.github.md2conf.toolset.ConvertCommand.ConverterType.MD2WIKI;
+import java.nio.file.Path;
 
 public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
@@ -30,18 +32,16 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
     @Parameter(property = PREFIX + "inputDirectory")
     protected File inputDirectory;
-    @Parameter(property = PREFIX + "converter")
-    protected ConvertCommand.ConverterType converter = MD2WIKI;
-    @Parameter(property = PREFIX + "fileExtension")
-    protected String fileExtension = "md";
-    @Parameter(property = PREFIX + "excludePattern")
-    protected String excludePattern = "glob:**/.*";
+    @Parameter(property = PREFIX + "indexerFileExtension")
+    protected String indexerFileExtension = "md";
+    @Parameter(property = PREFIX + "indexerExcludePattern")
+    protected String indexerExcludePattern = "glob:**/.*";
     @Parameter(property = PREFIX + "indexerRootPage")
     protected String indexerRootPage = null;
-    @Parameter(property = PREFIX + "childLayout")
-    protected ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
-    @Parameter(property = PREFIX + "orphanFileStrategy")
-    protected OrphanFileStrategy orphanFileStrategy = OrphanFileStrategy.IGNORE;
+    @Parameter(property = PREFIX + "indexerChildLayout")
+    protected ChildLayout indexerChildLayout = ChildLayout.SUB_DIRECTORY;
+    @Parameter(property = PREFIX + "orphanFileAction")
+    protected OrphanFileAction orphanFileAction = OrphanFileAction.IGNORE;
     @Parameter(property = PREFIX + "titleExtract")
     protected TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
     @Parameter(property = PREFIX + "titlePrefix")
@@ -92,36 +92,47 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
 
     @NotNull
-    protected ConvertCommand.ConvertOptions getConvertOptions() {
-        ConvertCommand.ConvertOptions convertOptions = new ConvertCommand.ConvertOptions();
-        convertOptions.converter = this.converter;
-        convertOptions.inputDirectory = this.inputDirectory.toPath();
-        convertOptions.outputDirectory = this.outputDirectory.toPath();
-        convertOptions.titleExtract = this.titleExtract;
-        convertOptions.titlePrefix = this.titlePrefix;
-        convertOptions.titleSuffix = this.titleSuffix;
-        convertOptions.titleChildPrefixed = this.titleChildPrefixed;
-        convertOptions.titleRemoveFromContent = this.titleRemoveFromContent;
-        convertOptions.plantumlCodeMacroEnable = this.plantumlCodeMacroEnable;
-        convertOptions.plantumlCodeMacroName = this.plantumlCodeMacroName;
-        return convertOptions;
+    protected Md2WikiConvertCommand.Md2WikiConvertOptions getMd2WikiConvertOptions() {
+        Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions = new Md2WikiConvertCommand.Md2WikiConvertOptions();
+        md2WikiConvertOptions.outputDirectory = this.outputDirectory.toPath();
+        md2WikiConvertOptions.plantumlCodeMacroEnable = this.plantumlCodeMacroEnable;
+        md2WikiConvertOptions.plantumlCodeMacroName = this.plantumlCodeMacroName;
+        return md2WikiConvertOptions;
     }
 
     @NotNull
-    protected ConvertCommand.FormatOptions getFormatOptions() {
-        ConvertCommand.FormatOptions formatOptions = new ConvertCommand.FormatOptions();
-        formatOptions.markdownRightMargin = this.markdownRightMargin;
-        formatOptions.markdownHeadingStyle = this.markdownHeadingStyle;
-        return formatOptions;
+    protected ConvertCommand.TitleProcessingOptions getTitleProcessingOptions() {
+        ConvertCommand.TitleProcessingOptions titleProcessingOptions = new ConvertCommand.TitleProcessingOptions();
+        titleProcessingOptions.titleExtract = this.titleExtract;
+        titleProcessingOptions.titlePrefix = this.titlePrefix;
+        titleProcessingOptions.titleSuffix = this.titleSuffix;
+        titleProcessingOptions.titleChildPrefixed = this.titleChildPrefixed;
+        titleProcessingOptions.titleRemoveFromContent = this.titleRemoveFromContent;
+        return titleProcessingOptions;
     }
 
-    protected ConvertCommand.IndexerOptions getIndexerOptions(){
-        ConvertCommand.IndexerOptions indexerOptions = new ConvertCommand.IndexerOptions();
-        indexerOptions.fileExtension = this.fileExtension;
-        indexerOptions.excludePattern = this.excludePattern;
+    @NotNull
+    protected View2MdConvertCommand.View2MdConvertOptions getFormatOptions() {
+        View2MdConvertCommand.View2MdConvertOptions view2MdConvertOptions = new View2MdConvertCommand.View2MdConvertOptions();
+        view2MdConvertOptions.modelPath = this.confluenceContentModelPath.toPath();
+        return view2MdConvertOptions;
+    }
+
+    protected View2MdConvertCommand.MarkdownFormatOptions getMarkdownFormatOptions() {
+        View2MdConvertCommand.MarkdownFormatOptions markdownFormatOptions = new View2MdConvertCommand.MarkdownFormatOptions();
+        markdownFormatOptions.markdownHeadingStyle = this.markdownHeadingStyle;
+        markdownFormatOptions.markdownRightMargin = this.markdownRightMargin;
+        return markdownFormatOptions;
+    }
+
+    protected IndexCommand.IndexerOptions getIndexerOptions(){
+        IndexCommand.IndexerOptions indexerOptions = new IndexCommand.IndexerOptions();
+        indexerOptions.inputDirectory = this.inputDirectory.toPath();
+        indexerOptions.indexerFileExtension = this.indexerFileExtension;
+        indexerOptions.indexerExcludePattern = this.indexerExcludePattern;
         indexerOptions.indexerRootPage = this.indexerRootPage;
-        indexerOptions.childLayout = this.childLayout;
-        indexerOptions.orphanFileStrategy = this.orphanFileStrategy;
+        indexerOptions.indexerChildLayout = this.indexerChildLayout;
+        indexerOptions.indexerOrphanFileAction = this.orphanFileAction;
         return indexerOptions;
     }
 
@@ -148,8 +159,12 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         return options;
     }
 
-    public File getConfluenceContentModelPath() {
-        return confluenceContentModelPath;
+    protected Path getOutputDirectoryAsPath() {
+        if (outputDirectory != null) {
+            return outputDirectory.toPath();
+        } else {
+            return null;
+        }
     }
 
 }

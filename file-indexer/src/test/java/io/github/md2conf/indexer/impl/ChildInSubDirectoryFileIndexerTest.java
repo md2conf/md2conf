@@ -1,7 +1,7 @@
 package io.github.md2conf.indexer.impl;
 
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
-import io.github.md2conf.indexer.OrphanFileStrategy;
+import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.indexer.PagesStructure;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,7 @@ class ChildInSubDirectoryFileIndexerTest extends AbstractFileIndexerTest {
     @Test
     void index_dir_with_xml_files() {
         ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
-                .withFileExtension("xml")
+                .fileExtension("xml")
                 .build());
         String path = "src/test/resources/dir_with_xml_files";
         Path rootDir = (new File(path)).toPath();
@@ -42,7 +42,7 @@ class ChildInSubDirectoryFileIndexerTest extends AbstractFileIndexerTest {
     @Test
     void test_dir_with_name_collision() {
         ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
-                .withFileExtension("wiki")
+                .fileExtension("wiki")
                 .build());
         String path = "src/test/resources/dir_with_name_collision";
         Path rootDir = (new File(path)).toPath();
@@ -114,7 +114,7 @@ class ChildInSubDirectoryFileIndexerTest extends AbstractFileIndexerTest {
         FileIndexerConfigurationProperties markdownProps = new FileIndexerConfigurationProperties();
         markdownProps.setFileExtension("md");
         markdownProps.setRootPage(null);
-        markdownProps.setOrhanPagesStrategy(OrphanFileStrategy.ADD_TO_TOP_LEVEL_PAGES);
+        markdownProps.setOrphanFileAction(OrphanFileAction.ADD_TO_TOP_LEVEL_PAGES);
         ChildInSubDirectoryFileIndexer markdownIndexer = new ChildInSubDirectoryFileIndexer(markdownProps);
         String path = "src/test/resources/dir_with_index_md_and_orphans";
         File f = new File(path);

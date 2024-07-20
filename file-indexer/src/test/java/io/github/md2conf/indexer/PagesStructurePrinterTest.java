@@ -50,8 +50,8 @@ class PagesStructurePrinterTest {
     @Test
     void test_dir_with_name_collision() {
         FileIndexer defaultIndexer = new DelegatingFileIndexer(aDefaultIndexerConfigurationProperties()
-                .withFileExtension("wiki")
-                .withChildLayout(ChildLayout.SUB_DIRECTORY)
+                .fileExtension("wiki")
+                .childLayout(ChildLayout.SUB_DIRECTORY)
                 .build());
         String path = "src/test/resources/dir_with_name_collision";
         Path rootDir = (new File(path)).toPath();
