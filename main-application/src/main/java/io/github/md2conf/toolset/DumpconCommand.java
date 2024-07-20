@@ -34,10 +34,10 @@ public class DumpconCommand implements Runnable {
     public static void dumpcon(PublishCommand.ConfluenceOptions confluenceOptions, View2MdConvertCommand.FormatOptions formatOptions, Path outputDirectory){
         var intermediateDir = outputDirectory.resolve(".dump");
         dump(confluenceOptions, intermediateDir);
-        Md2WikiConvertCommand.ConvertOptions convertOptions = new Md2WikiConvertCommand.ConvertOptions();
-        convertOptions.outputDirectory = outputDirectory;
-        convertOptions.converter = ConvertCommand.ConverterType.VIEW2MD;
-        ConvertCommand.convert(convertOptions, new IndexCommand.IndexerOptions(), intermediateDir, formatOptions);
+        Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions = new Md2WikiConvertCommand.Md2WikiConvertOptions();
+        md2WikiConvertOptions.outputDirectory = outputDirectory;
+        md2WikiConvertOptions.converter = ConvertOldCommand.ConverterType.VIEW2MD;
+        ConvertOldCommand.convert(md2WikiConvertOptions, new IndexCommand.IndexerOptions(), intermediateDir, formatOptions);
     }
 
 }

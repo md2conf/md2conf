@@ -20,18 +20,18 @@ public class ConpubCommand implements Runnable {
     @CommandLine.ArgGroup(exclusive = false,  heading = "Indexer options:\n")
     IndexCommand.IndexerOptions indexerOptions;
     @CommandLine.ArgGroup(exclusive = false,  heading = "Convert options:\n")
-    Md2WikiConvertCommand.ConvertOptions convertOptions;
+    Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions;
 
     @Override
     public void run() {
-        var convertOptionsLocal = convertOptions==null? new Md2WikiConvertCommand.ConvertOptions(): convertOptions;
+        var convertOptionsLocal = md2WikiConvertOptions ==null? new Md2WikiConvertCommand.Md2WikiConvertOptions(): md2WikiConvertOptions;
         var indexerOptionsLocal = indexerOptions==null? new IndexCommand.IndexerOptions(): indexerOptions;
         var publishOptionsLocal = publishOptions==null? new PublishCommand.PublishOptions(): publishOptions;
         conpub(convertOptionsLocal, indexerOptionsLocal, confluenceOptions, publishOptionsLocal);
     }
 
-    public static void conpub(Md2WikiConvertCommand.ConvertOptions convertOptions, IndexCommand.IndexerOptions indexerOptions, PublishCommand.ConfluenceOptions confluenceOptions, PublishCommand.PublishOptions publishOptions) {
-        var modelFile = ConvertCommand.convert(convertOptions, indexerOptions, null, new View2MdConvertCommand.FormatOptions());
+    public static void conpub(Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions, IndexCommand.IndexerOptions indexerOptions, PublishCommand.ConfluenceOptions confluenceOptions, PublishCommand.PublishOptions publishOptions) {
+        var modelFile = ConvertOldCommand.convert(md2WikiConvertOptions, indexerOptions, null, new View2MdConvertCommand.FormatOptions());
         PublishCommand.publish(confluenceOptions, publishOptions, modelFile.toPath());
     }
 

@@ -6,7 +6,7 @@ import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.OrphanFileStrategy;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
-import io.github.md2conf.toolset.ConvertCommand;
+import io.github.md2conf.toolset.ConvertOldCommand;
 import io.github.md2conf.toolset.IndexCommand;
 import io.github.md2conf.toolset.PublishCommand;
 import io.github.md2conf.toolset.subcommand.Md2WikiConvertCommand;
@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-import static io.github.md2conf.toolset.ConvertCommand.ConverterType.MD2WIKI;
+import static io.github.md2conf.toolset.ConvertOldCommand.ConverterType.MD2WIKI;
 
 public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
@@ -34,7 +34,7 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     @Parameter(property = PREFIX + "inputDirectory")
     protected File inputDirectory;
     @Parameter(property = PREFIX + "converter")
-    protected ConvertCommand.ConverterType converter = MD2WIKI;
+    protected ConvertOldCommand.ConverterType converter = MD2WIKI;
     @Parameter(property = PREFIX + "fileExtension")
     protected String fileExtension = "md";
     @Parameter(property = PREFIX + "excludePattern")
@@ -95,18 +95,18 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
 
     @NotNull
-    protected Md2WikiConvertCommand.ConvertOptions getConvertOptions() {
-        Md2WikiConvertCommand.ConvertOptions convertOptions = new Md2WikiConvertCommand.ConvertOptions();
-        convertOptions.converter = this.converter;
-        convertOptions.outputDirectory = this.outputDirectory.toPath();
-        convertOptions.titleExtract = this.titleExtract;
-        convertOptions.titlePrefix = this.titlePrefix;
-        convertOptions.titleSuffix = this.titleSuffix;
-        convertOptions.titleChildPrefixed = this.titleChildPrefixed;
-        convertOptions.titleRemoveFromContent = this.titleRemoveFromContent;
-        convertOptions.plantumlCodeMacroEnable = this.plantumlCodeMacroEnable;
-        convertOptions.plantumlCodeMacroName = this.plantumlCodeMacroName;
-        return convertOptions;
+    protected Md2WikiConvertCommand.Md2WikiConvertOptions getConvertOptions() {
+        Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions = new Md2WikiConvertCommand.Md2WikiConvertOptions();
+        md2WikiConvertOptions.converter = this.converter;
+        md2WikiConvertOptions.outputDirectory = this.outputDirectory.toPath();
+        md2WikiConvertOptions.titleExtract = this.titleExtract;
+        md2WikiConvertOptions.titlePrefix = this.titlePrefix;
+        md2WikiConvertOptions.titleSuffix = this.titleSuffix;
+        md2WikiConvertOptions.titleChildPrefixed = this.titleChildPrefixed;
+        md2WikiConvertOptions.titleRemoveFromContent = this.titleRemoveFromContent;
+        md2WikiConvertOptions.plantumlCodeMacroEnable = this.plantumlCodeMacroEnable;
+        md2WikiConvertOptions.plantumlCodeMacroName = this.plantumlCodeMacroName;
+        return md2WikiConvertOptions;
     }
 
     @NotNull
