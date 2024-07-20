@@ -23,21 +23,19 @@ public class DumpconCommand implements Runnable {
     @CommandLine.ArgGroup(exclusive = false, heading = "Format options for view2md converter:\n", order = 4)
     View2MdConvertCommand.FormatOptions formatOptions;
 
-    @CommandLine.Option(names = {"-o", "--output-dir"}, description = "output directory")
-    protected Path outputDirectory;
+
 
     @Override
     public void run() {
-        dumpcon(confluenceOptions, formatOptions, outputDirectory);
+        dumpcon(confluenceOptions, formatOptions, formatOptions.outputDirectory);
     }
 
     public static void dumpcon(PublishCommand.ConfluenceOptions confluenceOptions, View2MdConvertCommand.FormatOptions formatOptions, Path outputDirectory){
         var intermediateDir = outputDirectory.resolve(".dump");
         dump(confluenceOptions, intermediateDir);
-        Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions = new Md2WikiConvertCommand.Md2WikiConvertOptions();
+        Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions = new Md2WikiConvertCommand.Md2WikiConvertOptions(); //todo
         md2WikiConvertOptions.outputDirectory = outputDirectory;
-        md2WikiConvertOptions.converter = ConvertOldCommand.ConverterType.VIEW2MD;
-        ConvertOldCommand.convert(md2WikiConvertOptions, new IndexCommand.IndexerOptions(), intermediateDir, formatOptions);
+        View2MdConvertCommand.convertView2Md(formatOptions);
     }
 
 }

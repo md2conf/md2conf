@@ -1,6 +1,5 @@
 package io.github.md2conf.maven.plugin;
 
-import io.github.md2conf.toolset.ConvertOldCommand;
 import io.github.md2conf.toolset.IndexCommand;
 import io.github.md2conf.toolset.subcommand.Md2WikiConvertCommand;
 import io.github.md2conf.toolset.subcommand.View2MdConvertCommand;
@@ -22,6 +21,6 @@ public class ConvertMojo extends AbstractMd2ConfMojo{
         IndexCommand.IndexerOptions indexerOptions = getIndexerOptions();
         Path modelPath = getConfluenceContentModelPath()==null? null: getConfluenceContentModelPath().toPath();
         View2MdConvertCommand.FormatOptions formatOptions = getFormatOptions();
-        ConvertOldCommand.convert(md2WikiConvertOptions, indexerOptions, modelPath, formatOptions);
+        View2MdConvertCommand.c(md2WikiConvertOptions, indexerOptions, modelPath, formatOptions);
     }
 }

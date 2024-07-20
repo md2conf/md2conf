@@ -7,18 +7,16 @@ import com.vladsch.flexmark.util.format.options.HeadingStyle;
 import io.github.md2conf.converter.view2md.View2MdConverter;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.toolset.ConvertCommand;
-import io.github.md2conf.toolset.ConvertOldCommand;
 import io.github.md2conf.toolset.LoggingMixin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 import static io.github.md2conf.toolset.PublishCommand.loadConfluenceContentModel;
 
 
 @CommandLine.Command(name = "view2md")
+@Slf4j
 public class View2MdConvertCommand implements Runnable{
-    private final static Logger logger = LoggerFactory.getLogger(ConvertOldCommand.class);
 
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
@@ -28,15 +26,14 @@ public class View2MdConvertCommand implements Runnable{
 
     @Override
     public void run() {
-
-
+        convertView2Md(this.formatOptions);
     }
 
-    private void convertView2Md() {
+    public static void convertView2Md(FormatOptions formatOptions) {
         ConfluenceContentModel model = loadContentModelFromPathOrDefault(formatOptions);
         View2MdConverter view2MdConverter = new View2MdConverter(formatOptions.outputDirectory, formatOptionsAsDataHolder(formatOptions));
         view2MdConverter.convert(model);
-        logger.info("Converting to markdown result saved to {}", formatOptions.outputDirectory);
+        log.info("Converting to markdown result saved to {}", formatOptions.outputDirectory);
     }
 
     private static ConfluenceContentModel loadContentModelFromPathOrDefault(ConvertCommand.ConvertOptions convertOptions) {

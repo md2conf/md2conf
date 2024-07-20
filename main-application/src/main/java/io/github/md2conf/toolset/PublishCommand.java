@@ -63,7 +63,7 @@ public class PublishCommand implements Runnable {
                 .build();
     }
 
-    protected static ConfluenceContentModel loadConfluenceContentModel(Path confluenceContentModelPath) {
+    public static ConfluenceContentModel loadConfluenceContentModel(Path confluenceContentModelPath) {
         Path modelFilePath;
         if (confluenceContentModelPath.toFile().isDirectory()){
             modelFilePath = findFilePathWithModel(confluenceContentModelPath);

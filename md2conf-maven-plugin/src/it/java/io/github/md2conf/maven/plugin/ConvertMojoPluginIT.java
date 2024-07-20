@@ -38,7 +38,6 @@ class ConvertMojoPluginIT extends AbstractMd2ConfMojoIT {
         // arrange
         Map<String, String> properties = mandatoryProperties();
         properties.put("inputDirectory", ".");
-        properties.put("converter", "NO");
         // act
         var res = invokeGoalAndVerify("convert", "default", properties);
         Path outputPath = res.toPath().resolve("target/md2conf");

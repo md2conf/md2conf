@@ -8,22 +8,20 @@ import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.ConvertCommand;
-import io.github.md2conf.toolset.ConvertOldCommand;
 import io.github.md2conf.toolset.IndexCommand;
 import io.github.md2conf.toolset.LoggingMixin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
 
 import static io.github.md2conf.model.util.ModelReadWriteUtil.saveConfluenceContentModelAtPath;
-import static io.github.md2conf.toolset.ConvertOldCommand.ConverterType.MD2WIKI;
 
 @CommandLine.Command(name = "md2wiki")
+@Slf4j
 public class Md2WikiConvertCommand implements Runnable {
-    private final static Logger logger = LoggerFactory.getLogger(ConvertOldCommand.class);
 
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
@@ -37,14 +35,11 @@ public class Md2WikiConvertCommand implements Runnable {
     private IndexCommand.IndexerOptions indexerOptions;
 
 
+    @SneakyThrows
     @Override
     public void run() {
         var indexerOptionsLocal = indexerOptions == null ? new IndexCommand.IndexerOptions() : indexerOptions;
-        try {
-            convertMd2Wiki(this.md2WikiConvertOptions, indexerOptionsLocal);
-        } catch (IOException e) {
-            throw new RuntimeException(e); //todo use lombok
-        }
+        convertMd2Wiki(this.md2WikiConvertOptions, indexerOptionsLocal);
     }
 
     public static File convertMd2Wiki(Md2WikiConvertOptions md2WikiConvertOptions, IndexCommand.IndexerOptions indexerOptions) throws IOException {
@@ -52,16 +47,16 @@ public class Md2WikiConvertCommand implements Runnable {
         PageStructureConverter converterService = createConverter(md2WikiConvertOptions);
         ConfluenceContentModel model = converterService.convert(pagesStructure);
         File contentModelFile = saveConfluenceContentModelAtPath(model, md2WikiConvertOptions.outputDirectory);
-        logger.info("Confluence content model saved at file {}", contentModelFile);
+        log.info("Confluence content model saved at file {}", contentModelFile);
         return contentModelFile;
     }
 
     protected static ConfluenceContentModel convertInternal(PagesStructure pagesStructure, PageStructureConverter converterService) {
-        logger.info("Convert using {}", converterService);
+        log.info("Convert using {}", converterService);
         try {
             return converterService.convert(pagesStructure);
         } catch (IOException e) {
-            logger.error("Cannot convert provided input dir content with error", e);
+            log.error("Cannot convert provided input dir content with error", e);
             throw new RuntimeException(e);
         }
     }
@@ -83,11 +78,6 @@ public class Md2WikiConvertCommand implements Runnable {
     }
 
     public static class Md2WikiConvertOptions extends ConvertCommand.ConvertOptions{ //todo split on mandatory and additional
-        @Deprecated
-        @CommandLine.Option(names = {"--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
-                defaultValue = "MD2WIKI",
-                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        public ConvertOldCommand.ConverterType converter = MD2WIKI;
 
         //todo extract to TitleOptions and make common for both converters
         @CommandLine.Option(names = {"--title-extract"}, description = "Strategy to extract title from file", //todo rename to TitleExtractFrom

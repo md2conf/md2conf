@@ -41,6 +41,7 @@
         <jackson.version>2.17.2</jackson.version>
         <junit.version>5.10.3</junit.version>
         <logback.version>1.5.6</logback.version>
+        <lombok.version>1.18.34</lombok.version>
         <maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
         <mockito.version>5.12.0</mockito.version>
         <commons-io.version>2.16.1</commons-io.version>
