@@ -1,7 +1,6 @@
 [![maven-central](https://img.shields.io/maven-central/v/io.github.md2conf/md2conf-cli.svg)](https://search.maven.org/artifact/io.github.md2conf/md2conf-cli)
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
-
 ## Overview
 
 Set of command-line tools to publish markdown files to a Confluence or
@@ -19,7 +18,8 @@ Notable features:
 - Extensible by design
 
 This toolset designed to support "docs-as-code" approach to use markdown
-as a docs source and Confluence as a publishing platform.
+as a docs source and Confluence as a publishing platform. The "dump" functionality allow to easy create initial docs in
+markdown based on a Confluence content.
 
 ## Installation
 
@@ -37,7 +37,7 @@ docker run -p 8090:8090 -p 8091:8091 qwazer/atlassian-sdk-confluence
 ```
 
 After Confluence starts it will be accessible at http://localhost:8090
-with admin:admin credentials.
+with `admin:admin` credentials.
 
 Run next command
 
@@ -52,35 +52,34 @@ See results at http://localhost:8090/display/ds/Sample
 Change `url`, `space-key`, `parent-page-title`, `username`, `password`
 in the command above and run.
 
-
 ## Usage
 
 ### Command-line
 
 ```
 Usage: md2conf [-v] [COMMAND]
-Set of tools to work with 'confluence-content-model': publish, dump, convert.
+Set of tools to deal with markdown files and Confluence: publish, dump, convert
   -v, --verbose   Increase verbosity.
 Commands:
-  convert                      Convert files to `confluence-content-model` or
-                                 from `confluence-content-model`
-  publish                      Publish content to a Confluence instance
   conpub, convert-and-publish  Convert and publish docs to a Confluence instance
+  convert                      Convert
   dump                         Dump content from Confluence instance and save
                                  as 'confluence-content-model' with files in
                                  Confluence VIEW format
   dumpcon, dump-and-convert    Dump content from Confluence instance, convert
                                  using VIEW2MD converter to directory tree with
                                  markdown files and binary attachments
+  index                        Index input directory to build page structure
+                                 and print results
+  publish                      Publish content to a Confluence instance
   help                         Display help information about the specified
                                  command.
-'confluence-content-model' is a representation of Confluence page trees and
-attachments on a local filesystem. See 'md2conf help model' for details.
 ```
 
 ### Docker
 
 Run to read the help message
+
 ```
 docker run md2conf/md2conf:latest help
 ```
@@ -97,10 +96,10 @@ Mount current working dir with "docs" directory and dump content from a remote c
 docker run -v ./docs:/docs md2conf/md2conf dumpcon -o=/docs --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://confluence.local
 ```
 
-
 ### Maven plugin
 
 ```xml
+
 <plugin>
     <groupId>io.github.md2conf</groupId>
     <artifactId>md2conf-maven-plugin</artifactId>
@@ -126,7 +125,6 @@ docker run -v ./docs:/docs md2conf/md2conf dumpcon -o=/docs --username=admin --p
 </plugin>
 ```
 
-
 ## How it works inside?
 
 Main publish-and-convert steps are
@@ -151,7 +149,6 @@ Main dump-and-convert steps are
 
 ![dump-convert-steps.png](docs/plantuml/dump-convert-steps.png)
 
-
 ### Index by file-indexer
 
 File-indexer is a tool that build Confluence Content Model based on file
@@ -159,14 +156,14 @@ name conventions.
 
 File-indexer controlled by properties:
 
-| Property key       | CLI name               | Description                                                                                                                                                                                                                                                                                                      | Default value |
-|:-------------------|:-----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| inputDirectory     | "-i", "--input-dir"    | Input directory                                                                                                                                                                                                                                                                                                  |               |
-| fileExtension      | --file-extension       | File extension to index as confluence content pages                                                                                                                                                                                                                                                              | md            |
-| excludePattern     | --exclude-pattern      | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method                                                                                                                                                                                      | "glob:**/.*"  |
-| indexerRootPage    | --indexer-root-page    | Use specified page as parent page for all another top-level pages in an input directory                                                                                                                                                                                                                          |               |
-| childLayout        | --child-layout         | SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file. SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages | SUB_DIRECTORY |
-| orphanFileStrategy | --orphan-file-strategy | What to do with page which source file that are not top-level page and not child of any page. Possible options are IGNORE, ADD_TO_TOP_LEVEL_PAGES                                                                                                                                                                | IGNORE        |
+| Property key            | CLI name                                   | Description                                                                                                                                                                                                                                                                                                      | Default value |
+|:------------------------|:-------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
+| inputDirectory          | "-i", "--input-dir", "--indexer-input-dir" | Input directory                                                                                                                                                                                                                                                                                                  |               |
+| indexerFileExtension    | --indexer-file-extension                   | File extension to index as confluence content pages                                                                                                                                                                                                                                                              | md            |
+| indexerExcludePattern   | --indexer-exclude-pattern                  | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method                                                                                                                                                                                      | "glob:**/.*"  |
+| indexerRootPage         | --indexer-root-page                        | Use specified page as parent page for all another top-level pages in an input directory                                                                                                                                                                                                                          |               |
+| indexerChildLayout      | --indexer-child-layout                     | SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file. SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages | SUB_DIRECTORY |
+| indexerOrphanFileAction | --indexer-orphan-file-action               | What to do with page which source file that are not top-level page and not child of any page. Possible options are IGNORE, ADD_TO_TOP_LEVEL_PAGES                                                                                                                                                                | IGNORE        |
 
 #### Attachments naming convention
 
@@ -186,10 +183,9 @@ For example, next filesystem tree
 will be indexed as Confluence page with source at path `./page.md` and
 one attachment at path `page_attachments/attach.txt`.
 
-
 #### Child relation layout examples
 
-There are 2 options to specify `childLayout`: SUB_DIRECTORY and
+There are 2 options to specify `indexerChildLayout`: SUB_DIRECTORY and
 SAME_DIRECTORY
 
 ##### SUB_DIRECTORY
@@ -237,9 +233,9 @@ will be indexed to next pages structure
    └─── page_b.md
 ```
 
-#### Property "orphanFileStrategy"
+#### Property "indexerOrphanFileAction"
 
-When `orphanFileStrategy` set to `ADD_TO_TOP_LEVEL_PAGES` the next files tree
+When `indexerOrphanFileAction` set to `ADD_TO_TOP_LEVEL_PAGES` the next files tree
 
 ```
 ├── some_dir
@@ -263,6 +259,7 @@ When `indexerRootPage` set to `overview.md` the next files tree
 ├─── page_a.md
 └─── page_b.md
 ```
+
 will be indexed to next pages structure
 
 ```
@@ -275,12 +272,12 @@ will be indexed to next pages structure
 
 Controlled by properties:
 
-| Property key           | CLI name                     | Description                                                                                                                                                                            | Default value     |
-|:-----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
-| converter              | --converter                  | Converter. Valid values are MD2WIKI, COPYING, NO, VIEW2MD                                                                                                                              | MD2WIKI           |
-| outputDirectory        | "-o", "--output-dir"         | Output directory                                                                                                                                                                       |                   |
+| Property key    | CLI name             | Description                                               | Default value |
+|:----------------|:---------------------|:----------------------------------------------------------|:--------------|
+| outputDirectory | "-o", "--output-dir" | Output directory                                          |               |
 
-#### Markdown to Wiki Converter properties (MD2WIKI)
+
+#### Title processing options
 
 | Property key           | CLI name                     | Description                                                                                                                                                                            | Default value     |
 |:-----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
@@ -289,9 +286,14 @@ Controlled by properties:
 | titleSuffix            | --title-suffix               | Title suffix common for all pages                                                                                                                                                      |                   |
 | titleChildPrefixed     | --title-child-prefixed       | Add title prefix of root page if page is a child                                                                                                                                       | false             |
 | titleRemoveFromContent | --title-remove-from-content  | Remove title from converted content, to avoid duplicate titles rendering in an Confluence                                                                                              | false             |
+
+
+#### Markdown to Wiki Converter properties (MD2WIKI)
+
+| Property key           | CLI name                     | Description                                                                                                                                                                            | Default value     |
+|:-----------------------|:-----------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------|
 | plantumlCodeAsMacro    | --plantuml-code-macro-enable | Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering)                                                                                        | false             |
 | plantumlCodeMacroName  | --plantuml-code-macro-name   | Name of confluence macro to render plantuml. Need to Confluence plugin. Possible known options are: 'plantuml' or 'plantumlrender' or 'plantumlcloud'. By default, 'plantuml' is used. | plantuml          |
-
 
 The result of conversion saved in output directory file
 `confluence-content-model.json`'.
@@ -306,35 +308,36 @@ There are properties to format markdown produced by VIEW2MD converter.
 | markdownHeadingStyle | --markdown-heading-style | Markdown heading style. Valid values:  AS_IS, ATX_PREFERRED, SETEXT_PREFERRED | ATX_PREFERRED |
 
 ### Confluence connection options
+
 Controlled by properties:
 
-| Property key                 | CLI name                           | Description                                                                                                     | Default value                    |
-|:-----------------------------|:-----------------------------------|:----------------------------------------------------------------------------------------------------------------|:---------------------------------|
-| confluenceUrl                | "-url", "--confluence-url"         | The root URL of the Confluence instance                                                                         |                                  |
-| username                     | "--username"                       | Username of the Confluence user                                                                                 |                                  |
-| password                     | "--password"                       | The password or personal access token of the user. In case of using token don't specify username.               |                                  |
-| spaceKey                     | "-s", "--space-key"                | The password or personal access token of the user                                                               |                                  |
-| parentPageTitle              | "-pt", "--parent-page-title"       | The parent page to publish `confluence-content-model`                                                           |                                  |
-| skipSslVerification          | --skip-ssl-verification            |                                                                                                                 | false                            |
-| maxRequestsPerSecond         | --max-requests-per-second          |                                                                                                                 |                                  |
-| connectionTimeToLive         | --connection-time-to-live          | Connection TTL. Useful in case a server is configured to have a very low TTL to keep existing connectings alive |                                  |
-
+| Property key         | CLI name                     | Description                                                                                                     | Default value |
+|:---------------------|:-----------------------------|:----------------------------------------------------------------------------------------------------------------|:--------------|
+| confluenceUrl        | "-url", "--confluence-url"   | The root URL of the Confluence instance                                                                         |               |
+| username             | "--username"                 | Username of the Confluence user                                                                                 |               |
+| password             | "--password"                 | The password or personal access token of the user. In case of using token don't specify username.               |               |
+| spaceKey             | "-s", "--space-key"          | The password or personal access token of the user                                                               |               |
+| parentPageTitle      | "-pt", "--parent-page-title" | The parent page to publish `confluence-content-model`                                                           |               |
+| skipSslVerification  | --skip-ssl-verification      |                                                                                                                 | false         |
+| maxRequestsPerSecond | --max-requests-per-second    |                                                                                                                 |               |
+| connectionTimeToLive | --connection-time-to-live    | Connection TTL. Useful in case a server is configured to have a very low TTL to keep existing connectings alive |               |
 
 ### Publish
 
 Controlled by properties:
 
-| Property key                 | CLI name                           | Description                                                                                                     | Default value                    |
-|:-----------------------------|:-----------------------------------|:----------------------------------------------------------------------------------------------------------------|:---------------------------------|
-| orphanRemovalStrategy        | --orphan-removal-strategy          | REMOVE_ORPHANS or KEEP_ORPHANS                                                                                  | KEEP_ORPHANS                     |
-| parentPagePublishingStrategy | --parent-page-publishing-strategy  | APPEND_TO_ANCESTOR or REPLACE_ANCESTOR                                                                          | APPEND_TO_ANCESTOR               |
-| notifyWatchers               | --notify-watchers                  |                                                                                                                 | false                            |
-| versionMessage               | --version-message                  |                                                                                                                 | Published by md2conf             |
-| confluenceContentModelPath   | "-m", "--confluence-content-model" | Path to file with `confluence-content-model` JSON file.                                                         | '.confluence-content-model.json' |
+| Property key                 | CLI name                           | Description                                             | Default value                    |
+|:-----------------------------|:-----------------------------------|:--------------------------------------------------------|:---------------------------------|
+| orphanRemovalStrategy        | --orphan-removal-strategy          | REMOVE_ORPHANS or KEEP_ORPHANS                          | KEEP_ORPHANS                     |
+| parentPagePublishingStrategy | --parent-page-publishing-strategy  | APPEND_TO_ANCESTOR or REPLACE_ANCESTOR                  | APPEND_TO_ANCESTOR               |
+| notifyWatchers               | --notify-watchers                  |                                                         | false                            |
+| versionMessage               | --version-message                  |                                                         | Published by md2conf             |
+| confluenceContentModelPath   | "-m", "--confluence-content-model" | Path to file with `confluence-content-model` JSON file. | '.confluence-content-model.json' |
 
 ### Dump
 
-For Confluence Content model dump need to provide [Confluence connection options](#confluence-connection-options) and output directory.
+For Confluence Content model dump need to provide [Confluence connection options](#confluence-connection-options) and
+output directory.
 
 ### Confluence Content model
 
@@ -382,10 +385,8 @@ are
 and
 [children-display-macro](https://support.atlassian.com/confluence-cloud/docs/insert-the-children-display-macro/)
 
-
 Also see
 [confluence_macro_spec_test](converters/flexmark-ext-confluence-macro/src/test/resources/confluence_macro_spec_test.md)
-
 
 ### Cross-page links between markdown pages
 
@@ -395,7 +396,6 @@ valid Confluence page reference.
 
 For examples see
 [crosspage_link_title_spec_test](converters/flexmark-ext-crosspage-link/src/test/resources/crosspage_link_title_spec_test.md)
-
 
 ### Image attachments
 
@@ -430,7 +430,8 @@ See mappings here:
 
 ## Diagram generations
 
-The `md2conf` toolset doesn't contain embedded diagram generation support from textual diagram formats like PlantUML, Mermaid, etc.
+The `md2conf` toolset doesn't contain embedded diagram generation support from textual diagram formats like PlantUML,
+Mermaid, etc.
 Users can setup own diagram generators in their pipelines.
 
 ### Example to include PlantUML diagram generation in Maven
@@ -441,29 +442,29 @@ Next setup will convert all "*.puml" files from "plantuml" directory and saves o
 Actual version of PlantUML should be specified by a user.
 
 ```xml
-            <plugin>
-                <groupId>com.github.jeluard</groupId>
-                <artifactId>plantuml-maven-plugin</artifactId>
-                <version>1.2</version>
-                <configuration>
-                    <sourceFiles>
-                        <directory>plantuml</directory>
-                        <includes>
-                            <include>**/*.puml</include>
-                        </includes>
-                    </sourceFiles>
-                    <outputDirectory>markdown</outputDirectory>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>net.sourceforge.plantuml</groupId>
-                        <artifactId>plantuml</artifactId>
-                        <version>1.2023.10</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-```
 
+<plugin>
+    <groupId>com.github.jeluard</groupId>
+    <artifactId>plantuml-maven-plugin</artifactId>
+    <version>1.2</version>
+    <configuration>
+        <sourceFiles>
+            <directory>plantuml</directory>
+            <includes>
+                <include>**/*.puml</include>
+            </includes>
+        </sourceFiles>
+        <outputDirectory>markdown</outputDirectory>
+    </configuration>
+    <dependencies>
+        <dependency>
+            <groupId>net.sourceforge.plantuml</groupId>
+            <artifactId>plantuml</artifactId>
+            <version>1.2023.10</version>
+        </dependency>
+    </dependencies>
+</plugin>
+```
 
 ## History and motivation
 
@@ -477,7 +478,6 @@ Idempotence confluence client originally written by Christian Stettler
 and others as part of
 [confluence-publisher](https://github.com/confluence-publisher/confluence-publisher)
 tool to publish ascii docs to confluence.
-
 
 ### License
 

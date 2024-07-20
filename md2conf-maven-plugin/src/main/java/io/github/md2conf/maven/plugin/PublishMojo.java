@@ -1,6 +1,6 @@
 package io.github.md2conf.maven.plugin;
 
-import io.github.md2conf.toolset.PublishCommand;
+import io.github.md2conf.command.PublishCommand;
 import org.apache.maven.plugins.annotations.Mojo;
 
 @Mojo(name = "publish")

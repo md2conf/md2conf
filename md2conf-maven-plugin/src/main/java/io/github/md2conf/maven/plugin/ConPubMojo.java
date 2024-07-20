@@ -1,6 +1,6 @@
 package io.github.md2conf.maven.plugin;
 
-import io.github.md2conf.toolset.ConpubCommand;
+import io.github.md2conf.command.ConpubCommand;
 import org.apache.maven.plugins.annotations.Mojo;
 
 @Mojo(name = "conpub")
@@ -11,7 +11,7 @@ public class ConPubMojo extends AbstractMd2ConfMojo{
             getLog().info("md2conf plugin conpub skipped ('skip' is enabled)");
             return;
         }
-        ConpubCommand.conpub(getConvertOptions(), getIndexerOptions(), getConfluenceOptions(), getPublishOptions());
+        ConpubCommand.conpub(getMd2WikiConvertOptions(), getIndexerOptions(), getConfluenceOptions(), getPublishOptions(), getTitleProcessingOptions());
     }
 
 }
