@@ -26,7 +26,7 @@ public class IndexCommand implements Runnable{
         PagesStructure pagesStructure = IndexCommand.indexInputDirectory(indexerOptions);
     }
 
-    protected static PagesStructure indexInputDirectory(IndexerOptions indexerOptions) {
+    public static PagesStructure indexInputDirectory(IndexerOptions indexerOptions) {
         logger.info("Indexing path {}", indexerOptions.inputDirectory);
         logger.info("Child relation established using {} layout", indexerOptions.childLayout);
         FileIndexerConfigurationProperties fileIndexerConfigurationProperties = createFileIndexerConfigurationProperties(indexerOptions);

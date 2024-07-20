@@ -3,7 +3,6 @@ package io.github.md2conf.toolset;
 import com.vladsch.flexmark.formatter.Formatter;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-import com.vladsch.flexmark.util.format.options.HeadingStyle;
 import io.github.md2conf.converter.PageStructureConverter;
 import io.github.md2conf.converter.copying.CopyingConverter;
 import io.github.md2conf.converter.md2wiki.Md2WikiConverter;
@@ -14,6 +13,8 @@ import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.title.processor.DefaultPageStructureTitleProcessor;
 import io.github.md2conf.title.processor.PageStructureTitleProcessor;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
+import io.github.md2conf.toolset.subcommand.Md2WikiConvertCommand;
+import io.github.md2conf.toolset.subcommand.View2MdConvertCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -24,12 +25,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.github.md2conf.model.util.ModelReadWriteUtil.saveConfluenceContentModelAtPath;
-import static io.github.md2conf.toolset.ConvertCommand.ConverterType.MD2WIKI;
 import static io.github.md2conf.toolset.ConvertCommand.ConverterType.VIEW2MD;
 import static io.github.md2conf.toolset.PublishCommand.loadConfluenceContentModel;
 
 
-@Command(name = "convert",
+@Command(name = "convert-old",
         description = "Convert files to `confluence-content-model` or from `confluence-content-model`")
 public class ConvertCommand implements Runnable {
 
@@ -39,13 +39,13 @@ public class ConvertCommand implements Runnable {
     LoggingMixin loggingMixin;
 
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1", heading = "Convert options:\n")
-    private ConvertOptions convertOptions;
+    private Md2WikiConvertCommand.ConvertOptions convertOptions;
 
     @CommandLine.ArgGroup(exclusive = false, heading = "Indexer options:\n", order = 3)
     private IndexCommand.IndexerOptions indexerOptions;
 
     @CommandLine.ArgGroup(exclusive = false, heading = "Format options for view2md converter:\n", order = 4)
-    private FormatOptions formatOptions;
+    private View2MdConvertCommand.FormatOptions formatOptions;
 
     //todo adjust description
     @CommandLine.Option(names = {"-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file. Default value is current working directory.", defaultValue = ".", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
@@ -57,7 +57,7 @@ public class ConvertCommand implements Runnable {
         convert(this.convertOptions, indexerOptionsLocal, this.confluenceContentModelPath, this.formatOptions);
     }
 
-    public static File convert(ConvertOptions convertOptions, IndexCommand.IndexerOptions indexerOptions, Path confluenceContentModelPath, FormatOptions formatOptions) {
+    public static File convert(Md2WikiConvertCommand.ConvertOptions convertOptions, IndexCommand.IndexerOptions indexerOptions, Path confluenceContentModelPath, View2MdConvertCommand.FormatOptions formatOptions) {
         if (convertOptions.converter == VIEW2MD) {
             ConfluenceContentModel model = loadContentModelFromPathOrDefault(convertOptions, confluenceContentModelPath);
             View2MdConverter view2MdConverter = new View2MdConverter(convertOptions.outputDirectory, formatOptionsAsDataHolder(formatOptions));
@@ -74,7 +74,7 @@ public class ConvertCommand implements Runnable {
         }
     }
 
-    private static DataHolder formatOptionsAsDataHolder(FormatOptions formatOptions) {
+    private static DataHolder formatOptionsAsDataHolder(View2MdConvertCommand.FormatOptions formatOptions) {
         MutableDataSet mutableDataSet = new MutableDataSet();
         if (formatOptions!=null) {
             mutableDataSet.set(Formatter.RIGHT_MARGIN, formatOptions.markdownRightMargin);
@@ -83,7 +83,7 @@ public class ConvertCommand implements Runnable {
         return mutableDataSet;
     }
 
-    private static ConfluenceContentModel loadContentModelFromPathOrDefault(ConvertOptions convertOptions, Path confluenceContentModelPath) {
+    private static ConfluenceContentModel loadContentModelFromPathOrDefault(Md2WikiConvertCommand.ConvertOptions convertOptions, Path confluenceContentModelPath) {
         ConfluenceContentModel model;
         if (confluenceContentModelPath == null || confluenceContentModelPath.toString().equals(".")) {
             model = loadConfluenceContentModel(convertOptions.modelPath);
@@ -94,7 +94,7 @@ public class ConvertCommand implements Runnable {
     }
 
 
-    protected static PageStructureConverter createConverter(ConvertOptions convertOptions) {
+    protected static PageStructureConverter createConverter(Md2WikiConvertCommand.ConvertOptions convertOptions) {
         PageStructureTitleProcessor pageStructureTitleProcessor =
                 new DefaultPageStructureTitleProcessor(convertOptions.titleExtract,
                         convertOptions.titlePrefix,
@@ -128,41 +128,7 @@ public class ConvertCommand implements Runnable {
         }
     }
 
-    public static class ConvertOptions { //todo split on mandatory and additional
-        @CommandLine.Option(names = {"--converter"}, description = "Valid values: ${COMPLETION-CANDIDATES}",
-                defaultValue = "MD2WIKI",
-                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        public ConverterType converter = MD2WIKI;
-        @CommandLine.Option(names = { "--model-path"}, required = false, description = "Model path directory") //todo rework
-        public Path modelPath;
-        @CommandLine.Option(names = {"-o", "--output-dir"}, required = true, description = "Output directory")
-        public Path outputDirectory;
-        @CommandLine.Option(names = {"--title-extract"}, description = "Strategy to extract title from file", //todo rename to TitleExtractFrom
-                defaultValue = "FROM_FIRST_HEADER",
-                showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        public TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
-
-        @CommandLine.Option(names = {"--title-prefix"}, description = "Title prefix common for all pages")
-        public String titlePrefix;
-        @CommandLine.Option(names = {"--title-suffix"}, description = "Title suffix common for all pages")
-        public String titleSuffix;
-        @CommandLine.Option(names = {"--title-child-prefixed"}, description = "Add title prefix of root page if page is a child")
-        public boolean titleChildPrefixed;
-        @CommandLine.Option(names = {"--title-remove-from-content"}, description = "Remove title from converted content, to avoid duplicate titles rendering in an Confluence")
-        public Boolean titleRemoveFromContent;
-        @CommandLine.Option(names = {"--plantuml-code-macro-enable"}, description = "Render markdown plantuml fenced code block as confluence plantuml macro (server-side rendering)")
-        public Boolean plantumlCodeMacroEnable = false;
-        @CommandLine.Option(names = {"--plantuml-code-macro-name"}, description = "Name of confluence macro to render plantuml. Need to have custom Confluence plugin on a server. Possible known options are: 'plantuml' or 'plantumlrender' or 'plantumlcloud'. By default, 'plantuml' is used.")
-        public String plantumlCodeMacroName = "plantuml";
-    }
-
-    public static class FormatOptions{
-        @CommandLine.Option(names = {"--markdown-right-margin"}, description = "Markdown right margin size")
-        public Integer markdownRightMargin = 120;
-        @CommandLine.Option(names = {"--markdown-heading-style"}, description = "Markdown heading style. Valid values: ${COMPLETION-CANDIDATES}")
-        public HeadingStyle markdownHeadingStyle = HeadingStyle.ATX_PREFERRED;
-    }
-
+    @Deprecated
     public enum ConverterType {
         NO,
         COPYING,
