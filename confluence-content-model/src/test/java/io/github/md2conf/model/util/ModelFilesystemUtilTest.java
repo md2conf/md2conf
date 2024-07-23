@@ -2,7 +2,6 @@ package io.github.md2conf.model.util;
 
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluencePage;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -15,13 +14,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.github.md2conf.model.ConfluenceContentModel.Type.WIKI;
-import static io.github.md2conf.model.util.ModelReadWriteUtil.readFromYamlOrJson;
+import static io.github.md2conf.model.util.ModelFilesystemUtil.readFromYamlOrJson;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ModelReadWriteUtilTest {
+class ModelFilesystemUtilTest {
 
     private static final String TEST_RESOURCES = "src/test/resources";
 
@@ -39,35 +39,35 @@ class ModelReadWriteUtilTest {
         ConfluencePage confluencePage = createConfluencePageWithAttachments(title, WIKI, absolutePathTo("single-page/single-page.wiki"), attachments);
         ConfluenceContentModel confluenceContentModel = new ConfluenceContentModel(confluencePage);
 
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).doesNotExist();
-        File res =  ModelReadWriteUtil.saveConfluenceContentModelAtPath(confluenceContentModel, outputTmpDir);
+        assertThat(Path.of(outputTmpDir.toString(), ModelFilesystemUtil.DEFAULT_FILE_NAME)).doesNotExist();
+        File res =  ModelFilesystemUtil.saveConfluenceContentModelAtPath(confluenceContentModel, outputTmpDir);
 
-        Assertions.assertThat(res).isFile().hasFileName(ConfluenceContentModel.DEFAULT_FILE_NAME);
-        Assertions.assertThat(res.toString()).isEqualTo(outputTmpDir.toString()+"/"+ ConfluenceContentModel.DEFAULT_FILE_NAME);
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).exists();
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).isNotEmptyFile();
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).hasExtension("json");
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).content().contains("single-page/single-page.wiki");
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).content().contains("attachments/attachmentOne.txt");
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), ConfluenceContentModel.DEFAULT_FILE_NAME)).content().contains("Single Test Page");
+        assertThat(res).isFile().hasFileName(ModelFilesystemUtil.DEFAULT_FILE_NAME);
+        assertThat(res.toString()).isEqualTo(outputTmpDir.toString()+"/"+ ModelFilesystemUtil.DEFAULT_FILE_NAME);
+        assertThat(Path.of(outputTmpDir.toString(), ModelFilesystemUtil.DEFAULT_FILE_NAME)).exists();
+        assertThat(Path.of(outputTmpDir.toString(), ModelFilesystemUtil.DEFAULT_FILE_NAME)).isNotEmptyFile();
+        assertThat(Path.of(outputTmpDir.toString(), ModelFilesystemUtil.DEFAULT_FILE_NAME)).hasExtension("json");
+        assertThat(Path.of(outputTmpDir.toString(), ModelFilesystemUtil.DEFAULT_FILE_NAME)).content().contains("single-page/single-page.wiki");
+        assertThat(Path.of(outputTmpDir.toString(), ModelFilesystemUtil.DEFAULT_FILE_NAME)).content().contains("attachments/attachmentOne.txt");
+        assertThat(Path.of(outputTmpDir.toString(), ModelFilesystemUtil.DEFAULT_FILE_NAME)).content().contains("Single Test Page");
 
     }
 
     @Test
     void save_to_existing_file_is_not_allowed() {
         Path path =  Paths.get(absolutePathTo("single-page/single-page.wiki"));
-        Assertions.assertThat(path).exists();
+        assertThat(path).exists();
         org.junit.jupiter.api.Assertions.assertThrows(RuntimeException.class, () -> {
-            ModelReadWriteUtil.saveConfluenceContentModelAtPath(new ConfluenceContentModel(), path );
+            ModelFilesystemUtil.saveConfluenceContentModelAtPath(new ConfluenceContentModel(), path );
         });
     }
 
     @Test
     void save_to_non_existing_dir() {
         String dir2 = UUID.randomUUID().toString();
-        ModelReadWriteUtil.saveConfluenceContentModelAtPath(new ConfluenceContentModel(), Paths.get(outputTmpDir.toString(), dir2));
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), dir2, ConfluenceContentModel.DEFAULT_FILE_NAME)).exists();
-        Assertions.assertThat(Path.of(outputTmpDir.toString(), dir2, ConfluenceContentModel.DEFAULT_FILE_NAME)).isNotEmptyFile();
+        ModelFilesystemUtil.saveConfluenceContentModelAtPath(new ConfluenceContentModel(), Paths.get(outputTmpDir.toString(), dir2));
+        assertThat(Path.of(outputTmpDir.toString(), dir2, ModelFilesystemUtil.DEFAULT_FILE_NAME)).exists();
+        assertThat(Path.of(outputTmpDir.toString(), dir2, ModelFilesystemUtil.DEFAULT_FILE_NAME)).isNotEmptyFile();
     }
 
 
@@ -106,6 +106,8 @@ class ModelReadWriteUtilTest {
         File file = Paths.get(TEST_RESOURCES, "bad-json.json").toFile();
         Throwable exception = assertThrows(RuntimeException.class,
                 ()-> readFromYamlOrJson(file));
-        Assertions.assertThat(exception).hasCauseInstanceOf(IOException.class);
+        assertThat(exception).hasCauseInstanceOf(IOException.class);
     }
+
+    // todo more tests for readModel
 }

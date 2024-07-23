@@ -104,11 +104,11 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     }
 
     @NotNull
-    protected View2MdConvertCommand.FormatOptions getFormatOptions() {
-        View2MdConvertCommand.FormatOptions formatOptions = new View2MdConvertCommand.FormatOptions();
-        formatOptions.markdownRightMargin = this.markdownRightMargin;
-        formatOptions.markdownHeadingStyle = this.markdownHeadingStyle;
-        return formatOptions;
+    protected View2MdConvertCommand.View2MdConvertOptions getFormatOptions() {
+        View2MdConvertCommand.View2MdConvertOptions view2MdConvertOptions = new View2MdConvertCommand.View2MdConvertOptions();
+        view2MdConvertOptions.markdownRightMargin = this.markdownRightMargin;
+        view2MdConvertOptions.markdownHeadingStyle = this.markdownHeadingStyle;
+        return view2MdConvertOptions;
     }
 
     protected IndexCommand.IndexerOptions getIndexerOptions(){

@@ -55,7 +55,7 @@ public class IndexCommand implements Runnable{
 
     public static class IndexerOptions {
         @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "Input directory")
-        public Path inputDirectory;
+        public Path inputDirectory; //todo extract as InputDirOptions and use in PublishCommand too
         @CommandLine.Option(names = {"--file-extension"}, description = "File extension to index as confluence content pages")
         public String fileExtension = "md"; //todo change fileExtension based on converter
         @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")

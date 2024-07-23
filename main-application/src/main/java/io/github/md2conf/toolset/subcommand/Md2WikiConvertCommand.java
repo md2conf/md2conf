@@ -16,8 +16,9 @@ import picocli.CommandLine;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
-import static io.github.md2conf.model.util.ModelReadWriteUtil.saveConfluenceContentModelAtPath;
+import static io.github.md2conf.model.util.ModelFilesystemUtil.saveConfluenceContentModelAtPath;
 
 @CommandLine.Command(name = "md2wiki")
 @Slf4j
@@ -27,7 +28,7 @@ public class Md2WikiConvertCommand implements Runnable {
     LoggingMixin loggingMixin;
 
 
-    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1", heading = "md2wiki options:\n")
+    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1", heading = "md2wiki converting options:\n")
     private Md2WikiConvertOptions md2WikiConvertOptions;
 
 
@@ -78,6 +79,8 @@ public class Md2WikiConvertCommand implements Runnable {
     }
 
     public static class Md2WikiConvertOptions extends ConvertCommand.ConvertOptions{ //todo split on mandatory and additional
+        @CommandLine.Option(names = { "--model-path"}, required = false, description = "Model path directory") //todo rework
+        public Path modelPath; //todo drop?
 
         //todo extract to TitleOptions and make common for both converters
         @CommandLine.Option(names = {"--title-extract"}, description = "Strategy to extract title from file", //todo rename to TitleExtractFrom

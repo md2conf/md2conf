@@ -14,8 +14,8 @@ public class DumpConMojo extends AbstractMd2ConfMojo{
             getLog().info("md2conf plugin dumpcon skipped ('skip' is enabled)");
             return;
         }
-        View2MdConvertCommand.FormatOptions formatOptions = getFormatOptions();
-        DumpconCommand.dumpcon(getConfluenceOptions(), formatOptions, getOutputDirectoryAsPath());
+        View2MdConvertCommand.View2MdConvertOptions view2MdConvertOptions = getFormatOptions();
+        DumpconCommand.dumpcon(getConfluenceOptions(), view2MdConvertOptions, getOutputDirectoryAsPath());
     }
 
     public Path getOutputDirectoryAsPath() {

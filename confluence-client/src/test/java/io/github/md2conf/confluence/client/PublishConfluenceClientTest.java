@@ -23,7 +23,7 @@ import io.github.md2conf.confluence.client.http.RestApiInternalClient;
 import io.github.md2conf.model.ConfluenceContentModel;
 import io.github.md2conf.model.ConfluenceContentModel.Type;
 import io.github.md2conf.model.ConfluencePage;
-import io.github.md2conf.model.util.ModelReadWriteUtil;
+import io.github.md2conf.model.util.ModelFilesystemUtil;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -711,11 +711,11 @@ public class PublishConfluenceClientTest {
         return confluencePublisher(publishingStrategy, REMOVE_ORPHANS, confluenceRestClient, publishConfluenceClientListener, versionMessage, true);
     }
 
-    private static ConfluenceContentModel readFromFilePrefix(String qualifier){
+    private static ConfluenceContentModel readFromFilePrefix(String qualifier) {
         Path path = Paths.get(TEST_RESOURCES + "/metadata-" + qualifier + ".json");
-       ConfluenceContentModel model =  ModelReadWriteUtil.readFromYamlOrJson(path.toFile());
-       resolveAbsoluteContentFileAndAttachmentsPath(model.getPages(), path.getParent().toAbsolutePath());
-       return model;
+        ConfluenceContentModel model = ModelFilesystemUtil.readModel(path);
+        resolveAbsoluteContentFileAndAttachmentsPath(model.getPages(), path.getParent().toAbsolutePath());
+        return model;
     }
 
     private static PublishConfluenceClient confluencePublisher(PublishingStrategy publishingStrategy, OrphanRemovalStrategy orphanRemovalStrategy, RestApiInternalClient confluenceRestClient, PublishConfluenceClientListener publishConfluenceClientListener, String versionMessage, boolean notifyWatchers) {

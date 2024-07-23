@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static io.github.md2conf.model.util.ModelReadWriteUtil.saveConfluenceContentModelAtPath;
+import static io.github.md2conf.model.util.ModelFilesystemUtil.saveConfluenceContentModelAtPath;
 import static io.github.md2conf.toolset.PublishCommand.buildConfluenceClientConfigurationProperties;
 
 @CommandLine.Command(name = "dump", description = "Dump content from Confluence instance and save as 'confluence-content-model' with files in Confluence VIEW format")

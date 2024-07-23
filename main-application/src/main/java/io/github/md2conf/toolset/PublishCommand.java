@@ -4,7 +4,7 @@ import io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperti
 import io.github.md2conf.confluence.client.ConfluenceClientFactory;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.confluence.client.PublishingStrategy;
-import io.github.md2conf.model.ConfluenceContentModel;
+import io.github.md2conf.model.util.ModelFilesystemUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -13,8 +13,6 @@ import picocli.CommandLine.Command;
 import java.nio.file.Path;
 
 import static io.github.md2conf.confluence.client.ConfluenceClientConfigurationProperties.ConfluenceClientConfigurationPropertiesBuilder.aConfluenceClientConfigurationProperties;
-import static io.github.md2conf.model.util.ModelReadWriteUtil.readFromYamlOrJson;
-import static io.github.md2conf.toolset.ConvertCommand.findFilePathWithModel;
 
 @Command(name = "publish", description = "Publish content to a Confluence instance", sortOptions = false)
 public class PublishCommand implements Runnable {
@@ -28,7 +26,7 @@ public class PublishCommand implements Runnable {
     protected PublishOptions publishOptions;
 
     @CommandLine.Option(names = { "-m", "--confluence-content-model"}, description = "Path to file with `confluence-content-model` JSON file or to directory with confluence-content-model.json file. Default value is current working directory.", defaultValue = ".", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    public Path confluenceContentModelPath;
+    public Path confluenceContentModelPath; //todo unify with convert options
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
 
@@ -39,7 +37,7 @@ public class PublishCommand implements Runnable {
     }
 
     public static void publish(ConfluenceOptions confluenceOptions, PublishOptions publishOptions, Path confluenceContentModelPath) {
-        var model = loadConfluenceContentModel(confluenceContentModelPath);
+        var model = ModelFilesystemUtil.readModel(confluenceContentModelPath);
         var clientProps = buildConfluenceClientConfigurationProperties(confluenceOptions, publishOptions);
         var publishConfluenceClient = ConfluenceClientFactory.publishConfluenceClient(clientProps, model, null);
         publishConfluenceClient.publish(model, confluenceOptions.spaceKey, confluenceOptions.parentPageTitle);
@@ -62,20 +60,6 @@ public class PublishCommand implements Runnable {
                 .withPublishingStrategy(publishOptions.parentPagePublishingStrategy)
                 .build();
     }
-
-    public static ConfluenceContentModel loadConfluenceContentModel(Path confluenceContentModelPath) {
-        Path modelFilePath;
-        if (confluenceContentModelPath.toFile().isDirectory()){
-            modelFilePath = findFilePathWithModel(confluenceContentModelPath);
-        }else{
-            modelFilePath = confluenceContentModelPath;
-        }
-        if (!modelFilePath.toFile().exists()) {
-            throw new IllegalArgumentException("File doesn't exists at path " + modelFilePath);
-        }
-        return readFromYamlOrJson(modelFilePath.toFile());
-    }
-
 
 
     public static class ConfluenceOptions{

@@ -12,7 +12,7 @@ public class ConvertView2MdMojo extends AbstractMd2ConfMojo{ //todo add tests
             getLog().info("md2conf plugin convert-view2md skipped ('skip' is enabled)");
             return;
         }
-        View2MdConvertCommand.FormatOptions formatOptions = getFormatOptions();
-        View2MdConvertCommand.convertView2Md(formatOptions);
+        View2MdConvertCommand.View2MdConvertOptions view2MdConvertOptions = getFormatOptions();
+        View2MdConvertCommand.convertView2Md(view2MdConvertOptions);
     }
 }
