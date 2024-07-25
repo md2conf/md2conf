@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 
+import static io.github.md2conf.toolset.TestUtil.getCommandLine;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class Md2WikiConvertCommandTest {
@@ -19,20 +20,18 @@ class Md2WikiConvertCommandTest {
     private Path outputPath;
 
     @Test
-    void invoke_no_params() {
-        MainApp mainApp = new MainApp();
-        CommandLine cmd = new CommandLine(mainApp);
+    void when_invokeNoParams_then_missingRequiredArgumentPrinted() {
         StringWriter swOut = new StringWriter();
         StringWriter swErr = new StringWriter();
-        cmd.setOut(new PrintWriter(swOut));
-        cmd.setErr(new PrintWriter(swErr));
+        CommandLine cmd = getCommandLine(swOut, swErr);
         int exitCode = cmd.execute("convert", "md2wiki");
         assertThat(exitCode).isNotZero();
-        String errOut = swErr.toString();
         assertThat(swOut.toString()).isEmpty();
-        assertThat(errOut).isNotEmpty().contains("Missing required argument");
-        assertThat(errOut).doesNotContain("publish").doesNotContain("Exception").contains("Missing required argument");
+        assertThat(swErr.toString()).isNotEmpty().doesNotContain("Exception")
+                .contains("Usage: md2conf")
+                .contains("Missing required argument");
     }
+
 
     @Test
     void invoke_on_empty_dir() { //todo print warn from indexer

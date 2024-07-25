@@ -9,7 +9,7 @@ public class FileIndexerConfigurationProperties {
 //    private String attachmentDirectorySuffix; //todo
     private String rootPage = null;
     private ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
-    private OrphanFileStrategy orphanFileStrategy = OrphanFileStrategy.IGNORE;
+    private OrphanFileAction orphanFileAction = OrphanFileAction.IGNORE;
 
     public String getExcludePattern() {
         return excludePattern;
@@ -43,12 +43,12 @@ public class FileIndexerConfigurationProperties {
         this.childLayout = childLayout;
     }
 
-    public OrphanFileStrategy getOrhanPagesStrategy() {
-        return orphanFileStrategy;
+    public OrphanFileAction getOrhanPagesStrategy() {
+        return orphanFileAction;
     }
 
-    public void setOrhanPagesStrategy(OrphanFileStrategy orphanFileStrategy) {
-        this.orphanFileStrategy = orphanFileStrategy;
+    public void setOrhanPagesStrategy(OrphanFileAction orphanFileAction) {
+        this.orphanFileAction = orphanFileAction;
     }
 
     @Override

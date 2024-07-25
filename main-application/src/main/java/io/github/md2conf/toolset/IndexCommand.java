@@ -4,7 +4,7 @@ import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.DelegatingFileIndexer;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
-import io.github.md2conf.indexer.OrphanFileStrategy;
+import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.indexer.PagesStructure;
 import io.github.md2conf.indexer.PagesStructurePrinter;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class IndexCommand implements Runnable{
 
     public static PagesStructure indexInputDirectory(IndexerOptions indexerOptions) {
         logger.info("Indexing path {}", indexerOptions.inputDirectory);
-        logger.info("Child relation established using {} layout", indexerOptions.childLayout);
+        logger.info("Child relation established using {} layout", indexerOptions.indexerChildLayout);
         FileIndexerConfigurationProperties fileIndexerConfigurationProperties = createFileIndexerConfigurationProperties(indexerOptions);
         FileIndexer fileIndexer = new DelegatingFileIndexer(fileIndexerConfigurationProperties);
         PagesStructure pagesStructure = fileIndexer.indexPath(indexerOptions.inputDirectory);
@@ -45,34 +45,34 @@ public class IndexCommand implements Runnable{
 
     private static FileIndexerConfigurationProperties createFileIndexerConfigurationProperties(IndexerOptions indexerOptions) {
         FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
-        fileIndexerConfigurationProperties.setFileExtension(indexerOptions.fileExtension);
-        fileIndexerConfigurationProperties.setExcludePattern(indexerOptions.excludePattern);
+        fileIndexerConfigurationProperties.setFileExtension(indexerOptions.indexerFileExtension);
+        fileIndexerConfigurationProperties.setExcludePattern(indexerOptions.indexerExcludePattern);
         fileIndexerConfigurationProperties.setRootPage(indexerOptions.indexerRootPage);
-        fileIndexerConfigurationProperties.setChildLayout(indexerOptions.childLayout);
-        fileIndexerConfigurationProperties.setOrhanPagesStrategy(indexerOptions.orphanFileStrategy);
+        fileIndexerConfigurationProperties.setChildLayout(indexerOptions.indexerChildLayout);
+        fileIndexerConfigurationProperties.setOrhanPagesStrategy(indexerOptions.indexerOrphanFileAction);
         return fileIndexerConfigurationProperties;
     }
 
 
     public static class IndexerOptions {
-        @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "Input directory")
-        public Path inputDirectory; //todo extract as InputDirOptions and use in PublishCommand too
-        @CommandLine.Option(names = {"--file-extension"}, description = "File extension to index as confluence content pages", defaultValue = "md")
-        public String fileExtension = "md"; //todo change fileExtension based on converter
-        @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method", defaultValue = "glob:**/.*")
-        public String excludePattern = "glob:**/.*";
+        @CommandLine.Option(names = {"-i", "--input-dir", "--indexer-input-dir"}, required = true, description = "Input directory")
+        public Path inputDirectory;
+        @CommandLine.Option(names = {"--indexer-file-extension"}, description = "File extension to index as confluence content pages", defaultValue = "md")
+        public String indexerFileExtension = "md";
+        @CommandLine.Option(names = {"--indexer-exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method", defaultValue = "glob:**/.*")
+        public String indexerExcludePattern = "glob:**/.*";
         @CommandLine.Option(names = {"--indexer-root-page"}, description = "Use specified page as parent page for all another top-level pages in an input directory", defaultValue = NULL_VALUE)
         public String indexerRootPage = null;
-        @CommandLine.Option(names = {"--child-layout"}, description =
+        @CommandLine.Option(names = {"--indexer-child-layout"}, description =
                 "SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file\n " +
                         "SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages",
                 defaultValue = "SUB_DIRECTORY",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        public ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
-        @CommandLine.Option(names = {"--orphan-file-strategy"},
+        public ChildLayout indexerChildLayout = ChildLayout.SUB_DIRECTORY;
+        @CommandLine.Option(names = {"--indexer-orphan-file-strategy"},
                 description = "What to do with page which source file that are not top-level page and not child of any page. Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "IGNORE",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-        public OrphanFileStrategy orphanFileStrategy = OrphanFileStrategy.IGNORE;
+        public OrphanFileAction indexerOrphanFileAction = OrphanFileAction.IGNORE;
     }
 }

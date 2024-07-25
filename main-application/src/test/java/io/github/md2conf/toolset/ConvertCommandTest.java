@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
 
+import static io.github.md2conf.toolset.TestUtil.getCommandLine;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ConvertCommandTest {
@@ -23,20 +24,17 @@ class ConvertCommandTest {
 
 
     @Test
-    void invoke_no_params() {
-        MainApp mainApp = new MainApp();
-        CommandLine cmd = new CommandLine(mainApp);
+    void when_invokeNoParams_then_usagePrinted() {
         StringWriter swOut = new StringWriter();
         StringWriter swErr = new StringWriter();
-        cmd.setOut(new PrintWriter(swOut));
-        cmd.setErr(new PrintWriter(swErr));
+        CommandLine cmd = getCommandLine(swOut, swErr);
         int exitCode = cmd.execute("convert");
         assertThat(exitCode).isNotZero();
-        String errOut = swErr.toString();
         assertThat(swOut.toString()).isEmpty();
-        assertThat(errOut).contains("Commands")
+        assertThat(swErr.toString()).contains("Commands")
                 .doesNotContain("publish").doesNotContain("Exception");
     }
+
 
     @Test
     @Disabled

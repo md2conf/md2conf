@@ -4,7 +4,7 @@ import com.vladsch.flexmark.util.format.options.HeadingStyle;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.confluence.client.PublishingStrategy;
 import io.github.md2conf.indexer.ChildLayout;
-import io.github.md2conf.indexer.OrphanFileStrategy;
+import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.IndexCommand;
 import io.github.md2conf.toolset.PublishCommand;
@@ -38,8 +38,8 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected String indexerRootPage = null;
     @Parameter(property = PREFIX + "childLayout")
     protected ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
-    @Parameter(property = PREFIX + "orphanFileStrategy")
-    protected OrphanFileStrategy orphanFileStrategy = OrphanFileStrategy.IGNORE;
+    @Parameter(property = PREFIX + "orphanFileAction")
+    protected OrphanFileAction orphanFileAction = OrphanFileAction.IGNORE;
     @Parameter(property = PREFIX + "titleExtract")
     protected TitleExtractStrategy titleExtract = TitleExtractStrategy.FROM_FIRST_HEADER;
     @Parameter(property = PREFIX + "titlePrefix")
@@ -114,11 +114,11 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected IndexCommand.IndexerOptions getIndexerOptions(){
         IndexCommand.IndexerOptions indexerOptions = new IndexCommand.IndexerOptions();
         indexerOptions.inputDirectory = this.inputDirectory.toPath();
-        indexerOptions.fileExtension = this.fileExtension;
-        indexerOptions.excludePattern = this.excludePattern;
+        indexerOptions.indexerFileExtension = this.fileExtension;
+        indexerOptions.indexerExcludePattern = this.excludePattern;
         indexerOptions.indexerRootPage = this.indexerRootPage;
-        indexerOptions.childLayout = this.childLayout;
-        indexerOptions.orphanFileStrategy = this.orphanFileStrategy;
+        indexerOptions.indexerChildLayout = this.childLayout;
+        indexerOptions.indexerOrphanFileAction = this.orphanFileAction;
         return indexerOptions;
     }
 

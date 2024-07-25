@@ -166,7 +166,7 @@ File-indexer controlled by properties:
 | excludePattern     | --exclude-pattern      | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method                                                                                                                                                                                      | "glob:**/.*"  |
 | indexerRootPage    | --indexer-root-page    | Use specified page as parent page for all another top-level pages in an input directory                                                                                                                                                                                                                          |               |
 | childLayout        | --child-layout         | SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file. SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages | SUB_DIRECTORY |
-| orphanFileStrategy | --orphan-file-strategy | What to do with page which source file that are not top-level page and not child of any page. Possible options are IGNORE, ADD_TO_TOP_LEVEL_PAGES                                                                                                                                                                | IGNORE        |
+| orphanFileAction | --orphan-file-strategy | What to do with page which source file that are not top-level page and not child of any page. Possible options are IGNORE, ADD_TO_TOP_LEVEL_PAGES                                                                                                                                                                | IGNORE        |
 
 #### Attachments naming convention
 
@@ -237,9 +237,9 @@ will be indexed to next pages structure
    └─── page_b.md
 ```
 
-#### Property "orphanFileStrategy"
+#### Property "orphanFileAction"
 
-When `orphanFileStrategy` set to `ADD_TO_TOP_LEVEL_PAGES` the next files tree
+When `orphanFileAction` set to `ADD_TO_TOP_LEVEL_PAGES` the next files tree
 
 ```
 ├── some_dir
