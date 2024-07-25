@@ -13,13 +13,14 @@ import picocli.CommandLine;
 
 import java.nio.file.Path;
 
+import static picocli.CommandLine.Option.NULL_VALUE;
+
 @CommandLine.Command(name = "index", description = "Index input directory to build page structure and print results")
 public class IndexCommand implements Runnable{
     private static final Logger logger = LoggerFactory.getLogger(IndexCommand.class);
 
-    @CommandLine.ArgGroup(exclusive = false, heading = "Indexer options:\n", order = 3)
+    @CommandLine.ArgGroup(multiplicity = "1", heading = "Indexer options:\n", order = 1)
     private IndexerOptions indexerOptions;
-
 
     @Override
     public void run() {
@@ -56,11 +57,11 @@ public class IndexCommand implements Runnable{
     public static class IndexerOptions {
         @CommandLine.Option(names = {"-i", "--input-dir"}, required = true, description = "Input directory")
         public Path inputDirectory; //todo extract as InputDirOptions and use in PublishCommand too
-        @CommandLine.Option(names = {"--file-extension"}, description = "File extension to index as confluence content pages")
+        @CommandLine.Option(names = {"--file-extension"}, description = "File extension to index as confluence content pages", defaultValue = "md")
         public String fileExtension = "md"; //todo change fileExtension based on converter
-        @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method")
+        @CommandLine.Option(names = {"--exclude-pattern"}, description = "Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method", defaultValue = "glob:**/.*")
         public String excludePattern = "glob:**/.*";
-        @CommandLine.Option(names = {"--indexer-root-page"}, description = "Use specified page as parent page for all another top-level pages in an input directory")
+        @CommandLine.Option(names = {"--indexer-root-page"}, description = "Use specified page as parent page for all another top-level pages in an input directory", defaultValue = NULL_VALUE)
         public String indexerRootPage = null;
         @CommandLine.Option(names = {"--child-layout"}, description =
                 "SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file\n " +
