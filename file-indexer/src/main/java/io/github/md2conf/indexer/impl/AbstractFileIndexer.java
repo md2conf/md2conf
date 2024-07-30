@@ -72,9 +72,9 @@ public abstract class AbstractFileIndexer implements FileIndexer {
 
     private void processOrphans(List<Path> pagePaths, List<DefaultPage> topLevelPages) {
         List<Path> notIncludedToGraph = notIncludedToGraph(topLevelPages, pagePaths);
-        if (properties.getOrhanPagesStrategy() == OrphanFileAction.ADD_TO_TOP_LEVEL_PAGES) {
+        if (properties.getOrphanFileAction() == OrphanFileAction.ADD_TO_TOP_LEVEL_PAGES) {
             notIncludedToGraph.forEach(v-> topLevelPages.add(new DefaultPage(v)));
-        } else if (properties.getOrhanPagesStrategy().equals(OrphanFileAction.IGNORE)){
+        } else if (properties.getOrphanFileAction().equals(OrphanFileAction.IGNORE)){
             if (!notIncludedToGraph.isEmpty()) {
                 logIgnored(notIncludedToGraph);
             }

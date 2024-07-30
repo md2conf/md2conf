@@ -22,8 +22,8 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
     @Test
     void index_dir_with_xml_files() {
         FileIndexer defaultIndexer = new ChildInSameDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
-                .withFileExtension("xml")
-                .withExcludePattern("glob:**")
+                .fileExtension("xml")
+                .excludePattern("glob:**")
                 .build());
         String path = "src/test/resources/dir_with_xml_files";
         Path rootDir = (new File(path)).toPath();
@@ -94,7 +94,7 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
         markdownProps.setFileExtension("md");
         markdownProps.setRootPage(null);
         markdownProps.setChildLayout(ChildLayout.SAME_DIRECTORY);
-            markdownProps.setOrhanPagesStrategy(orphanFileAction);
+            markdownProps.setOrphanFileAction(orphanFileAction);
         return new ChildInSameDirectoryFileIndexer(markdownProps);
     }
 }

@@ -44,13 +44,13 @@ public class IndexCommand implements Runnable{
     }
 
     private static FileIndexerConfigurationProperties createFileIndexerConfigurationProperties(IndexerOptions indexerOptions) {
-        FileIndexerConfigurationProperties fileIndexerConfigurationProperties = new FileIndexerConfigurationProperties();
-        fileIndexerConfigurationProperties.setFileExtension(indexerOptions.indexerFileExtension);
-        fileIndexerConfigurationProperties.setExcludePattern(indexerOptions.indexerExcludePattern);
-        fileIndexerConfigurationProperties.setRootPage(indexerOptions.indexerRootPage);
-        fileIndexerConfigurationProperties.setChildLayout(indexerOptions.indexerChildLayout);
-        fileIndexerConfigurationProperties.setOrhanPagesStrategy(indexerOptions.indexerOrphanFileAction);
-        return fileIndexerConfigurationProperties;
+        return FileIndexerConfigurationProperties.builder()
+                .fileExtension(indexerOptions.indexerFileExtension)
+                .excludePattern(indexerOptions.indexerExcludePattern)
+                .rootPage(indexerOptions.indexerRootPage)
+                .childLayout(indexerOptions.indexerChildLayout)
+                .orphanFileAction(indexerOptions.indexerOrphanFileAction)
+                .build();
     }
 
 

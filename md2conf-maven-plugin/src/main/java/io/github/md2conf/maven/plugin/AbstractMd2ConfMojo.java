@@ -3,7 +3,6 @@ package io.github.md2conf.maven.plugin;
 import com.vladsch.flexmark.util.format.options.HeadingStyle;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.confluence.client.PublishingStrategy;
-import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.IndexCommand;
@@ -30,14 +29,14 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
     @Parameter(property = PREFIX + "inputDirectory")
     protected File inputDirectory;
-    @Parameter(property = PREFIX + "fileExtension")
-    protected String fileExtension = "md";
-    @Parameter(property = PREFIX + "excludePattern")
-    protected String excludePattern = "glob:**/.*";
+    @Parameter(property = PREFIX + "indexerFileExtension")
+    protected String indexerFileExtension = "md";
+    @Parameter(property = PREFIX + "indexerExcludePattern")
+    protected String indexerExcludePattern = "glob:**/.*";
     @Parameter(property = PREFIX + "indexerRootPage")
     protected String indexerRootPage = null;
-    @Parameter(property = PREFIX + "childLayout")
-    protected ChildLayout childLayout = ChildLayout.SUB_DIRECTORY;
+    @Parameter(property = PREFIX + "indexerChildLayout")
+    protected ChildLayout indexerChildLayout = ChildLayout.SUB_DIRECTORY;
     @Parameter(property = PREFIX + "orphanFileAction")
     protected OrphanFileAction orphanFileAction = OrphanFileAction.IGNORE;
     @Parameter(property = PREFIX + "titleExtract")
@@ -114,10 +113,10 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected IndexCommand.IndexerOptions getIndexerOptions(){
         IndexCommand.IndexerOptions indexerOptions = new IndexCommand.IndexerOptions();
         indexerOptions.inputDirectory = this.inputDirectory.toPath();
-        indexerOptions.indexerFileExtension = this.fileExtension;
-        indexerOptions.indexerExcludePattern = this.excludePattern;
+        indexerOptions.indexerindexerFileExtension = this.indexerFileExtension;
+        indexerOptions.indexerindexerExcludePattern = this.indexerExcludePattern;
         indexerOptions.indexerRootPage = this.indexerRootPage;
-        indexerOptions.indexerChildLayout = this.childLayout;
+        indexerOptions.indexerindexerChildLayout = this.indexerChildLayout;
         indexerOptions.indexerOrphanFileAction = this.orphanFileAction;
         return indexerOptions;
     }
