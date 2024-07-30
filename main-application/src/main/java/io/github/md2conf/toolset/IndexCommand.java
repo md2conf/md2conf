@@ -69,7 +69,7 @@ public class IndexCommand implements Runnable{
                 defaultValue = "SUB_DIRECTORY",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
         public ChildLayout indexerChildLayout = ChildLayout.SUB_DIRECTORY;
-        @CommandLine.Option(names = {"--indexer-orphan-file-strategy"},
+        @CommandLine.Option(names = {"--indexer-orphan-file-action"},
                 description = "What to do with page which source file that are not top-level page and not child of any page. Valid values: ${COMPLETION-CANDIDATES}",
                 defaultValue = "IGNORE",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS)

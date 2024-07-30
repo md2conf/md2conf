@@ -159,14 +159,14 @@ name conventions.
 
 File-indexer controlled by properties:
 
-| Property key       | CLI name               | Description                                                                                                                                                                                                                                                                                                      | Default value |
-|:-------------------|:-----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
-| inputDirectory     | "-i", "--input-dir"    | Input directory                                                                                                                                                                                                                                                                                                  |               |
-| fileExtension      | --file-extension       | File extension to index as confluence content pages                                                                                                                                                                                                                                                              | md            |
-| excludePattern     | --exclude-pattern      | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method                                                                                                                                                                                      | "glob:**/.*"  |
-| indexerRootPage    | --indexer-root-page    | Use specified page as parent page for all another top-level pages in an input directory                                                                                                                                                                                                                          |               |
-| childLayout        | --child-layout         | SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file. SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages | SUB_DIRECTORY |
-| orphanFileAction | --orphan-file-strategy | What to do with page which source file that are not top-level page and not child of any page. Possible options are IGNORE, ADD_TO_TOP_LEVEL_PAGES                                                                                                                                                                | IGNORE        |
+| Property key            | CLI name                                   | Description                                                                                                                                                                                                                                                                                                      | Default value |
+|:------------------------|:-------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------------|
+| inputDirectory          | "-i", "--input-dir", "--indexer-input-dir" | Input directory                                                                                                                                                                                                                                                                                                  |               |
+| indexerFileExtension    | --indexer-file-extension                   | File extension to index as confluence content pages                                                                                                                                                                                                                                                              | md            |
+| indexerExcludePattern   | --indexer-exclude-pattern                  | Exclude pattern in format of glob:** or regexp:.*. For syntax see javadoc of java.nio.file.FileSystem.getPathMatcher method                                                                                                                                                                                      | "glob:**/.*"  |
+| indexerRootPage         | --indexer-root-page                        | Use specified page as parent page for all another top-level pages in an input directory                                                                                                                                                                                                                          |               |
+| indexerChildLayout      | --indexer-child-layout                     | SUB_DIRECTORY is layout when source files for children pages resides in directory with the name equals to basename of parent file. SAME_DIRECTORY is layout when file with name 'index.md' or 'README.md' is the source file of parent page and other files in the directory are source files for children pages | SUB_DIRECTORY |
+| indexerOrphanFileAction | --indexer-orphan-file-action               | What to do with page which source file that are not top-level page and not child of any page. Possible options are IGNORE, ADD_TO_TOP_LEVEL_PAGES                                                                                                                                                                | IGNORE        |
 
 #### Attachments naming convention
 
@@ -237,9 +237,9 @@ will be indexed to next pages structure
    └─── page_b.md
 ```
 
-#### Property "orphanFileAction"
+#### Property "indexerOrphanFileAction"
 
-When `orphanFileAction` set to `ADD_TO_TOP_LEVEL_PAGES` the next files tree
+When `indexerOrphanFileAction` set to `ADD_TO_TOP_LEVEL_PAGES` the next files tree
 
 ```
 ├── some_dir
