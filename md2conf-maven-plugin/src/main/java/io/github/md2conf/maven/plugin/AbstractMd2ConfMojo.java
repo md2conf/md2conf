@@ -3,6 +3,7 @@ package io.github.md2conf.maven.plugin;
 import com.vladsch.flexmark.util.format.options.HeadingStyle;
 import io.github.md2conf.confluence.client.OrphanRemovalStrategy;
 import io.github.md2conf.confluence.client.PublishingStrategy;
+import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.title.processor.TitleExtractStrategy;
 import io.github.md2conf.toolset.IndexCommand;
@@ -113,10 +114,10 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
     protected IndexCommand.IndexerOptions getIndexerOptions(){
         IndexCommand.IndexerOptions indexerOptions = new IndexCommand.IndexerOptions();
         indexerOptions.inputDirectory = this.inputDirectory.toPath();
-        indexerOptions.indexerindexerFileExtension = this.indexerFileExtension;
-        indexerOptions.indexerindexerExcludePattern = this.indexerExcludePattern;
+        indexerOptions.indexerFileExtension = this.indexerFileExtension;
+        indexerOptions.indexerExcludePattern = this.indexerExcludePattern;
         indexerOptions.indexerRootPage = this.indexerRootPage;
-        indexerOptions.indexerindexerChildLayout = this.indexerChildLayout;
+        indexerOptions.indexerChildLayout = this.indexerChildLayout;
         indexerOptions.indexerOrphanFileAction = this.orphanFileAction;
         return indexerOptions;
     }
