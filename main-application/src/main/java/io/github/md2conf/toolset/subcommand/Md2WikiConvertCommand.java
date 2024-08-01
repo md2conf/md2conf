@@ -15,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 
 import static io.github.md2conf.model.util.ModelFilesystemUtil.saveConfluenceContentModelAtPath;
 
@@ -52,16 +50,6 @@ public class Md2WikiConvertCommand implements Runnable {
         return contentModelFile;
     }
 
-    protected static ConfluenceContentModel convertInternal(PagesStructure pagesStructure, PageStructureConverter converterService) {
-        log.info("Convert using {}", converterService);
-        try {
-            return converterService.convert(pagesStructure);
-        } catch (IOException e) {
-            log.error("Cannot convert provided input dir content with error", e);
-            throw new RuntimeException(e);
-        }
-    }
-
     private static PageStructureConverter createConverter(Md2WikiConvertOptions md2WikiConvertOptions) {
         PageStructureTitleProcessor pageStructureTitleProcessor =
                 new DefaultPageStructureTitleProcessor(md2WikiConvertOptions.titleExtract,
@@ -78,10 +66,7 @@ public class Md2WikiConvertCommand implements Runnable {
                 md2WikiConvertOptions.plantumlCodeMacroName);
     }
 
-    public static class Md2WikiConvertOptions extends ConvertCommand.ConvertOptions{ //todo split on mandatory and additional
-        @CommandLine.Option(names = { "--model-path"}, required = false, description = "Model path directory") //todo rework
-        public Path modelPath; //todo drop?
-
+    public static class Md2WikiConvertOptions extends ConvertCommand.ConvertOptions{
         //todo extract to TitleOptions and make common for both converters
         @CommandLine.Option(names = {"--title-extract"}, description = "Strategy to extract title from file", //todo rename to TitleExtractFrom
                 defaultValue = "FROM_FIRST_HEADER",

@@ -13,14 +13,14 @@ public class ConpubCommand implements Runnable {
 
     @CommandLine.Mixin
     LoggingMixin loggingMixin;
-    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1", heading = "Confluence options:\n")
-    PublishCommand.ConfluenceOptions confluenceOptions;
-    @CommandLine.ArgGroup(exclusive = false,  heading = "Publish options:\n")
-    PublishCommand.PublishOptions publishOptions;
     @CommandLine.ArgGroup(exclusive = false,  heading = "Indexer options:\n")
     IndexCommand.IndexerOptions indexerOptions;
     @CommandLine.ArgGroup(exclusive = false,  heading = "Convert options:\n")
     Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions;
+    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1", heading = "Confluence options:\n")
+    PublishCommand.ConfluenceOptions confluenceOptions;
+    @CommandLine.ArgGroup(exclusive = false,  heading = "Publish options:\n")
+    PublishCommand.PublishOptions publishOptions;
 
     @Override
     public void run() {
@@ -31,7 +31,10 @@ public class ConpubCommand implements Runnable {
     }
 
     @SneakyThrows
-    public static void conpub(Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions, IndexCommand.IndexerOptions indexerOptions, PublishCommand.ConfluenceOptions confluenceOptions, PublishCommand.PublishOptions publishOptions) {
+    public static void conpub(Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions,
+                              IndexCommand.IndexerOptions indexerOptions,
+                              PublishCommand.ConfluenceOptions confluenceOptions,
+                              PublishCommand.PublishOptions publishOptions) {
         var modelFile = Md2WikiConvertCommand.convertMd2Wiki(md2WikiConvertOptions, indexerOptions);
         PublishCommand.publish(confluenceOptions, publishOptions, modelFile.toPath());
     }
