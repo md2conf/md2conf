@@ -13,6 +13,7 @@ public class ConvertView2MdMojo extends AbstractMd2ConfMojo{ //todo add tests
             return;
         }
         View2MdConvertCommand.View2MdConvertOptions view2MdConvertOptions = getFormatOptions();
-        View2MdConvertCommand.convertView2Md(view2MdConvertOptions);
+        View2MdConvertCommand.MarkdownFormatOptions markdownFormatOptions = getMarkdownFormatOptions();
+        View2MdConvertCommand.convertView2Md(view2MdConvertOptions, markdownFormatOptions);
     }
 }

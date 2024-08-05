@@ -24,7 +24,7 @@ public class View2MdConvertCommand implements Runnable{
 
     @CommandLine.ArgGroup(exclusive = false, multiplicity = "1", heading = "view2md converting options:\n")
     View2MdConvertOptions view2MdConvertOptions;
-    @CommandLine.ArgGroup(exclusive = false, multiplicity = "1", heading = "markdown format options:\n")
+    @CommandLine.ArgGroup(exclusive = false, heading = "markdown format options:\n")
     MarkdownFormatOptions markdownFormatOptions;
 
 
