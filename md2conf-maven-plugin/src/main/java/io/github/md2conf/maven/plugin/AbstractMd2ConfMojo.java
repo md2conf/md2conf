@@ -15,6 +15,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.Path;
 
 public abstract class AbstractMd2ConfMojo extends AbstractMojo {
 
@@ -151,8 +152,12 @@ public abstract class AbstractMd2ConfMojo extends AbstractMojo {
         return options;
     }
 
-    public File getConfluenceContentModelPath() {
-        return confluenceContentModelPath;
+    protected Path getOutputDirectoryAsPath() {
+        if (outputDirectory != null) {
+            return outputDirectory.toPath();
+        } else {
+            return null;
+        }
     }
 
 }
