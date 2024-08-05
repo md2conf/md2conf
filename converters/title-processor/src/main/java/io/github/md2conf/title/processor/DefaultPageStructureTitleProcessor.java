@@ -15,6 +15,7 @@ public class DefaultPageStructureTitleProcessor implements PageStructureTitlePro
     private final String titleSuffix;
     private final boolean titleChildPrefixed;
 
+    @Deprecated
     public DefaultPageStructureTitleProcessor(TitleExtractStrategy titleExtractStrategy,
                                               String titlePrefix,
                                               String titleSuffix,
@@ -23,6 +24,13 @@ public class DefaultPageStructureTitleProcessor implements PageStructureTitlePro
         this.titlePrefix = titlePrefix;
         this.titleSuffix = titleSuffix;
         this.titleChildPrefixed = titleChildPrefixed;
+    }
+
+    public DefaultPageStructureTitleProcessor(TitleProcessorOptions titleProcessorOptions){
+        this.titleExtractor = new DefaultTitleExtractor(titleProcessorOptions.getTitleExtractStrategy());
+        this.titlePrefix = titleProcessorOptions.getTitlePrefix();
+        this.titleSuffix = titleProcessorOptions.getTitleSuffix();
+        this.titleChildPrefixed = titleProcessorOptions.isTitleChildPrefixed();
     }
 
     @Override

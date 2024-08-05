@@ -21,21 +21,25 @@ public class ConpubCommand implements Runnable {
     PublishCommand.ConfluenceOptions confluenceOptions;
     @CommandLine.ArgGroup(exclusive = false,  heading = "Publish options:\n")
     PublishCommand.PublishOptions publishOptions;
+    @CommandLine.ArgGroup(exclusive = false, heading = "Title options:\n", order = 3) //todo order
+    private ConvertCommand.TitleProcessingOptions titleProcessingOptions;
 
     @Override
     public void run() {
         var convertOptionsLocal = md2WikiConvertOptions ==null? new Md2WikiConvertCommand.Md2WikiConvertOptions(): md2WikiConvertOptions;
         var indexerOptionsLocal = indexerOptions==null? new IndexCommand.IndexerOptions(): indexerOptions;
         var publishOptionsLocal = publishOptions==null? new PublishCommand.PublishOptions(): publishOptions;
-        conpub(convertOptionsLocal, indexerOptionsLocal, confluenceOptions, publishOptionsLocal);
+        var titleProcessingLocal = titleProcessingOptions == null ? new ConvertCommand.TitleProcessingOptions() : titleProcessingOptions;
+        conpub(convertOptionsLocal, indexerOptionsLocal, confluenceOptions, publishOptionsLocal, titleProcessingLocal);
     }
 
     @SneakyThrows
     public static void conpub(Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions,
                               IndexCommand.IndexerOptions indexerOptions,
                               PublishCommand.ConfluenceOptions confluenceOptions,
-                              PublishCommand.PublishOptions publishOptions) {
-        var modelFile = Md2WikiConvertCommand.convertMd2Wiki(md2WikiConvertOptions, indexerOptions);
+                              PublishCommand.PublishOptions publishOptions,
+                              ConvertCommand.TitleProcessingOptions titleProcessingOptions) {
+        var modelFile = Md2WikiConvertCommand.convertMd2Wiki(md2WikiConvertOptions, indexerOptions, titleProcessingOptions);
         PublishCommand.publish(confluenceOptions, publishOptions, modelFile.toPath());
     }
 

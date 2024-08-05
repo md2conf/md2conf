@@ -16,6 +16,6 @@ public class ConvertMd2WikiMojo extends AbstractMd2ConfMojo{
         }
         Md2WikiConvertCommand.Md2WikiConvertOptions md2WikiConvertOptions = getMd2WikiConvertOptions();
         IndexCommand.IndexerOptions indexerOptions = getIndexerOptions();
-        Md2WikiConvertCommand.convertMd2Wiki(md2WikiConvertOptions, indexerOptions);
+        Md2WikiConvertCommand.convertMd2Wiki(md2WikiConvertOptions, indexerOptions, );
     }
 }
