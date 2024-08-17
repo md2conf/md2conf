@@ -54,7 +54,7 @@
         <module>converters</module>
         <module>confluence-client</module>
         <module>md2conf-command</module>
-        <module>md2conf-cli</module>
+        <module>md2conf-jar</module>
         <module>md2conf-maven-plugin</module>
     </modules>
 
