@@ -42,7 +42,7 @@ with `admin:admin` credentials.
 Run next command
 
 ```bash
-java -jar md2conf-cli.jar conpub -i=main-application/src/it/resources/several-pages --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://localhost:8090
+java -jar md2conf.jar conpub -i=main-application/src/it/resources/several-pages --username=admin --password=admin --space-key=ds -pt="Welcome to Confluence" -url=http://localhost:8090
 ```
 
 See results at http://localhost:8090/display/ds/Sample
