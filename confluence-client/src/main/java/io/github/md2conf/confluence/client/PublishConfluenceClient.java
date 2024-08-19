@@ -201,6 +201,10 @@ public class PublishConfluenceClient {
         String newContentHash = hash(content);
 
         if (notSameHash(existingContentHash, newContentHash) || !existingPage.getTitle().equals(page.getTitle())) {
+            if (page.isSkipUpdate()){
+                this.publishConfluenceClientListener.pageSkippedUpdate(existingPage);
+                return;
+            }
             this.apiInternalClient.deletePropertyByKey(contentId, CONTENT_HASH_PROPERTY_KEY);
             int newPageVersion = existingPage.getVersion() + 1;
             this.apiInternalClient.updatePage(contentId, ancestorId, page.getTitle(), content, page.getType(), newPageVersion, this.versionMessage, this.notifyWatchers);

@@ -126,6 +126,58 @@ public class PublishConfluenceClientTest {
     }
 
     @Test
+    public void publish_oneNewPageMarkedAsSkipped_delegatesToConfluenceRestClient() {
+        // arrange
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
+        when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn(PARENT_PAGE_ID);
+        when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, "Some Confluence Content")).thenThrow(new NotFoundException());
+        when(confluenceRestClientMock.addPageUnderAncestor(anyString(), anyString(), anyString(), anyString(), any(Type.class), anyString())).thenReturn("2345");
+
+        PublishConfluenceClientListener publishConfluenceClientListenerMock = mock(PublishConfluenceClientListener.class);
+
+
+        PublishConfluenceClient confluenceClient = confluencePublisher(confluenceRestClientMock, publishConfluenceClientListenerMock, "version message");
+        ConfluenceContentModel model = readFromFilePrefix("one-page-ancestor-id");
+        model.getPages().get(0).setSkipUpdate(true);
+
+        // act
+        confluenceClient.publish(model, TEST_SPACE, PARENT_PAGE_TITLE);
+
+        // assert
+        verify(confluenceRestClientMock, times(1)).addPageUnderAncestor(eq(TEST_SPACE), eq(PARENT_PAGE_ID), eq("Some Confluence Content"), eq("<h1>Some Confluence Content</h1>"), eq(STORAGE), eq("version message"));
+        verify(publishConfluenceClientListenerMock, times(1)).pageAdded(eq(new ConfluenceApiPage("2345", "Some Confluence Content", null, PublishConfluenceClient.INITIAL_PAGE_VERSION)));
+        verify(publishConfluenceClientListenerMock, times(1)).publishCompleted();
+        verifyNoMoreInteractions(publishConfluenceClientListenerMock);
+    }
+
+    @Test
+    public void publish_oneExistingPageMarkedAsSkipped_noPublish() {
+        // arrange
+        ConfluenceApiPage existingPage = new ConfluenceApiPage("3456", "Existing Page", "<h1>Some Other Confluence Content</h1>", 1);
+
+        RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);
+        when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, PARENT_PAGE_TITLE)).thenReturn(PARENT_PAGE_ID);
+        when(confluenceRestClientMock.getPageByTitle(TEST_SPACE, "Some Confluence Content")).thenReturn("3456");
+        when(confluenceRestClientMock.getPageWithViewContent("3456")).thenReturn(existingPage);
+        when(confluenceRestClientMock.getPropertyByKey("3456", PublishConfluenceClient.CONTENT_HASH_PROPERTY_KEY)).thenReturn("someWrongHash");
+        PublishConfluenceClientListener publishConfluenceClientListenerMock = mock(PublishConfluenceClientListener.class);
+
+
+        PublishConfluenceClient confluenceClient = confluencePublisher(confluenceRestClientMock, publishConfluenceClientListenerMock, "version message");
+        ConfluenceContentModel model = readFromFilePrefix("one-page-ancestor-id");
+        model.getPages().get(0).setSkipUpdate(true);
+
+        // act
+        confluenceClient.publish(model, TEST_SPACE, PARENT_PAGE_TITLE);
+
+        // assert
+        verify(confluenceRestClientMock, times(0)).addPageUnderAncestor(anyString(), anyString(),anyString(), anyString(), any(), anyString());
+        verify(publishConfluenceClientListenerMock, times(1)).pageSkippedUpdate(any());
+        verify(publishConfluenceClientListenerMock, times(1)).publishCompleted();
+        verifyNoMoreInteractions(publishConfluenceClientListenerMock);
+    }
+
+    @Test
     public void publish_multiplePageWithAncestorId_delegatesToConfluenceRestClient() {
         // arrange
         RestApiInternalClient confluenceRestClientMock = mock(RestApiInternalClient.class);

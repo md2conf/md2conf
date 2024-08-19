@@ -56,6 +56,7 @@ public class CopyingConverter implements PageStructureConverter {
         result.setContentFilePath(targetPath.toString());
         result.setTitle(titleMap.get(page.path().toAbsolutePath()));
         result.setAttachments(AttachmentUtil.toAttachmentsMap(copiedAttachments));
+        result.setSkipUpdate(page.skipUpdate());
         if (page.children() != null && !page.children().isEmpty()) {
             String childrenDirAsStr = FilenameUtils.concat(
                     relativePart.toString(),

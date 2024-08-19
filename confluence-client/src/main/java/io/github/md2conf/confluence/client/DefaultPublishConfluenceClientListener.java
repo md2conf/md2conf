@@ -10,6 +10,7 @@ public class DefaultPublishConfluenceClientListener implements PublishConfluence
 
     private int pageAddedCnt;
     private int pageUpdatedCnt;
+    private int pageUpdateSkippedCnt;
     private int pageNotModifiedCnt;
     private int pageDeletedCnt;
     private int attachmentAddedCnt;
@@ -73,10 +74,16 @@ public class DefaultPublishConfluenceClientListener implements PublishConfluence
         logger.info(getAttachmentStats());
     }
 
+    @Override
+    public void pageSkippedUpdate(ConfluenceApiPage page) {
+        pageUpdateSkippedCnt++;
+        logger.info("Skipped page update '" + page.getTitle() + "' (id " + page.getContentId() + ")");
+    }
+
     private String getPagesStats() {
         int pageCnt = pageAddedCnt + pageDeletedCnt + pageUpdatedCnt + pageNotModifiedCnt;
-        return String.format("Total pages count is %d (%d added , %d updated , %d deleted, %d not modified).",
-                pageCnt, pageAddedCnt, pageUpdatedCnt, pageDeletedCnt, pageNotModifiedCnt);
+        return String.format("Total pages count is %d (%d added , %d updated , %d deleted, %d not modified, %s update skipped).",
+                pageCnt, pageAddedCnt, pageUpdatedCnt, pageDeletedCnt, pageNotModifiedCnt, pageUpdateSkippedCnt);
     }
 
     private String getAttachmentStats() {

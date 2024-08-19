@@ -466,6 +466,22 @@ Actual version of PlantUML should be specified by a user.
 </plugin>
 ```
 
+## Advanced usage
+
+### Skip publishing update with `.md2conf_skipupdate` file
+
+It is possible to ignore publishing page updates. It is usefull when a page structure maintained in source code layout,
+but some page content updated manually not by docs-as-code approach.
+Such pages can be defined in `.md2conf_skipupdate` file.
+Rules defined the same way as in `.gitignore` file. 
+
+Example of `.md2conf_skipupdate` file:
+
+```
+# ignore publishing page updates for ./feedback.md
+./feedback.md
+```
+
 ## History and motivation
 
 See [decisions](docs/decisions) and [comparison with other tools](docs/comparison_with_other_tools.md).

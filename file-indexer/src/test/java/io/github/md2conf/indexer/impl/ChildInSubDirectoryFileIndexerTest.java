@@ -2,6 +2,7 @@ package io.github.md2conf.indexer.impl;
 
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.OrphanFileAction;
+import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +38,31 @@ class ChildInSubDirectoryFileIndexerTest extends AbstractFileIndexerTest {
         assertThat(structure.pages().get(0).children()).hasSize(1);
         assertThat(structure.pages().get(0).children().get(0).children()).hasSize(1);
         assertThat(structure.pages().get(0).children().get(0).children().get(0).children()).isEmpty();
+    }
+
+    @Test
+    void index_dir_with_skipupdate() {
+        ChildInSubDirectoryFileIndexer defaultIndexer = new ChildInSubDirectoryFileIndexer(aDefaultIndexerConfigurationProperties()
+                .fileExtension("md")
+                .build());
+        String path = "src/test/resources/dir_with_skipupdatefile";
+        Path rootDir = (new File(path)).toPath();
+        assertThat(rootDir).isDirectory();
+        assertThat(rootDir).isDirectoryContaining("glob:**.md");
+
+        PagesStructure structure = defaultIndexer.indexPath(rootDir);
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isNotEmpty();
+        assertThat(structure.pages()).hasSize(3);
+        Page pageA = structure.pages().stream().filter(v->v.path().toString().contains("page_a")).findFirst().orElseThrow();
+        assertThat(pageA.skipUpdate()).isTrue();
+
+        Page pageB = structure.pages().stream().filter(v->v.path().toString().contains("page_b")).findFirst().orElseThrow();
+        assertThat(pageB.skipUpdate()).isFalse();
+
+        assertThat(pageA.children()).hasSize(3);
+        Page anotherPage = pageA.children().stream().filter(v->v.path().toString().contains("another_page.md")).findFirst().orElseThrow();
+        assertThat(anotherPage.skipUpdate()).isTrue();
     }
 
     @Test

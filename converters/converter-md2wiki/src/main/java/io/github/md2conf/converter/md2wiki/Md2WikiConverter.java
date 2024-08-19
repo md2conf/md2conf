@@ -134,6 +134,7 @@ public class Md2WikiConverter implements PageStructureConverter {
         result.setAttachments(AttachmentUtil.toAttachmentsMap(copiedAttachments));
         result.setType(ConfluenceContentModel.Type.WIKI);
         result.setAttachments(AttachmentUtil.toAttachmentsMap(copiedAttachments));
+        result.setSkipUpdate(page.skipUpdate());
         // process children
         if (page.children() != null && !page.children().isEmpty()) {
             String childrenDirAsStr = FilenameUtils.concat(

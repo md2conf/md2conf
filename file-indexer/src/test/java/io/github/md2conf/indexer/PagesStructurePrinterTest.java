@@ -106,4 +106,6 @@ class PagesStructurePrinterTest {
         assertThat(logWatcher.list.get(5).getFormattedMessage()).contains("    └── page_b.md");
     }
 
+    //todo test for skip update
+
 }

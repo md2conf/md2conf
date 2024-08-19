@@ -24,6 +24,7 @@ public class ConfluencePage {
     private List<ConfluencePage> children = new ArrayList<>();
     private Map<String, String> attachments = new HashMap<>();
     private List<String> labels = new ArrayList<>();
+    private boolean skipUpdate = false;
 
     public List<ConfluencePage> getChildren() {
         return Objects.requireNonNullElse(this.children, emptyList());

@@ -6,6 +6,7 @@ import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.OrphanFileAction;
 import io.github.md2conf.indexer.Page;
+import io.github.md2conf.indexer.ignore.SkipUpdateMarker;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,8 @@ public abstract class AbstractFileIndexer implements FileIndexer {
     public AbstractFileIndexer(FileIndexerConfigurationProperties fileIndexerConfigurationProperties) {
         this.properties = fileIndexerConfigurationProperties;
         FileSystem fileSystem = FileSystems.getDefault();
-        this.excludePathMatcher = fileSystem.getPathMatcher(properties.getExcludePattern());
+        this.excludePathMatcher = fileSystem.getPathMatcher(properties.getExcludePattern()); //todo use indexignore
+
     }
 
     @Override
@@ -58,6 +60,8 @@ public abstract class AbstractFileIndexer implements FileIndexer {
             logger.error("Could not index directory {} using properties {}", rootPath, properties);
             throw new RuntimeException(e);
         }
+        SkipUpdateMarker skipUpdateMarker = new SkipUpdateMarker(rootPath);
+        skipUpdateMarker.visitAndMark(res);
         return res;
     }
 
