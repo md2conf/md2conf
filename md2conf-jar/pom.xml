@@ -51,6 +51,9 @@
                                 <exclude>META-INF/NOTICE.txt</exclude>
                                 <exclude>META-INF/DEPENDENCIES</exclude>
                                 <exclude>META-INF/LICENSE-notice.md</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
                             </excludes>
                         </filter>
                     </filters>
