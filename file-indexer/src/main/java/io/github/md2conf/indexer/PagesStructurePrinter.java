@@ -31,17 +31,23 @@ public class PagesStructurePrinter {
         for (int index = 0; index < list.size(); index++) {
             page = list.get(index);
             if (index == list.size() - 1) {
-                logger.info("{}└── {}", prefix, basePath.relativize(page.path()));
+                logger.info("{}└── {} {}", prefix, basePath.relativize(page.path()), isSkipped(page));
                 if (!page.children().isEmpty()) {
                     walk(page.children(), prefix + "    ");
                 }
             } else {
-                logger.info("{}├── {}", prefix, basePath.relativize(page.path()));
+                logger.info("{}├── {} {}", prefix, basePath.relativize(page.path()), isSkipped(page));
                 if (!page.children().isEmpty()) {
                     walk(page.children(), prefix + "│   ");
                 }
             }
         }
+    }
+
+    private static String isSkipped(Page page) {
+        if (page.skipUpdate()){
+            return "(skip update)";
+        } else return "";
     }
 }
 

@@ -25,4 +25,5 @@ public interface PublishConfluenceClientListener {
 
     void publishCompleted();
 
+    void pageSkippedUpdate(ConfluenceApiPage existingPage);
 }

@@ -4,6 +4,7 @@ import io.github.md2conf.indexer.ChildLayout;
 import io.github.md2conf.indexer.FileIndexer;
 import io.github.md2conf.indexer.FileIndexerConfigurationProperties;
 import io.github.md2conf.indexer.OrphanFileAction;
+import io.github.md2conf.indexer.Page;
 import io.github.md2conf.indexer.PagesStructure;
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +49,26 @@ class ChildInSameDirectoryFileIndexerTest extends AbstractFileIndexerTest{
         assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("page_a.md")).singleElement().matches(v -> v.children().size() == 0);
         assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("page_b.md")).singleElement().matches(v -> v.children().size() == 0);
         assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("index.md")).singleElement().matches(v -> v.children().size() == 1);
+        assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("index.md")).singleElement().matches(v -> v.attachments().size() == 1);
+    }
+
+    @Test
+    void index_dir_with_skipupdate() {
+        FileIndexer markdownIndexer = mdFileIndexer();
+        String path = "src/test/resources/dir_with_skipupdatefile";
+        File f = new File(path);
+        PagesStructure structure = markdownIndexer.indexPath(f.toPath());
+        assertThat(structure).isNotNull();
+        assertThat(structure.pages()).isNotEmpty();
+        assertThat(structure.pages()).hasSize(1);
+        assertThat(structure.pages().get(0).children()).hasSize(3);
+        assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("page_a.md")).singleElement()
+                .matches(v -> v.children().isEmpty(), "empty children")
+                .matches(Page::skipUpdate, "skip update");
+        assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("page_b.md")).singleElement()
+                .matches(v -> v.children().isEmpty(), "empty children")
+                .matches(v->!v.skipUpdate(), "not skip update");
+        assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("index.md")).singleElement().matches(v -> v.children().size() == 2);
         assertThat(structure.pages().get(0).children()).filteredOn(page -> page.path().endsWith("index.md")).singleElement().matches(v -> v.attachments().size() == 1);
     }
 

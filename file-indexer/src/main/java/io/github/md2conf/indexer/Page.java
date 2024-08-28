@@ -11,4 +11,6 @@ public interface Page {
 
     List<Path> attachments();
 
+    boolean skipUpdate();
+
 }

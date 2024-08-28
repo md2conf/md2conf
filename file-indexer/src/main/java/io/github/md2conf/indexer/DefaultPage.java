@@ -1,5 +1,7 @@
 package io.github.md2conf.indexer;
 
+import lombok.Setter;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +12,9 @@ public class DefaultPage implements Page {
 
     private final Path path;
     private final List<DefaultPage> children;
-
     private final List<Path> attachments;
+    @Setter
+    private boolean skipUpdate;
 
     public DefaultPage(Path path) {
         this.path = path;
@@ -44,6 +47,11 @@ public class DefaultPage implements Page {
     @Override
     public List<Path> attachments() {
         return attachments;
+    }
+
+    @Override
+    public boolean skipUpdate() {
+        return skipUpdate;
     }
 
     public void addChild(DefaultPage page) {
