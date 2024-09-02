@@ -1,6 +1,7 @@
 package io.github.md2conf.markdown.formatter;
 
 import com.vladsch.flexmark.ast.Link;
+import com.vladsch.flexmark.ext.tables.TableCell;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.ast.NodeVisitor;
 import com.vladsch.flexmark.util.ast.VisitHandler;
@@ -37,6 +38,11 @@ public class CrosspageLinkReplacer {
                 BasedSequence url = BasedSequence.of(Escaping.percentEncodeUrl(relativePath.toString()));
                 node.setUrl(url);
                 node.setUrlChars(url);
+                if (node.getParent() instanceof TableCell){
+                    TableCell tableCell = (TableCell) node.getParent();
+                    BasedSequence tableCellText = tableCell.getText();
+                    tableCell.setText(tableCellText.replace("/pages/viewpage.action?pageId="+pageId, url));
+                }
             }
         }
     }

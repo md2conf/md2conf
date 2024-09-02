@@ -21,8 +21,30 @@ class CrosspageLinkReplacerTest {
         CrosspageLinkReplacer visitor = new CrosspageLinkReplacer(Map.of(65552L, Path.of("./child/What is Confluence?.md")), Path.of("."));
         visitor.replacePageLinks(document);
 
-        String res =  formatter.getRenderer().render(document);
-        String expected = "# Welcome to Confluence" +   "\n\n" +"[What is Confluence?](child/What%20is%20Confluence?.md)\n";
+        String res = formatter.getRenderer().render(document);
+        String expected = "# Welcome to Confluence" + "\n\n" + "[What is Confluence?](child/What%20is%20Confluence?.md)\n";
+        Assertions.assertThat(res).isEqualTo(expected);
+    }
+
+    @Test
+    void replaceLinkInATableCell() {
+        String text = "# Welcome to Confluence " +
+                "\n\n" +
+                " | Column Header |\n" +
+                " |:-----------------------------------------------------------|\n" +
+                "| [What is Confluence?](/pages/viewpage.action?pageId=65552) |";
+
+        Node document = formatter.getParser().parse(text);
+        CrosspageLinkReplacer visitor = new CrosspageLinkReplacer(Map.of(65552L, Path.of("./child/What is Confluence?.md")), Path.of("."));
+        visitor.replacePageLinks(document);
+
+        String res = formatter.getRenderer().render(document);
+        String expected = "# Welcome to Confluence\n" +
+                "\n" +
+                "| Column Header                                           |\n" +
+                "|:--------------------------------------------------------|\n" +
+                "| [What is Confluence?](child/What%20is%20Confluence?.md) |\n" +
+                "\n";
         Assertions.assertThat(res).isEqualTo(expected);
     }
 }
