@@ -1,4 +1,4 @@
-package io.github.md2conf.command; //todo rename to command?
+package io.github.md2conf.command;
 
 import picocli.CommandLine;
 
@@ -20,6 +20,7 @@ public class MainApp {
     LoggingMixin loggingMixin;
 
     public static void main(String[] args) {
+        System.setProperty("slf4j.internal.verbosity", "WARN");
         CommandLine commandLine = new CommandLine(new MainApp());
         commandLine.setCaseInsensitiveEnumValuesAllowed(true);
         commandLine.setExecutionStrategy(LoggingMixin::executionStrategy).execute(args);
