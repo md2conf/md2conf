@@ -20,9 +20,14 @@ public class MainApp {
     LoggingMixin loggingMixin;
 
     public static void main(String[] args) {
+        int exitCode = execute(args);
+        System.exit(exitCode);
+    }
+
+    public static int execute(String[] args) {
         System.setProperty("slf4j.internal.verbosity", "WARN");
         CommandLine commandLine = new CommandLine(new MainApp());
         commandLine.setCaseInsensitiveEnumValuesAllowed(true);
-        commandLine.setExecutionStrategy(LoggingMixin::executionStrategy).execute(args);
+        return commandLine.setExecutionStrategy(LoggingMixin::executionStrategy).execute(args);
     }
 }

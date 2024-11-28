@@ -19,7 +19,7 @@ class MainAppTest {
         PrintStream originalErr = System.err;
         ByteArrayOutputStream errContent = new ByteArrayOutputStream();
         System.setErr(new PrintStream(errContent));
-        MainApp.main(new String[]{"wrong param"});
+        MainApp.execute(new String[]{"wrong param"});
         try {
 
             assertThat(errContent.toString()).contains("Unmatched argument at index 0");
@@ -33,7 +33,7 @@ class MainAppTest {
         PrintStream originalOut = System.out;
         ByteArrayOutputStream outContent = new ByteArrayOutputStream();
         System.setOut(new PrintStream(outContent));
-        MainApp.main(new String[]{"help"});
+        MainApp.execute(new String[]{"help"});
         try {
             assertThat(outContent.toString()).contains("Usage: md2conf [-v]");
         } finally {
