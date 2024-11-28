@@ -29,7 +29,7 @@ jobs:
     - name: Build with Maven
       run: mvn --no-transfer-progress -B install -Pintegration-tests --file pom.xml
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       ## extracted as separate step because required installed maven plugin
     - name: Maven plugin integration tests
       run: mvn -pl md2conf-maven-plugin -P plugin-it failsafe:integration-test failsafe:verify -nsu
