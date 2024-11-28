@@ -1,4 +1,4 @@
-[![maven-central](https://img.shields.io/maven-central/v/io.github.md2conf/md2conf-cli.svg)](https://search.maven.org/artifact/io.github.md2conf/md2conf-cli)
+[![maven-central](https://img.shields.io/maven-central/v/io.github.md2conf/md2conf-command.svg)](https://search.maven.org/artifact/io.github.md2conf/md2conf-command)
 [![codecov](https://codecov.io/gh/md2conf/md2conf/branch/master/graph/badge.svg?token=PJEAQ8SXH4)](https://codecov.io/gh/md2conf/md2conf)
 
 ## Overview
