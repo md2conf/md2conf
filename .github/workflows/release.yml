@@ -94,6 +94,6 @@ jobs:
           cache-from: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/md2conf:buildcache
           cache-to: type=registry,ref=${{ vars.DOCKERHUB_USERNAME }}/md2conf:buildcache,mode=max
       - name: Publish release to github
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           prerelease: true
