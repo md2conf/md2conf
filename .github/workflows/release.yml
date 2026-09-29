@@ -1,5 +1,6 @@
-# GitHub Actions Workflow created for handling the release process based on the draft release prepared
-# with the Build workflow. Running the publishPlugin task requires the PUBLISH_TOKEN secret provided.
+# GitHub Actions Workflow created for handling the release process based on the tag push.
+# Publishing to Maven Central requires the Sonatype Central Portal user token and the GPG key
+# secrets documented in RELEASE.md and .github/gpg_readme.md.
 
 name: Release
 
@@ -30,7 +31,8 @@ jobs:
         with:
           distribution: zulu
           java-version: 11
-          server-id: ossrh
+          # the id of the settings.xml server the central-publishing-maven-plugin reads credentials from
+          server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
@@ -48,6 +50,8 @@ jobs:
       - id: publish-to-central
         name: Publish to Central Repository
         env:
+          # the OSSRH_* names are kept for compatibility, but the values must be the user token
+          # generated in the Sonatype Central Portal (old Sonatype Jira credentials no longer work)
           MAVEN_USERNAME: ${{ vars.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
         run: |
@@ -55,7 +59,7 @@ jobs:
             --no-transfer-progress \
             --batch-mode \
             -Dgpg.passphrase=${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }} \
-            -P ossrh,integration-tests \
+            -P release,integration-tests \
             clean deploy
 
       # Pushing to docker registry
