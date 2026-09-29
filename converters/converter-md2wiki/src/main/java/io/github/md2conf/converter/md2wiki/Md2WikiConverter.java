@@ -67,9 +67,11 @@ public class Md2WikiConverter implements PageStructureConverter {
         extensions.add(LocalAttachmentLinkExtension.create());
         extensions.add(LocalImageExtension.create());
         extensions.add(CrosspageLinkExtension.create());
-        extensions.add(CurlyBracedBlockExtension.create());
         extensions.add(ConfluenceMacroExtension.create());
         extensions.add(JiraConverterExtension.create());
+        // must be registered after JiraConverterExtension so its Code renderer overrides
+        // JIRA's inline-code rendering (the last-registered renderer for a node type wins)
+        extensions.add(CurlyBracedBlockExtension.create());
         if (plantumlMacro) {
             extensions.add(PlantUmlCodeMacroExtension.create());
             res.set(PlantUmlCodeMacroExtension.CONFLUENCE_PLANTUML_MACRO, plantumlCodeMacroName);
