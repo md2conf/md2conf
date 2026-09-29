@@ -11,6 +11,7 @@
 
     <artifactId>flexmark-ext-fenced-code-block</artifactId>
     <version>0.0.0-SNAPSHOT</version>
+    <name>flexmark-ext-fenced-code-block</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

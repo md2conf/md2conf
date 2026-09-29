@@ -12,6 +12,7 @@
 
     <artifactId>confluence-client</artifactId>
     <version>0.0.0-SNAPSHOT</version>
+    <name>confluence-client</name>
 
     <dependencies>
         <dependency>

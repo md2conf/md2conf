@@ -12,6 +12,7 @@
 
     <artifactId>flexmark-ext-crosspage-link</artifactId>
     <version>0.0.0-SNAPSHOT</version>
+    <name>flexmark-ext-crosspage-link</name>
 
 
     <dependencies>

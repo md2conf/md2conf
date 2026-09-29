@@ -12,6 +12,7 @@
 
     <artifactId>title-processor</artifactId>
     <version>0.0.0-SNAPSHOT</version>
+    <name>title-processor</name>
 
 
     <dependencies>
