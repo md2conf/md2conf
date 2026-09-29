@@ -17,6 +17,8 @@ public class CurlyBracedBlockSpecTest extends RendererSpecTest {
     final private static String SPEC_RESOURCE = "/curly_braced_block_spec_test.md";
     final public static @NotNull ResourceLocation RESOURCE_LOCATION = ResourceLocation.of(SPEC_RESOURCE);
     final private static DataHolder OPTIONS = new MutableDataSet()
+            // order matters: CurlyBracedBlockExtension must be registered AFTER JiraConverterExtension
+            // so its Code renderer overrides the JIRA one (last-registered renderer for a node type wins)
             .set(Parser.EXTENSIONS, List.of(
                     JiraConverterExtension.create(),
                     CurlyBracedBlockExtension.create()))

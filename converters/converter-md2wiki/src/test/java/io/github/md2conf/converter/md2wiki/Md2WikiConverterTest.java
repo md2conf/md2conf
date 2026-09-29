@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -233,6 +235,28 @@ class Md2WikiConverterTest {
                 .doesNotContain("{code:html}")
                 .doesNotContain("HTML_COMMENT_BLOCK")
                 .doesNotContain("INLINE_HTML_COMMENT");
+    }
+
+    @Test
+    void convert_inline_code_braces_are_encoded() throws IOException {
+        Md2WikiConverter md2WikiConverter = new Md2WikiConverter(titleProcessor, outputPath, false, false, "");
+        var prop = new FileIndexerConfigurationProperties();
+        prop.setFileExtension("md");
+        FileIndexer fileIndexer = new DelegatingFileIndexer(prop);
+        PagesStructure pagesStructure = fileIndexer.indexPath(Paths.get("src/test/resources/markdown_inline_code"));
+        assertThat(pagesStructure.pages()).hasSize(1);
+        md2WikiConverter.convert(pagesStructure);
+        String wiki = new String(Files.readAllBytes(outputPath.resolve("index.wiki")), StandardCharsets.UTF_8);
+        // inline code braces/brackets are encoded so Confluence does not treat them as macro/link syntax
+        assertThat(wiki).contains("{{&#123;toc&#125;}}")
+                .contains("{{&#123;status:colour=Green|title=On track|subtle=true&#125;}}")
+                .contains("{{&#91;x&#93;}}")
+                .contains("{{a&#123;b&#125;&#91;c&#93;}}");
+        // and no raw braces/brackets leak through from inline code
+        assertThat(wiki).doesNotContain("{toc}")
+                .doesNotContain("{status:")
+                .doesNotContain("[x]")
+                .doesNotContain("a{b}[c]");
     }
 
 }
